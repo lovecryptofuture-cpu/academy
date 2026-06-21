@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Academy — Course Home</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--r:14px;--maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1100px 560px at 50% -12%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:800;letter-spacing:-.01em;font-size:16px}
+  .brand .mk{color:var(--gold)}
+  .langbtn{font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);
+    color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:56px 0 30px}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:16px}
+  h1{font-size:clamp(32px,6.5vw,52px);line-height:1.05;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:58ch;margin:0}
+  .progress{display:flex;align-items:center;gap:14px;margin-top:30px}
+  .pbar{flex:1;height:8px;background:var(--panel-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .pfill{height:100%;width:6%;background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+  .ptext{font-size:13px;color:var(--muted);white-space:nowrap}
+
+  .tier{padding:38px 0 6px}
+  .tier-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .tier-head h2{font-size:22px;margin:0;font-weight:750}
+  .tier-head .tn{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px}
+  .tier-sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+
+  .lesson{display:flex;align-items:center;gap:16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r);padding:16px 18px;margin-bottom:12px;text-decoration:none;color:inherit;transition:.15s}
+  .lesson.live:hover{border-color:var(--gold-dim);transform:translateY(-1px);box-shadow:0 14px 30px -20px rgba(212,175,55,.4)}
+  .lesson.soon{opacity:.55;cursor:default}
+  .lnum{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);font-size:16px}
+  .lbody{flex:1;min-width:0}
+  .ltitle{font-weight:650;font-size:16px;margin:0 0 2px}
+  .ldesc{color:var(--muted);font-size:13.5px;margin:0}
+  .ltag{flex:0 0 auto;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:5px 11px;border-radius:99px}
+  .ltag.l{color:#0b0c0f;background:var(--gold)}
+  .ltag.s{color:var(--muted);border:1px solid var(--line)}
+
+  footer{padding:46px 0 70px;text-align:center;border-top:1px solid var(--line);margin-top:40px}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><span class="mk">◆</span> <span class="en">Trading Academy</span><span class="pa">ਟ੍ਰੇਡਿੰਗ ਅਕੈਡਮੀ</span></div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Member Course · From Basics to Advanced</span><span class="pa">ਮੈਂਬਰ ਕੋਰਸ · ਮੁੱਢਲੇ ਤੋਂ ਉੱਨਤ ਤੱਕ</span></div>
+    <h1><span class="en">Learn to trade — by doing, not watching.</span><span class="pa">ਟ੍ਰੇਡਿੰਗ ਸਿੱਖੋ — ਦੇਖ ਕੇ ਨਹੀਂ, ਕਰ ਕੇ।</span></h1>
+    <p class="lede"><span class="en">Interactive lessons with live tools, real gold examples, and a check at the end of each. Work through them in order. Each one builds on the last.</span><span class="pa">ਲਾਈਵ ਟੂਲਾਂ, ਅਸਲੀ ਸੋਨੇ ਦੀਆਂ ਮਿਸਾਲਾਂ ਅਤੇ ਹਰ ਪਾਠ ਦੇ ਅੰਤ ਵਿੱਚ ਟੈਸਟ ਨਾਲ ਇੰਟਰਐਕਟਿਵ ਪਾਠ। ਕ੍ਰਮ ਵਿੱਚ ਕਰੋ। ਹਰ ਪਾਠ ਪਿਛਲੇ ਉੱਤੇ ਬਣਦਾ ਹੈ।</span></p>
+    <div class="progress">
+      <div class="pbar"><div class="pfill"></div></div>
+      <div class="ptext"><span class="en">1 of 17 lessons live</span><span class="pa">17 ਵਿੱਚੋਂ 1 ਪਾਠ ਲਾਈਵ</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tier">
+    <div class="tier-head"><span class="tn">Tier I</span><h2><span class="en">Foundation</span><span class="pa">ਨੀਂਹ</span></h2></div>
+    <p class="tier-sub"><span class="en">The core path every member starts on — basics to your first live trade.</span><span class="pa">ਹਰ ਮੈਂਬਰ ਇੱਥੋਂ ਸ਼ੁਰੂ ਕਰਦਾ ਹੈ — ਮੁੱਢਲੀਆਂ ਗੱਲਾਂ ਤੋਂ ਪਹਿਲੇ ਲਾਈਵ trade ਤੱਕ।</span></p>
+
+    <div class="lesson soon"><div class="lnum">1</div><div class="lbody"><p class="ltitle"><span class="en">Basics &amp; Platforms</span><span class="pa">ਮੁੱਢਲੀਆਂ ਗੱਲਾਂ ਤੇ Platforms</span></p><p class="ldesc"><span class="en">Apps, brokers, exchanges, golden rules</span><span class="pa">ਐਪਸ, brokers, exchanges, ਸੁਨਹਿਰੀ ਨਿਯਮ</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">2</div><div class="lbody"><p class="ltitle"><span class="en">Market Analysis</span><span class="pa">ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ</span></p><p class="ldesc"><span class="en">Price action, indicators, the trading plan</span><span class="pa">Price action, indicators, trading plan</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">3</div><div class="lbody"><p class="ltitle"><span class="en">Strategy Building</span><span class="pa">Strategy ਬਣਾਉਣਾ</span></p><p class="ldesc"><span class="en">Backtesting, psychology, journaling</span><span class="pa">Backtesting, psychology, journaling</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">4</div><div class="lbody"><p class="ltitle"><span class="en">Execution Mastery</span><span class="pa">Execution ਮੁਹਾਰਤ</span></p><p class="ldesc"><span class="en">A+ checklist, entries, stops &amp; sizing</span><span class="pa">A+ checklist, entries, stops ਤੇ sizing</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">5</div><div class="lbody"><p class="ltitle"><span class="en">Advanced Market Reading</span><span class="pa">ਉੱਨਤ ਮਾਰਕੀਟ ਪੜ੍ਹਨਾ</span></p><p class="ldesc"><span class="en">Multi-timeframe, confluence, Smart Money</span><span class="pa">Multi-timeframe, confluence, Smart Money</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">6</div><div class="lbody"><p class="ltitle"><span class="en">Full System &amp; Going Live</span><span class="pa">ਪੂਰਾ System ਤੇ Going Live</span></p><p class="ldesc"><span class="en">Blueprint, capital, first 30 days, drawdowns</span><span class="pa">Blueprint, capital, ਪਹਿਲੇ 30 ਦਿਨ, drawdowns</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+  </div>
+
+  <div class="tier">
+    <div class="tier-head"><span class="tn">Tier II</span><h2><span class="en">Gold Specialisation</span><span class="pa">ਸੋਨਾ ਵਿਸ਼ੇਸ਼ਤਾ</span></h2></div>
+    <p class="tier-sub"><span class="en">XAU/USD in depth — volatility, the physical market, institutional signals.</span><span class="pa">XAU/USD ਡੂੰਘਾਈ ਵਿੱਚ — volatility, ਅਸਲੀ ਬਾਜ਼ਾਰ, ਸੰਸਥਾਗਤ ਸੰਕੇਤ।</span></p>
+
+    <a class="lesson live" href="lesson-01-sd.html"><div class="lnum">G1</div><div class="lbody"><p class="ltitle"><span class="en">Standard Deviation on Gold</span><span class="pa">ਸੋਨੇ ਉੱਤੇ Standard Deviation</span></p><p class="ldesc"><span class="en">Measure volatility, set σ-based stops, size positions</span><span class="pa">Volatility ਮਾਪੋ, σ-ਆਧਾਰਿਤ stops, position sizing</span></p></div><span class="ltag l"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></span></a>
+    <div class="lesson soon"><div class="lnum">G2</div><div class="lbody"><p class="ltitle"><span class="en">Volatility Scaling — the $4,500 era</span><span class="pa">Volatility Scaling — $4,500 ਦਾ ਦੌਰ</span></p><p class="ldesc"><span class="en">ATR stops, position sizing for higher prices</span><span class="pa">ATR stops, ਉੱਚੀਆਂ ਕੀਮਤਾਂ ਲਈ sizing</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">G3</div><div class="lbody"><p class="ltitle"><span class="en">The Gold Trading Edge</span><span class="pa">ਸੋਨੇ ਦਾ Trading Edge</span></p><p class="ldesc"><span class="en">SGE premium, COMEX EFP, real-yield decoupling</span><span class="pa">SGE premium, COMEX EFP, real-yield ਟੁੱਟਣਾ</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">G4</div><div class="lbody"><p class="ltitle"><span class="en">Institutional Gold Signals</span><span class="pa">ਸੰਸਥਾਗਤ ਸੋਨਾ ਸੰਕੇਤ</span></p><p class="ldesc"><span class="en">Lease rates, Basel III, COT, vol surface</span><span class="pa">Lease rates, Basel III, COT, vol surface</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+  </div>
+
+  <div class="tier">
+    <div class="tier-head"><span class="tn">Tier III</span><h2><span class="en">Market Microstructure</span><span class="pa">ਮਾਰਕੀਟ Microstructure</span></h2></div>
+    <p class="tier-sub"><span class="en">How the market really works under the hood — the edge other groups never teach.</span><span class="pa">ਬਾਜ਼ਾਰ ਅਸਲ ਵਿੱਚ ਅੰਦਰੋਂ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ — ਉਹ edge ਜੋ ਹੋਰ ਗਰੁੱਪ ਨਹੀਂ ਸਿਖਾਉਂਦੇ।</span></p>
+
+    <div class="lesson soon"><div class="lnum">M1</div><div class="lbody"><p class="ltitle"><span class="en">Why a Rainstorm Changes Your Fill</span><span class="pa">ਮੀਂਹ ਤੁਹਾਡੀ Fill ਕਿਉਂ ਬਦਲਦਾ ਹੈ</span></p><p class="ldesc"><span class="en">HFT physics, latency &amp; false breakouts</span><span class="pa">HFT physics, latency ਤੇ ਝੂਠੇ breakouts</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">M2</div><div class="lbody"><p class="ltitle"><span class="en">Liquidity Providers &amp; Your Broker</span><span class="pa">Liquidity Providers ਤੇ ਤੁਹਾਡਾ Broker</span></p><p class="ldesc"><span class="en">A-book vs B-book, how brokers make money</span><span class="pa">A-book vs B-book, brokers ਪੈਸਾ ਕਿਵੇਂ ਕਮਾਉਂਦੇ ਹਨ</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">M3</div><div class="lbody"><p class="ltitle"><span class="en">Stop Hunts &amp; Liquidity Engineering</span><span class="pa">Stop Hunts ਤੇ Liquidity Engineering</span></p><p class="ldesc"><span class="en">How big players engineer moves into your stops</span><span class="pa">ਵੱਡੇ ਖਿਡਾਰੀ ਤੁਹਾਡੇ stops ਵੱਲ ਚਾਲ ਕਿਵੇਂ ਬਣਾਉਂਦੇ ਹਨ</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">M4</div><div class="lbody"><p class="ltitle"><span class="en">Dark Pools, GEX &amp; Order Flow</span><span class="pa">Dark Pools, GEX ਤੇ Order Flow</span></p><p class="ldesc"><span class="en">Hidden liquidity, gamma walls, VPIN toxicity</span><span class="pa">ਲੁਕੀ liquidity, gamma walls, VPIN toxicity</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+    <div class="lesson soon"><div class="lnum">M5</div><div class="lbody"><p class="ltitle"><span class="en">Why 90% of What You Were Taught Is Noise</span><span class="pa">ਤੁਹਾਨੂੰ ਸਿਖਾਇਆ 90% ਸ਼ੋਰ ਕਿਉਂ ਹੈ</span></p><p class="ldesc"><span class="en">Separating real edge from guru lore</span><span class="pa">ਅਸਲੀ edge ਨੂੰ guru ਗੱਲਾਂ ਤੋਂ ਵੱਖ ਕਰਨਾ</span></p></div><span class="ltag s"><span class="en">Soon</span><span class="pa">ਜਲਦੀ</span></span></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss. Past performance does not guarantee future results.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ। ਪਿਛਲੀ ਕਾਰਗੁਜ਼ਾਰੀ ਭਵਿੱਖ ਦੀ ਗਾਰੰਟੀ ਨਹੀਂ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+}
+</script>
+</body>
+</html>
