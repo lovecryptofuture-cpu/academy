@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Analysis — Foundation Part 2</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+
+  .grid2{display:grid;gap:14px}
+  @media(min-width:620px){.grid2{grid-template-columns:1fr 1fr}}
+  .pillar .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px}
+  .pillar .nm{font-weight:750;font-size:19px;margin:0 0 4px}
+  .pillar .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+  .pillar .row{padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+  .pillar .row b{color:var(--gold-soft);font-weight:650}
+
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .candlewrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .candlewrap svg{flex:0 0 150px}
+  .candleinfo{flex:1;min-width:200px}
+  .ohlc{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .ohlc button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 14px;border-radius:9px;font-size:13.5px;font-weight:600}
+  .ohlc button:hover{border-color:var(--gold-dim)}
+  .ohlc button.sel{background:var(--gold);color:#241d05;border-color:var(--gold)}
+  .candledesc{font-size:14.5px;color:#d3d4d8;min-height:48px}
+  .cpart{transition:.2s;opacity:.32}
+  .cpart.on{opacity:1}
+
+  .concept{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .concept:last-child{border-bottom:none}
+  .concept .ico{flex:0 0 40px;width:40px;height:40px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:19px}
+  .concept .ct{font-weight:650;margin:0 0 3px;font-size:15.5px}
+  .concept .cd{margin:0;color:var(--muted);font-size:14px}
+
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  input[type=range]{width:100%;accent-color:var(--gold)}
+  .rrgrid{display:grid;gap:18px}
+  @media(min-width:560px){.rrgrid{grid-template-columns:1fr 1fr}}
+  .rrval{font-size:15px;color:var(--gold-soft);font-weight:700}
+  .out{margin-top:18px;padding:18px;border-radius:10px;background:#0e1014;border:1px dashed var(--gold-dim)}
+  .out .big{font-size:30px;font-weight:800;line-height:1}
+  .out .lbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict{margin-top:12px;font-weight:700;font-size:15px}
+  .verdict.good{color:var(--green)} .verdict.bad{color:var(--red)}
+
+  .jcols{display:grid;gap:14px;margin-top:16px}
+  @media(min-width:620px){.jcols{grid-template-columns:1fr 1fr}}
+  .jcol{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .jcol .jh{font-weight:700;font-size:14px;color:var(--gold);margin:0 0 8px}
+  .jcol ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+  .jcol li{margin:5px 0}
+
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#pillars">1 · <span class="en">Two Pillars</span><span class="pa">ਦੋ ਥੰਮ੍ਹ</span></a>
+      <a href="#charts">2 · <span class="en">Candles</span><span class="pa">Candles</span></a>
+      <a href="#price">3 · <span class="en">Price Action</span><span class="pa">Price Action</span></a>
+      <a href="#indicators">4 · <span class="en">Indicators</span><span class="pa">Indicators</span></a>
+      <a href="#risk">5 · <span class="en">Risk &amp; R:R</span><span class="pa">ਜੋਖਮ ਤੇ R:R</span></a>
+      <a href="#plan">6 · <span class="en">Plan</span><span class="pa">Plan</span></a>
+      <a href="#quiz">7 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Foundation · Part 2 of 6</span><span class="pa">ਨੀਂਹ · ਭਾਗ 2 / 6</span></div>
+    <h1><span class="en">Market Analysis</span><span class="pa">ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ</span></h1>
+    <p class="lede"><span class="en">Two ways to read a market — the why and the when. Candles, support and resistance, a couple of indicators, and the risk maths that keeps you profitable even when you're wrong more than half the time.</span><span class="pa">ਮਾਰਕੀਟ ਪੜ੍ਹਨ ਦੇ ਦੋ ਤਰੀਕੇ — ਕਿਉਂ ਅਤੇ ਕਦੋਂ। Candles, support ਤੇ resistance, ਕੁਝ indicators, ਅਤੇ ਉਹ ਜੋਖਮ ਦਾ ਗਣਿਤ ਜੋ ਤੁਹਾਨੂੰ ਅੱਧੇ ਤੋਂ ਵੱਧ ਵਾਰ ਗਲਤ ਹੋਣ ਉੱਤੇ ਵੀ ਮੁਨਾਫ਼ੇ ਵਿੱਚ ਰੱਖਦਾ ਹੈ।</span></p>
+    <div class="meta">
+      <span><b>~15 min</b> · <span class="en">read &amp; do</span><span class="pa">ਪੜ੍ਹੋ ਤੇ ਕਰੋ</span></span>
+      <span><b>2 <span class="en">tools</span><span class="pa">ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="pillars">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">The two pillars</span><span class="pa">ਦੋ ਥੰਮ੍ਹ</span></h2>
+    <p><span class="en">Every market read comes down to two questions. Fundamentals tell you <strong>why</strong> something should move; technicals tell you <strong>when</strong>. Most traders pick one as their main lens and use the other for context.</span><span class="pa">ਹਰ ਮਾਰਕੀਟ ਪੜ੍ਹਾਈ ਦੋ ਸਵਾਲਾਂ ਉੱਤੇ ਆਉਂਦੀ ਹੈ। Fundamentals ਦੱਸਦੇ ਹਨ ਕਿ ਕੁਝ <strong>ਕਿਉਂ</strong> ਹਿੱਲਣਾ ਚਾਹੀਦਾ; technicals ਦੱਸਦੇ ਹਨ <strong>ਕਦੋਂ</strong>। ਜ਼ਿਆਦਾਤਰ traders ਇੱਕ ਨੂੰ ਮੁੱਖ ਬਣਾਉਂਦੇ ਹਨ ਤੇ ਦੂਜੇ ਨੂੰ context ਲਈ ਵਰਤਦੇ ਹਨ।</span></p>
+    <div class="grid2">
+      <div class="card pillar">
+        <div class="lab"><span class="en">Fundamental · the "why"</span><span class="pa">Fundamental · "ਕਿਉਂ"</span></div>
+        <p class="nm"><span class="en">Intrinsic value</span><span class="pa">ਅਸਲੀ ਕੀਮਤ</span></p>
+        <p class="sub"><span class="en">What is the asset actually worth?</span><span class="pa">Asset ਅਸਲ ਵਿੱਚ ਕਿੰਨੇ ਦਾ ਹੈ?</span></p>
+        <div class="row"><b>Stocks</b> — <span class="en">earnings, company news, leadership, industry trends</span><span class="pa">earnings, ਕੰਪਨੀ ਖ਼ਬਰਾਂ, leadership, industry trends</span></div>
+        <div class="row"><b>Crypto</b> — <span class="en">utility, tokenomics, adoption, ecosystem growth</span><span class="pa">utility, tokenomics, adoption, ecosystem growth</span></div>
+        <div class="row"><b>Forex</b> — <span class="en">interest rates, GDP, inflation, geopolitics</span><span class="pa">interest rates, GDP, inflation, geopolitics</span></div>
+      </div>
+      <div class="card pillar">
+        <div class="lab"><span class="en">Technical · the "when"</span><span class="pa">Technical · "ਕਦੋਂ"</span></div>
+        <p class="nm"><span class="en">Price &amp; history</span><span class="pa">ਕੀਮਤ ਤੇ ਇਤਿਹਾਸ</span></p>
+        <p class="sub"><span class="en">Study charts to forecast the next move.</span><span class="pa">ਅਗਲੀ ਚਾਲ ਦਾ ਅੰਦਾਜ਼ਾ ਲਾਉਣ ਲਈ charts ਪੜ੍ਹੋ।</span></p>
+        <div class="row"><b>Price action</b> — <span class="en">candlesticks, support &amp; resistance, trendlines</span><span class="pa">candlesticks, support ਤੇ resistance, trendlines</span></div>
+        <div class="row"><b>Indicators</b> — <span class="en">moving averages, RSI, volume to confirm setups</span><span class="pa">moving averages, RSI, volume — setups ਪੱਕੇ ਕਰਨ ਲਈ</span></div>
+        <div class="row"><b>Timeframes</b> — <span class="en">day: 5m/15m/1H · swing: 4H/Daily</span><span class="pa">day: 5m/15m/1H · swing: 4H/Daily</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="charts">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">Read a candle</span><span class="pa">ਇੱਕ candle ਪੜ੍ਹੋ</span></h2>
+    <p><span class="en">TradingView is your workspace — and the candlestick is its alphabet. Each candle holds four prices. Tap each one to see what it tells you.</span><span class="pa">TradingView ਤੁਹਾਡਾ workspace ਹੈ — ਤੇ candlestick ਇਸਦੀ ਵਰਣਮਾਲਾ। ਹਰ candle ਵਿੱਚ ਚਾਰ ਕੀਮਤਾਂ ਹਨ। ਹਰ ਇੱਕ ਨੂੰ ਟੈਪ ਕਰੋ ਤੇ ਦੇਖੋ ਇਹ ਕੀ ਦੱਸਦੀ ਹੈ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · candle anatomy</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · candle ਬਣਤਰ</span></span>
+      <div class="candlewrap">
+        <svg viewBox="0 0 120 260" xmlns="http://www.w3.org/2000/svg">
+          <line id="c-high" class="cpart" x1="60" y1="14" x2="60" y2="60" stroke="#46c98a" stroke-width="4"/>
+          <rect id="c-body" class="cpart" x="38" y="60" width="44" height="120" rx="3" fill="#46c98a"/>
+          <line id="c-low" class="cpart" x1="60" y1="180" x2="60" y2="232" stroke="#46c98a" stroke-width="4"/>
+          <line id="c-close" class="cpart" x1="20" y1="60" x2="100" y2="60" stroke="#e8cf7a" stroke-width="2" stroke-dasharray="3 3"/>
+          <line id="c-open" class="cpart" x1="20" y1="180" x2="100" y2="180" stroke="#e8cf7a" stroke-width="2" stroke-dasharray="3 3"/>
+        </svg>
+        <div class="candleinfo">
+          <div class="ohlc">
+            <button onclick="cpart('open',this)"><span class="en">Open</span><span class="pa">Open</span></button>
+            <button onclick="cpart('high',this)"><span class="en">High</span><span class="pa">High</span></button>
+            <button onclick="cpart('low',this)"><span class="en">Low</span><span class="pa">Low</span></button>
+            <button onclick="cpart('close',this)"><span class="en">Close</span><span class="pa">Close</span></button>
+          </div>
+          <div class="candledesc" id="cdesc"><span class="en">Tap a price above. This is a green (bullish) candle — it closed higher than it opened.</span><span class="pa">ਉੱਪਰ ਕੋਈ ਕੀਮਤ ਟੈਪ ਕਰੋ। ਇਹ ਹਰਾ (bullish) candle ਹੈ — ਇਹ open ਤੋਂ ਉੱਚਾ close ਹੋਇਆ।</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:14px"><span class="en">The close is the most important price — it's where the period's battle finally settled. On a green candle the body's top is the close; on a red candle the body's top is the open.</span><span class="pa">Close ਸਭ ਤੋਂ ਜ਼ਰੂਰੀ ਕੀਮਤ ਹੈ — ਇੱਥੇ ਉਸ ਸਮੇਂ ਦੀ ਲੜਾਈ ਆਖ਼ਰ ਟਿਕੀ। ਹਰੇ candle ਉੱਤੇ body ਦਾ ਉੱਪਰਲਾ ਸਿਰਾ close ਹੈ; ਲਾਲ candle ਉੱਤੇ ਉੱਪਰਲਾ ਸਿਰਾ open ਹੈ।</span></p>
+  </div>
+</section>
+
+<section id="price">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Price action basics</span><span class="pa">Price action ਮੁੱਢਲੀਆਂ ਗੱਲਾਂ</span></h2>
+    <p><span class="en">Before any indicator, learn to read raw price. These three concepts do most of the work.</span><span class="pa">ਕਿਸੇ indicator ਤੋਂ ਪਹਿਲਾਂ, ਸਿੱਧੀ ਕੀਮਤ ਪੜ੍ਹਨੀ ਸਿੱਖੋ। ਇਹ ਤਿੰਨ ਸੰਕਲਪ ਜ਼ਿਆਦਾਤਰ ਕੰਮ ਕਰਦੇ ਹਨ।</span></p>
+    <div class="card">
+      <div class="concept"><div class="ico">📊</div><div><p class="ct"><span class="en">Support &amp; Resistance</span><span class="pa">Support ਤੇ Resistance</span></p><p class="cd"><span class="en">Support is the floor where buyers step in; resistance is the ceiling where sellers take over. The highest-probability trades form at these levels.</span><span class="pa">Support ਉਹ ਫਰਸ਼ ਹੈ ਜਿੱਥੇ ਖਰੀਦਦਾਰ ਆਉਂਦੇ ਹਨ; resistance ਉਹ ਛੱਤ ਹੈ ਜਿੱਥੇ ਵੇਚਣ ਵਾਲੇ ਹਾਵੀ ਹੁੰਦੇ ਹਨ। ਸਭ ਤੋਂ ਵਧੀਆ trades ਇਨ੍ਹਾਂ ਪੱਧਰਾਂ ਉੱਤੇ ਬਣਦੇ ਹਨ।</span></p></div></div>
+      <div class="concept"><div class="ico">📈</div><div><p class="ct"><span class="en">Trendlines</span><span class="pa">Trendlines</span></p><p class="cd"><span class="en">Uptrend = higher highs &amp; higher lows. Downtrend = lower highs &amp; lower lows. Sideways &amp; choppy = wait for a breakout, don't force trades.</span><span class="pa">Uptrend = ਉੱਚੀਆਂ highs ਤੇ ਉੱਚੀਆਂ lows। Downtrend = ਨੀਵੀਆਂ highs ਤੇ ਨੀਵੀਆਂ lows। Sideways = breakout ਦੀ ਉਡੀਕ ਕਰੋ, trades ਨਾ ਧੱਕੋ।</span></p></div></div>
+      <div class="concept"><div class="ico">📦</div><div><p class="ct"><span class="en">Volume</span><span class="pa">Volume</span></p><p class="cd"><span class="en">High volume validates a move — real interest behind it. Low volume means a weak move with little conviction; be cautious.</span><span class="pa">ਜ਼ਿਆਦਾ volume ਚਾਲ ਨੂੰ ਪੱਕਾ ਕਰਦਾ ਹੈ — ਪਿੱਛੇ ਅਸਲੀ ਦਿਲਚਸਪੀ। ਘੱਟ volume ਕਮਜ਼ੋਰ ਚਾਲ; ਸਾਵਧਾਨ ਰਹੋ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="indicators">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Two indicators, no clutter</span><span class="pa">ਦੋ indicators, ਕੋਈ ਭੀੜ ਨਹੀਂ</span></h2>
+    <p><span class="en"><strong>Golden rule: keep it simple.</strong> Pick one or two indicators when starting — a cluttered chart hides the signal instead of revealing it.</span><span class="pa"><strong>ਸੁਨਹਿਰੀ ਨਿਯਮ: ਸੌਖਾ ਰੱਖੋ।</strong> ਸ਼ੁਰੂ ਵਿੱਚ ਇੱਕ ਜਾਂ ਦੋ indicators ਚੁਣੋ — ਭਰਿਆ chart signal ਲੁਕਾ ਦਿੰਦਾ ਹੈ।</span></p>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">〰️ <span class="en">Moving Averages</span><span class="pa">Moving Averages</span></h3>
+        <p class="muted" style="font-size:14.5px"><span class="en">Smooths price to show the trend. EMA reacts faster than SMA.</span><span class="pa">ਕੀਮਤ ਨੂੰ ਸਮੂਥ ਕਰ ਕੇ trend ਦਿਖਾਉਂਦਾ ਹੈ। EMA, SMA ਤੋਂ ਤੇਜ਼ ਪ੍ਰਤੀਕਿਰਿਆ ਦਿੰਦਾ ਹੈ।</span></p>
+        <p class="cd muted" style="font-size:14px;margin:0"><span class="en">› SMA 200 = long-term trend<br>› EMA 20/50 = shorter-term momentum<br>› Above MA = bullish · below = bearish</span><span class="pa">› SMA 200 = ਲੰਮਾ trend<br>› EMA 20/50 = ਥੋੜ੍ਹੇ ਸਮੇਂ ਦੀ momentum<br>› MA ਤੋਂ ਉੱਪਰ = bullish · ਹੇਠਾਂ = bearish</span></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">⚡ <span class="en">RSI</span><span class="pa">RSI</span></h3>
+        <p class="muted" style="font-size:14.5px"><span class="en">A momentum gauge — is the asset overbought or oversold?</span><span class="pa">Momentum gauge — asset overbought ਹੈ ਜਾਂ oversold?</span></p>
+        <p class="cd muted" style="font-size:14px;margin:0"><span class="en">› Above 70 = overbought → possible drop<br>› Below 30 = oversold → possible bounce<br>› Divergence = early trend-change warning</span><span class="pa">› 70 ਤੋਂ ਉੱਪਰ = overbought → ਡਿੱਗ ਸਕਦਾ<br>› 30 ਤੋਂ ਹੇਠਾਂ = oversold → ਉੱਠ ਸਕਦਾ<br>› Divergence = trend ਬਦਲਣ ਦੀ ਪਹਿਲੀ ਚੇਤਾਵਨੀ</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="risk">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">The maths that keeps you alive</span><span class="pa">ਉਹ ਗਣਿਤ ਜੋ ਤੁਹਾਨੂੰ ਜ਼ਿੰਦਾ ਰੱਖਦਾ ਹੈ</span></h2>
+    <p><span class="en">Here's the counterintuitive truth: you can be <em>wrong more than half the time</em> and still make money — if your winners are bigger than your losers. Move the sliders and watch it for yourself.</span><span class="pa">ਇੱਥੇ ਉਲਟ ਜਿਹੀ ਸੱਚਾਈ ਹੈ: ਤੁਸੀਂ <em>ਅੱਧੇ ਤੋਂ ਵੱਧ ਵਾਰ ਗਲਤ</em> ਹੋ ਸਕਦੇ ਹੋ ਤੇ ਫਿਰ ਵੀ ਪੈਸਾ ਕਮਾ ਸਕਦੇ ਹੋ — ਜੇ ਤੁਹਾਡੀਆਂ ਜਿੱਤਾਂ ਹਾਰਾਂ ਤੋਂ ਵੱਡੀਆਂ ਹਨ। Sliders ਹਿਲਾਓ ਤੇ ਖੁਦ ਦੇਖੋ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · risk : reward</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · risk : reward</span></span>
+      <div class="rrgrid">
+        <div>
+          <label><span class="en">Win rate</span><span class="pa">Win rate</span> — <span class="rrval" id="wrval">40%</span></label>
+          <input type="range" id="wr" min="10" max="90" value="40" step="5" oninput="calcRR()">
+        </div>
+        <div>
+          <label><span class="en">Reward : Risk</span><span class="pa">Reward : Risk</span> — <span class="rrval" id="rrlbl">1 : 2</span></label>
+          <input type="range" id="rr" min="0.5" max="5" value="2" step="0.5" oninput="calcRR()">
+        </div>
+      </div>
+      <div class="out">
+        <div class="big" id="expval">+$0.20</div>
+        <div class="lbl"><span class="en">average profit per $1 risked, over many trades</span><span class="pa">ਹਰ $1 ਜੋਖਮ ਉੱਤੇ ਔਸਤ ਮੁਨਾਫ਼ਾ, ਕਈ trades ਉੱਤੇ</span></div>
+        <div class="verdict good" id="verdict"></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Expectancy = (win rate × reward) − (loss rate × 1). Aim for at least 1:2 — then even a 40% win rate is profitable.</span><span class="pa">Expectancy = (win rate × reward) − (loss rate × 1)। ਘੱਟੋ-ਘੱਟ 1:2 ਦਾ ਟੀਚਾ — ਫਿਰ 40% win rate ਵੀ ਮੁਨਾਫ਼ੇ ਵਾਲਾ।</span></p>
+    </div>
+    <div class="card">
+      <p style="margin:0"><strong><span class="en">Position sizing &amp; leverage:</span><span class="pa">Position sizing ਤੇ leverage:</span></strong> <span class="en">size every trade so your stop-loss equals 1–2% of your account — never more. And avoid high leverage early; it multiplies losses as fast as gains, and beginners usually lose first.</span><span class="pa">ਹਰ trade ਇੰਝ size ਕਰੋ ਕਿ stop-loss account ਦਾ 1–2% ਹੋਵੇ — ਵੱਧ ਕਦੇ ਨਹੀਂ। ਤੇ ਸ਼ੁਰੂ ਵਿੱਚ ਜ਼ਿਆਦਾ leverage ਤੋਂ ਬਚੋ; ਇਹ ਨੁਕਸਾਨ ਮੁਨਾਫ਼ੇ ਜਿੰਨੀ ਤੇਜ਼ੀ ਨਾਲ ਵਧਾਉਂਦਾ ਹੈ।</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Plan your trade. Trade your plan.</span><span class="pa">Trade ਦੀ ਯੋਜਨਾ ਬਣਾਓ। ਯੋਜਨਾ ਮੁਤਾਬਕ trade ਕਰੋ।</span></h2>
+    <p><span class="en">Write your entry trigger, target, and stop <strong>before</strong> you enter. No plan = gambling. Then log every trade — the journal is where real improvement happens.</span><span class="pa">Entry trigger, target ਤੇ stop entry ਤੋਂ <strong>ਪਹਿਲਾਂ</strong> ਲਿਖੋ। ਕੋਈ ਯੋਜਨਾ ਨਹੀਂ = ਜੂਆ। ਫਿਰ ਹਰ trade log ਕਰੋ — journal ਉਹ ਥਾਂ ਹੈ ਜਿੱਥੇ ਅਸਲੀ ਸੁਧਾਰ ਹੁੰਦਾ ਹੈ।</span></p>
+    <div class="jcols">
+      <div class="jcol"><p class="jh"><span class="en">Log the facts</span><span class="pa">ਤੱਥ log ਕਰੋ</span></p><ul>
+        <li><span class="en">Date &amp; asset</span><span class="pa">ਮਿਤੀ ਤੇ asset</span></li>
+        <li><span class="en">Entry &amp; exit price</span><span class="pa">Entry ਤੇ exit ਕੀਮਤ</span></li>
+        <li><span class="en">Stop loss &amp; take profit</span><span class="pa">Stop loss ਤੇ take profit</span></li>
+        <li><span class="en">Profit or loss</span><span class="pa">ਮੁਨਾਫ਼ਾ ਜਾਂ ਨੁਕਸਾਨ</span></li>
+      </ul></div>
+      <div class="jcol"><p class="jh"><span class="en">Log the truth (crucial)</span><span class="pa">ਸੱਚ log ਕਰੋ (ਜ਼ਰੂਰੀ)</span></p><ul>
+        <li><span class="en">Your emotions on the trade</span><span class="pa">Trade ਉੱਤੇ ਤੁਹਾਡੀਆਂ ਭਾਵਨਾਵਾਂ</span></li>
+        <li><span class="en">Why you took it</span><span class="pa">ਤੁਸੀਂ ਇਹ ਕਿਉਂ ਲਿਆ</span></li>
+        <li><span class="en">Your reasoning</span><span class="pa">ਤੁਹਾਡਾ ਤਰਕ</span></li>
+        <li><span class="en">What you'd do differently</span><span class="pa">ਅਗਲੀ ਵਾਰ ਕੀ ਵੱਖਰਾ ਕਰੋਗੇ</span></li>
+      </ul></div>
+    </div>
+    <p class="muted" style="font-size:14px;margin-top:16px"><span class="en">Review your journal every weekend. Back to paper trading until you can run plans on S/R and trendlines without guessing.</span><span class="pa">ਹਰ weekend ਆਪਣਾ journal review ਕਰੋ। ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ S/R ਤੇ trendlines ਉੱਤੇ ਬਿਨਾਂ ਅੰਦਾਜ਼ੇ ਯੋਜਨਾ ਨਾ ਚਲਾ ਸਕੋ, paper trading ਉੱਤੇ ਵਾਪਸ ਜਾਓ।</span></p>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">07</span>
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions to lock in Part 2.</span><span class="pa">ਭਾਗ 2 ਪੱਕਾ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();calcRR();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','pillars','charts','price','indicators','risk','plan','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+const CDESC={
+  open:["The OPEN is where price started the period. On this green candle, the open is the bottom of the body.","OPEN ਉਹ ਥਾਂ ਹੈ ਜਿੱਥੋਂ ਕੀਮਤ ਸ਼ੁਰੂ ਹੋਈ। ਇਸ ਹਰੇ candle ਉੱਤੇ open body ਦਾ ਹੇਠਲਾ ਸਿਰਾ ਹੈ।"],
+  high:["The HIGH is the peak price reached — the very top of the upper wick.","HIGH ਉਹ ਸਭ ਤੋਂ ਉੱਚੀ ਕੀਮਤ ਹੈ — ਉੱਪਰਲੇ wick ਦਾ ਬਿਲਕੁਲ ਸਿਖਰ।"],
+  low:["The LOW is the lowest point hit — the bottom of the lower wick.","LOW ਉਹ ਸਭ ਤੋਂ ਨੀਵੀਂ ਕੀਮਤ ਹੈ — ਹੇਠਲੇ wick ਦਾ ਤਲ।"],
+  close:["The CLOSE is where price ended — the story of the candle. Here it's the top of the body (green = closed above open).","CLOSE ਉਹ ਥਾਂ ਹੈ ਜਿੱਥੇ ਕੀਮਤ ਖ਼ਤਮ ਹੋਈ — candle ਦੀ ਕਹਾਣੀ। ਇੱਥੇ ਇਹ body ਦਾ ਉੱਪਰਲਾ ਸਿਰਾ ਹੈ (ਹਰਾ = open ਤੋਂ ਉੱਪਰ close)।"]
+};
+const CMAP={open:['c-open','c-body'],high:['c-high'],low:['c-low'],close:['c-close','c-body']};
+function cpart(key,el){
+  document.querySelectorAll('.ohlc button').forEach(b=>b.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  document.querySelectorAll('.cpart').forEach(p=>p.classList.remove('on'));
+  CMAP[key].forEach(id=>document.getElementById(id).classList.add('on'));
+  document.getElementById('cdesc').textContent=L(CDESC[key][0],CDESC[key][1]);
+}
+
+function calcRR(){
+  const wr=+document.getElementById('wr').value, rr=+document.getElementById('rr').value;
+  document.getElementById('wrval').textContent=wr+'%';
+  document.getElementById('rrlbl').textContent='1 : '+rr;
+  const p=wr/100, exp=p*rr-(1-p)*1;
+  const ev=document.getElementById('expval');
+  ev.textContent=(exp>=0?'+$':'−$')+Math.abs(exp).toFixed(2);
+  ev.style.color=exp>=0?'var(--green)':'var(--red)';
+  const v=document.getElementById('verdict');
+  if(exp>0.0001){v.className='verdict good';v.textContent=L('Profitable over time ✓','ਸਮੇਂ ਨਾਲ ਮੁਨਾਫ਼ੇ ਵਾਲਾ ✓');}
+  else if(exp<-0.0001){v.className='verdict bad';v.textContent=L('Loses money over time ✗','ਸਮੇਂ ਨਾਲ ਨੁਕਸਾਨ ✗');}
+  else{v.className='verdict';v.style.color='var(--muted)';v.textContent=L('Break-even','ਨਾ ਨਫ਼ਾ ਨਾ ਨੁਕਸਾਨ');}
+}
+
+const QUIZ=[
+ {q:["Fundamental analysis answers which question?","Fundamental analysis ਕਿਹੜੇ ਸਵਾਲ ਦਾ ਜਵਾਬ ਦਿੰਦਾ ਹੈ?"],
+  o:[["WHEN to enter","ਕਦੋਂ enter ਕਰੀਏ"],["WHY an asset should move (its value)","Asset ਕਿਉਂ ਹਿੱਲਣਾ ਚਾਹੀਦਾ (ਇਸਦੀ ਕੀਮਤ)"],["Which broker to use","ਕਿਹੜਾ broker ਵਰਤੀਏ"],["The candle colour","Candle ਦਾ ਰੰਗ"]],
+  a:1,f:["Fundamentals = the 'why' (value). Technicals = the 'when' (timing).","Fundamentals = 'ਕਿਉਂ' (ਕੀਮਤ)। Technicals = 'ਕਦੋਂ' (timing)।"]},
+ {q:["On a green (bullish) candle, the close is…","ਹਰੇ (bullish) candle ਉੱਤੇ close ਕਿੱਥੇ ਹੈ…"],
+  o:[["The bottom of the body","Body ਦਾ ਹੇਠਲਾ ਸਿਰਾ"],["The top of the body","Body ਦਾ ਉੱਪਰਲਾ ਸਿਰਾ"],["The tip of the lower wick","ਹੇਠਲੇ wick ਦਾ ਸਿਰਾ"],["Always the high","ਹਮੇਸ਼ਾ high"]],
+  a:1,f:["Green means it closed above where it opened — so the close is the top of the body.","ਹਰਾ ਮਤਲਬ ਇਹ open ਤੋਂ ਉੱਪਰ close ਹੋਇਆ — ਇਸ ਲਈ close body ਦਾ ਉੱਪਰਲਾ ਸਿਰਾ ਹੈ।"]},
+ {q:["RSI reads 75. What does that suggest?","RSI 75 ਦਿਖਾਉਂਦਾ ਹੈ। ਇਹ ਕੀ ਸੁਝਾਉਂਦਾ ਹੈ?"],
+  o:[["Oversold — likely to bounce up","Oversold — ਉੱਠ ਸਕਦਾ"],["Overbought — possible reversal down","Overbought — ਡਿੱਗ ਸਕਦਾ"],["Neutral — no signal","Neutral — ਕੋਈ signal ਨਹੀਂ"],["Strong buy signal","ਪੱਕਾ buy signal"]],
+  a:1,f:["Above 70 = overbought, a possible reversal down. Below 30 = oversold.","70 ਤੋਂ ਉੱਪਰ = overbought, ਡਿੱਗ ਸਕਦਾ। 30 ਤੋਂ ਹੇਠਾਂ = oversold।"]},
+ {q:["You win only 40% of trades. Can you still be profitable?","ਤੁਸੀਂ ਸਿਰਫ਼ 40% trades ਜਿੱਤਦੇ ਹੋ। ਕੀ ਫਿਰ ਵੀ ਮੁਨਾਫ਼ਾ ਹੋ ਸਕਦਾ?"],
+  o:[["No, you need 50%+ to profit","ਨਹੀਂ, ਮੁਨਾਫ਼ੇ ਲਈ 50%+ ਚਾਹੀਦਾ"],["Yes, if your reward:risk is high enough (e.g. 1:2)","ਹਾਂ, ਜੇ reward:risk ਕਾਫ਼ੀ ਹੈ (ਜਿਵੇਂ 1:2)"],["Only with leverage","ਸਿਰਫ਼ leverage ਨਾਲ"],["Only on crypto","ਸਿਰਫ਼ crypto ਉੱਤੇ"]],
+  a:1,f:["At 1:2, a 40% win rate gives positive expectancy: (0.4×2)−(0.6×1)=+0.2 per $1.","1:2 ਉੱਤੇ, 40% win rate positive expectancy ਦਿੰਦਾ ਹੈ: (0.4×2)−(0.6×1)=+0.2 ਹਰ $1।"]},
+ {q:["What turns trading into gambling?","ਕੀ trading ਨੂੰ ਜੂਆ ਬਣਾ ਦਿੰਦਾ ਹੈ?"],
+  o:[["Using TradingView","TradingView ਵਰਤਣਾ"],["Entering without a written plan","ਬਿਨਾਂ ਲਿਖੀ ਯੋਜਨਾ enter ਕਰਨਾ"],["Trading on the daily chart","Daily chart ਉੱਤੇ trade ਕਰਨਾ"],["Keeping a journal","Journal ਰੱਖਣਾ"]],
+  a:1,f:["No plan = gambling. Define entry, target, and stop before you enter — every time.","ਕੋਈ ਯੋਜਨਾ ਨਹੀਂ = ਜੂਆ। Entry, target ਤੇ stop entry ਤੋਂ ਪਹਿਲਾਂ ਤੈਅ ਕਰੋ — ਹਰ ਵਾਰ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Part 2 complete','★ ਭਾਗ 2 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You can read candles, spot structure, use a couple of indicators, and size trades so the maths works in your favour. Next — turning this into a repeatable strategy.","ਤੁਸੀਂ candles ਪੜ੍ਹ ਸਕਦੇ ਹੋ, structure ਪਛਾਣ ਸਕਦੇ ਹੋ, ਕੁਝ indicators ਵਰਤ ਸਕਦੇ ਹੋ, ਤੇ trades ਇੰਝ size ਕਰ ਸਕਦੇ ਹੋ ਕਿ ਗਣਿਤ ਤੁਹਾਡੇ ਹੱਕ ਵਿੱਚ ਹੋਵੇ। ਅਗਲਾ — ਇਸਨੂੰ ਦੁਹਰਾਉਣ ਯੋਗ strategy ਬਣਾਉਣਾ।")
+      : L("Almost. Revisit the candle tool and the risk:reward slider, then run the check again — aim for 4/5.","ਲਗਭਗ। Candle ਟੂਲ ਤੇ risk:reward slider ਦੁਬਾਰਾ ਦੇਖੋ, ਫਿਰ ਟੈਸਟ ਕਰੋ — 4/5 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Mark support &amp; resistance on one gold chart','ਇੱਕ ਸੋਨੇ ਦੇ chart ਉੱਤੇ support ਤੇ resistance ਲਾਓ')}</li>
+        <li>→ ${L('Start your trading journal today','ਅੱਜ ਆਪਣਾ trading journal ਸ਼ੁਰੂ ਕਰੋ')}</li>
+        <li>→ ${L('Next: Part 3 — Strategy Building','ਅਗਲਾ: ਭਾਗ 3 — Strategy ਬਣਾਉਣਾ')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();calcRR();
+</script>
+</body>
+</html>
