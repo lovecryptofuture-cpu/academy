@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Standard Deviation in Gold — Interactive Lesson</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+  /* bilingual visibility */
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa p .pa, body.lang-pa .lab .pa{display:inline}
+  /* punjabi gets a slightly taller line for Gurmukhi */
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;letter-spacing:.02em;color:var(--muted);text-decoration:none;
+    padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);
+    color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px;letter-spacing:.03em}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:60px 0 38px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,56px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  h1 .sigma{font-family:Georgia,"Times New Roman",serif;font-style:italic;color:var(--gold)}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,33px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8}
+  .muted{color:var(--muted)} strong{color:#fff}
+
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin:18px 0}
+  .formula{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:17px;color:var(--gold-soft);
+    background:#0e1014;border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto}
+
+  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .stat .big{font-size:30px;font-weight:800;color:var(--gold);line-height:1}
+  .stat .lbl{font-size:12px;color:var(--muted);margin-top:8px}
+  @media(max-width:560px){.stats3{grid-template-columns:1fr;gap:10px}}
+
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  input[type=number]{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:11px 12px;font-size:15px;font-family:inherit}
+  input[type=number]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.15)}
+  .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.grid5{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+  button{font-family:inherit;cursor:pointer}
+  .btn{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#241d05;border:none;font-weight:700;font-size:14.5px;padding:12px 20px;border-radius:10px}
+  .btn:hover{filter:brightness(1.06)}
+  .out{margin-top:16px;padding:16px;border-radius:10px;background:#0e1014;border:1px dashed var(--gold-dim);
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:14px;color:var(--gold-soft);display:none}
+  .out.show{display:block}
+  .out .res{color:#fff;font-size:22px;font-weight:800;font-family:inherit}
+
+  .task{border-left:3px solid var(--gold);padding:4px 0 4px 18px;margin:22px 0}
+  .task .h{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px}
+  .check{display:flex;align-items:flex-start;gap:11px;padding:11px 0;cursor:pointer;border-bottom:1px solid var(--line)}
+  .check:last-child{border-bottom:none}
+  .check .box{flex:0 0 22px;width:22px;height:22px;border:1.5px solid var(--gold-dim);border-radius:6px;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .check.done .box{background:var(--gold);border-color:var(--gold)}
+  .check .box svg{opacity:0;transition:.15s} .check.done .box svg{opacity:1}
+  .check.done .lab{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--gold-dim)}
+  .lab{font-size:15px}
+
+  .sig{display:grid;grid-template-columns:auto 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .sig div{padding:13px 15px;border-bottom:1px solid var(--line)}
+  .sig div:nth-last-child(-n+2){border-bottom:none}
+  .sig .k{background:var(--panel-2);font-weight:700;font-size:14px;white-space:nowrap}
+  .sig .up{color:var(--red)} .sig .dn{color:var(--green)} .sig .sq{color:var(--gold)}
+
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .bell{width:100%;height:auto;display:block;margin:8px 0}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#concept">1 · <span class="en">Concept</span><span class="pa">ਸੰਕਲਪ</span></a>
+      <a href="#rule">2 · <span class="en">The Rule</span><span class="pa">ਨਿਯਮ</span></a>
+      <a href="#calc">3 · <span class="en">Calculate</span><span class="pa">ਗਣਨਾ</span></a>
+      <a href="#bands">4 · <span class="en">Bollinger</span><span class="pa">ਬੋਲਿੰਜਰ</span></a>
+      <a href="#risk">5 · <span class="en">Sizing</span><span class="pa">ਸਾਈਜ਼ਿੰਗ</span></a>
+      <a href="#quiz">6 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Volatility &amp; Risk · Lesson 01</span><span class="pa">ਵੋਲੈਟਿਲਿਟੀ ਅਤੇ ਜੋਖਮ · ਪਾਠ 01</span></div>
+    <h1><span class="en">Reading volatility with <span class="sigma">σ</span> on gold</span><span class="pa">ਸੋਨੇ ਉੱਤੇ <span class="sigma">σ</span> ਨਾਲ ਵੋਲੈਟਿਲਿਟੀ ਪੜ੍ਹਨਾ</span></h1>
+    <p class="lede"><span class="en">Standard deviation is how the market defines "normal." Learn to measure it on XAU/USD, then turn it into stops, sizing, and Bollinger Band entries — by doing, not watching.</span><span class="pa">Standard deviation ਉਹ ਹੈ ਜਿਸ ਨਾਲ ਬਾਜ਼ਾਰ "ਆਮ" ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦਾ ਹੈ। XAU/USD ਉੱਤੇ ਇਸਨੂੰ ਮਾਪਣਾ ਸਿੱਖੋ, ਫਿਰ ਇਸਨੂੰ stops, sizing ਅਤੇ Bollinger Band entries ਵਿੱਚ ਬਦਲੋ — ਦੇਖ ਕੇ ਨਹੀਂ, ਕਰ ਕੇ।</span></p>
+    <div class="meta">
+      <span><b>~15 min</b> · <span class="en">read &amp; do</span><span class="pa">ਪੜ੍ਹੋ ਤੇ ਕਰੋ</span></span>
+      <span><b>2 <span class="en">tools</span><span class="pa">ਟੂਲ</span></b> <span class="en">you'll actually use</span><span class="pa">ਜੋ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਵਰਤੋਗੇ</span></span>
+      <span><b>5</b>-<span class="en">question check to finish</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="concept">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">What standard deviation actually is</span><span class="pa">Standard deviation ਅਸਲ ਵਿੱਚ ਕੀ ਹੈ</span></h2>
+    <p><span class="en">Standard deviation (σ) measures how far prices spread from their average. In trading it has one job: it <strong>quantifies volatility</strong> — how much price swings around its mean. Low σ means price is calm. High σ means it's wild.</span><span class="pa">Standard deviation (σ) ਮਾਪਦਾ ਹੈ ਕਿ ਕੀਮਤਾਂ ਆਪਣੀ ਔਸਤ ਤੋਂ ਕਿੰਨੀਆਂ ਦੂਰ ਫੈਲੀਆਂ ਹਨ। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਇਸਦਾ ਇੱਕੋ ਕੰਮ ਹੈ: ਇਹ <strong>volatility ਨੂੰ ਮਾਪਦਾ ਹੈ</strong> — ਕੀਮਤ ਆਪਣੀ ਔਸਤ ਦੁਆਲੇ ਕਿੰਨਾ ਹਿੱਲਦੀ ਹੈ। ਘੱਟ σ ਦਾ ਮਤਲਬ ਕੀਮਤ ਸ਼ਾਂਤ ਹੈ। ਜ਼ਿਆਦਾ σ ਦਾ ਮਤਲਬ ਕੀਮਤ ਤੇਜ਼ ਹੈ।</span></p>
+    <div class="card">
+      <div class="formula">σ = √[ Σ(xᵢ − x̄)² / (n − 1) ]</div>
+      <p class="muted" style="margin:14px 0 0;font-size:14px"><span class="en">xᵢ = each price · x̄ = the average · n = number of values. You'll almost never compute this by hand — your platform does it — but doing it <em>once</em> is what makes Bollinger Bands stop being magic.</span><span class="pa">xᵢ = ਹਰ ਕੀਮਤ · x̄ = ਔਸਤ · n = ਕੀਮਤਾਂ ਦੀ ਗਿਣਤੀ। ਤੁਸੀਂ ਇਸਨੂੰ ਹੱਥ ਨਾਲ ਕਦੇ ਨਹੀਂ ਕਰੋਗੇ — ਤੁਹਾਡਾ platform ਕਰਦਾ ਹੈ — ਪਰ ਇੱਕ <em>ਵਾਰੀ</em> ਖੁਦ ਕਰਨ ਨਾਲ Bollinger Bands ਜਾਦੂ ਨਹੀਂ ਰਹਿੰਦੇ।</span></p>
+    </div>
+    <p><span class="en">That last point matters: every volatility tool you'll ever use — Bollinger Bands, ATR-style stops, position sizing — is just this one number dressed up. Get σ, and the rest falls out.</span><span class="pa">ਇਹ ਗੱਲ ਜ਼ਰੂਰੀ ਹੈ: ਹਰ volatility ਟੂਲ ਜੋ ਤੁਸੀਂ ਵਰਤੋਗੇ — Bollinger Bands, ATR stops, position sizing — ਇਹੀ ਇੱਕ ਨੰਬਰ ਹੈ ਨਵੇਂ ਰੂਪ ਵਿੱਚ। σ ਸਮਝ ਲਓ, ਬਾਕੀ ਸਭ ਆਪੇ ਆ ਜਾਂਦਾ ਹੈ।</span></p>
+  </div>
+</section>
+
+<section id="rule">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">The 68–95–99.7 rule</span><span class="pa">68–95–99.7 ਨਿਯਮ</span></h2>
+    <p><span class="en">In a normal distribution, returns cluster around the mean predictably. This is the single most useful fact in risk management:</span><span class="pa">ਇੱਕ normal distribution ਵਿੱਚ, returns ਔਸਤ ਦੁਆਲੇ ਇੱਕ ਅੰਦਾਜ਼ੇ ਮੁਤਾਬਕ ਇਕੱਠੇ ਹੁੰਦੇ ਹਨ। ਇਹ risk management ਦੀ ਸਭ ਤੋਂ ਕੰਮ ਦੀ ਗੱਲ ਹੈ:</span></p>
+    <div class="stats3">
+      <div class="stat"><div class="big">68%</div><div class="lbl"><span class="en">fall within ±1σ</span><span class="pa">±1σ ਦੇ ਅੰਦਰ</span></div></div>
+      <div class="stat"><div class="big">95%</div><div class="lbl"><span class="en">fall within ±2σ</span><span class="pa">±2σ ਦੇ ਅੰਦਰ</span></div></div>
+      <div class="stat"><div class="big">99.7%</div><div class="lbl"><span class="en">fall within ±3σ</span><span class="pa">±3σ ਦੇ ਅੰਦਰ</span></div></div>
+    </div>
+
+    <svg class="bell" viewBox="0 0 600 220" role="img" aria-label="bell curve">
+      <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#d4af37" stop-opacity="0.5"/><stop offset="100%" stop-color="#d4af37" stop-opacity="0.02"/>
+      </linearGradient></defs>
+      <path d="M30,190 C150,190 180,30 300,30 C420,30 450,190 570,190 Z" fill="url(#g1)" stroke="#d4af37" stroke-width="1.5"/>
+      <line x1="300" y1="30" x2="300" y2="190" stroke="#2a2e37"/>
+      <line x1="210" y1="190" x2="210" y2="80" stroke="#2a2e37" stroke-dasharray="4 4"/>
+      <line x1="390" y1="190" x2="390" y2="80" stroke="#2a2e37" stroke-dasharray="4 4"/>
+      <line x1="130" y1="190" x2="130" y2="170" stroke="#2a2e37" stroke-dasharray="4 4"/>
+      <line x1="470" y1="190" x2="470" y2="170" stroke="#2a2e37" stroke-dasharray="4 4"/>
+      <line x1="30" y1="190" x2="570" y2="190" stroke="#3a3f49"/>
+      <text x="300" y="208" fill="#9aa0ab" font-size="12" text-anchor="middle">mean</text>
+      <text x="210" y="208" fill="#9aa0ab" font-size="12" text-anchor="middle">−1σ</text>
+      <text x="390" y="208" fill="#9aa0ab" font-size="12" text-anchor="middle">+1σ</text>
+      <text x="130" y="208" fill="#9aa0ab" font-size="12" text-anchor="middle">−2σ</text>
+      <text x="470" y="208" fill="#9aa0ab" font-size="12" text-anchor="middle">+2σ</text>
+      <text x="300" y="120" fill="#e8cf7a" font-size="13" text-anchor="middle" font-weight="700">68%</text>
+    </svg>
+
+    <div class="card" style="border-color:var(--gold-dim)">
+      <span class="en"><strong>The trade insight:</strong> a move beyond ±2σ is statistically unusual — only ~5% of moves go there. That's your line between "normal noise" (ignore it) and "something real" (breakout or reversal). Beyond ±3σ is extreme and rare.</span>
+      <span class="pa"><strong>ਟ੍ਰੇਡ ਦਾ ਸਬਕ:</strong> ±2σ ਤੋਂ ਅੱਗੇ ਦੀ ਚਾਲ ਅੰਕੜਿਆਂ ਮੁਤਾਬਕ ਅਸਾਧਾਰਨ ਹੈ — ਸਿਰਫ਼ ~5% ਚਾਲਾਂ ਉੱਥੇ ਜਾਂਦੀਆਂ ਹਨ। ਇਹੀ "ਆਮ ਸ਼ੋਰ" (ਛੱਡ ਦਿਓ) ਅਤੇ "ਅਸਲੀ ਕੁਝ" (breakout ਜਾਂ reversal) ਵਿਚਕਾਰ ਤੁਹਾਡੀ ਲਕੀਰ ਹੈ। ±3σ ਤੋਂ ਅੱਗੇ ਬਹੁਤ ਹੀ ਘੱਟ ਹੁੰਦਾ ਹੈ।</span>
+    </div>
+  </div>
+</section>
+
+<section id="calc">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Calculate σ on real gold prices</span><span class="pa">ਅਸਲੀ ਸੋਨੇ ਦੀਆਂ ਕੀਮਤਾਂ ਉੱਤੇ σ ਕੱਢੋ</span></h2>
+    <p><span class="en">Below are five XAU/USD daily closes. Hit calculate and watch the math — then change the numbers to your own week and see how volatility shifts.</span><span class="pa">ਹੇਠਾਂ ਪੰਜ XAU/USD ਰੋਜ਼ਾਨਾ closing ਕੀਮਤਾਂ ਹਨ। Calculate ਦਬਾਓ ਅਤੇ ਗਣਿਤ ਦੇਖੋ — ਫਿਰ ਆਪਣੇ ਹਫ਼ਤੇ ਦੇ ਨੰਬਰ ਪਾਓ ਅਤੇ ਦੇਖੋ volatility ਕਿਵੇਂ ਬਦਲਦੀ ਹੈ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · σ calculator</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · σ ਕੈਲਕੁਲੇਟਰ</span></span>
+      <label><span class="en">Five daily closing prices ($)</span><span class="pa">ਪੰਜ ਰੋਜ਼ਾਨਾ closing ਕੀਮਤਾਂ ($)</span></label>
+      <div class="grid5">
+        <input type="number" id="p0" value="1920" step="0.01">
+        <input type="number" id="p1" value="1935" step="0.01">
+        <input type="number" id="p2" value="1910" step="0.01">
+        <input type="number" id="p3" value="1945" step="0.01">
+        <input type="number" id="p4" value="1930" step="0.01">
+      </div>
+      <div style="margin-top:16px"><button class="btn" onclick="calcSD()"><span class="en">Calculate σ</span><span class="pa">σ ਕੱਢੋ</span></button></div>
+      <div class="out" id="sdout"></div>
+    </div>
+
+    <div class="task">
+      <div class="h"><span class="en">Your turn</span><span class="pa">ਤੁਹਾਡੀ ਵਾਰੀ</span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Run it once with the default numbers — confirm σ ≈ $13.51</span><span class="pa">ਪਹਿਲਾਂ default ਨੰਬਰਾਂ ਨਾਲ ਚਲਾਓ — ਪੱਕਾ ਕਰੋ σ ≈ $13.51</span></span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Pull this week's 5 daily gold closes from your chart and enter them</span><span class="pa">ਆਪਣੇ chart ਤੋਂ ਇਸ ਹਫ਼ਤੇ ਦੀਆਂ 5 ਰੋਜ਼ਾਨਾ ਸੋਨੇ ਦੀਆਂ closing ਕੀਮਤਾਂ ਪਾਓ</span></span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Note your σ — that's your volatility baseline for stops this week</span><span class="pa">ਆਪਣਾ σ ਲਿਖ ਲਓ — ਇਹ ਇਸ ਹਫ਼ਤੇ ਦੇ stops ਲਈ ਤੁਹਾਡਾ volatility baseline ਹੈ</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="bands">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Bollinger Bands = σ you can see</span><span class="pa">Bollinger Bands = σ ਜੋ ਤੁਸੀਂ ਦੇਖ ਸਕਦੇ ਹੋ</span></h2>
+    <p><span class="en">Bollinger Bands are just σ plotted on a chart. The middle is a 20-period average; the outer bands sit <strong>2σ above and below</strong> it. When σ rises, the bands widen. When price goes quiet, they squeeze.</span><span class="pa">Bollinger Bands ਸਿਰਫ਼ σ ਹੈ ਜੋ chart ਉੱਤੇ ਵਾਹਿਆ ਗਿਆ ਹੈ। ਵਿਚਕਾਰਲੀ ਲਾਈਨ 20-period ਔਸਤ ਹੈ; ਬਾਹਰਲੀਆਂ bands ਇਸ ਤੋਂ <strong>2σ ਉੱਪਰ ਤੇ ਹੇਠਾਂ</strong> ਹੁੰਦੀਆਂ ਹਨ। ਜਦੋਂ σ ਵਧਦਾ ਹੈ, bands ਚੌੜੀਆਂ ਹੋ ਜਾਂਦੀਆਂ ਹਨ। ਜਦੋਂ ਕੀਮਤ ਸ਼ਾਂਤ ਹੁੰਦੀ ਹੈ, ਇਹ ਸੁੰਗੜਦੀਆਂ ਹਨ।</span></p>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0"><span class="en">The construction</span><span class="pa">ਬਣਤਰ</span></h3>
+        <p class="muted" style="margin:0;font-size:14.5px"><span class="en">Middle = 20-day SMA<br>Upper = SMA + (2 × σ)<br>Lower = SMA − (2 × σ)</span><span class="pa">ਵਿਚਕਾਰ = 20-day SMA<br>ਉੱਪਰ = SMA + (2 × σ)<br>ਹੇਠਾਂ = SMA − (2 × σ)</span></p>
+        <div class="formula" style="margin-top:14px;font-size:14px">SMA $1,928 · σ $22.50<br>Upper → $1,973<br>Lower → $1,883</div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0"><span class="en">What each touch means</span><span class="pa">ਹਰ touch ਦਾ ਮਤਲਬ</span></h3>
+        <div class="sig" style="border:none">
+          <div class="k up"><span class="en">Upper touch</span><span class="pa">ਉੱਪਰਲੀ touch</span></div><div><span class="en">Overbought — consider selling / tightening stops</span><span class="pa">Overbought — ਵੇਚਣ / stops ਤੰਗ ਕਰਨ ਬਾਰੇ ਸੋਚੋ</span></div>
+          <div class="k dn"><span class="en">Lower touch</span><span class="pa">ਹੇਠਲੀ touch</span></div><div><span class="en">Oversold — watch for a reversal / buy</span><span class="pa">Oversold — reversal ਦੇਖੋ / ਖਰੀਦੋ</span></div>
+          <div class="k sq"><span class="en">Squeeze</span><span class="pa">Squeeze</span></div><div><span class="en">Low volatility — a breakout is loading</span><span class="pa">ਘੱਟ volatility — breakout ਆ ਰਿਹਾ ਹੈ</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-color:var(--gold-dim)">
+      <span class="en"><strong>The trap most beginners fall into:</strong> in a strong trend, price <em>rides</em> the upper band for days. A band touch is not an automatic reversal. Fade bands only in ranges; in trends, the band is support, not a sell.</span>
+      <span class="pa"><strong>ਜੋ ਗਲਤੀ ਜ਼ਿਆਦਾਤਰ ਨਵੇਂ ਕਰਦੇ ਹਨ:</strong> ਤਕੜੇ trend ਵਿੱਚ, ਕੀਮਤ ਕਈ ਦਿਨ ਉੱਪਰਲੀ band ਉੱਤੇ <em>ਚੱਲਦੀ</em> ਰਹਿੰਦੀ ਹੈ। Band touch ਆਪਣੇ ਆਪ reversal ਨਹੀਂ ਹੁੰਦੀ। Bands ਨੂੰ ਸਿਰਫ਼ range ਵਿੱਚ fade ਕਰੋ; trend ਵਿੱਚ band support ਹੈ, ਵੇਚਣ ਦਾ ਸੰਕੇਤ ਨਹੀਂ।</span>
+    </div>
+  </div>
+</section>
+
+<section id="risk">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">Turn σ into position size</span><span class="pa">σ ਨੂੰ position size ਵਿੱਚ ਬਦਲੋ</span></h2>
+    <p><span class="en">This is where σ pays for itself. Set your stop at 2σ (filters ~95% of noise), risk a fixed % of your account, and let the math hand you the position size. Bigger volatility → smaller position, automatically.</span><span class="pa">ਇੱਥੇ σ ਆਪਣੀ ਕੀਮਤ ਵਸੂਲ ਕਰਦਾ ਹੈ। ਆਪਣਾ stop 2σ ਉੱਤੇ ਰੱਖੋ (~95% ਸ਼ੋਰ ਫਿਲਟਰ ਕਰਦਾ ਹੈ), account ਦਾ ਤੈਅ % ਜੋਖਮ ਲਓ, ਅਤੇ ਗਣਿਤ ਨੂੰ size ਦੱਸਣ ਦਿਓ। ਜ਼ਿਆਦਾ volatility → ਛੋਟੀ position, ਆਪਣੇ ਆਪ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · position sizer</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · position sizer</span></span>
+      <div class="grid2">
+        <div><label><span class="en">Account balance ($)</span><span class="pa">Account ਬੈਲੇਂਸ ($)</span></label><input type="number" id="acct" value="50000"></div>
+        <div><label><span class="en">Risk per trade (%)</span><span class="pa">ਹਰ trade ਜੋਖਮ (%)</span></label><input type="number" id="riskpct" value="2" step="0.1"></div>
+        <div><label><span class="en">Current σ ($)</span><span class="pa">ਮੌਜੂਦਾ σ ($)</span></label><input type="number" id="sigma" value="13.51" step="0.01"></div>
+        <div><label><span class="en">Stop width (× σ)</span><span class="pa">Stop ਚੌੜਾਈ (× σ)</span></label><input type="number" id="nsig" value="2" step="0.5"></div>
+      </div>
+      <div style="margin-top:16px"><button class="btn" onclick="calcSize()"><span class="en">Calculate size</span><span class="pa">Size ਕੱਢੋ</span></button></div>
+      <div class="out" id="sizeout"></div>
+    </div>
+
+    <div class="task">
+      <div class="h"><span class="en">Lock in the rule</span><span class="pa">ਨਿਯਮ ਪੱਕਾ ਕਰੋ</span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Default values: confirm the stop is $27 and size ≈ 0.37 lots</span><span class="pa">Default ਨੰਬਰ: ਪੱਕਾ ਕਰੋ stop $27 ਤੇ size ≈ 0.37 lots</span></span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Now plug in <em>your</em> account size and the σ you measured in section 3</span><span class="pa">ਹੁਣ <em>ਆਪਣਾ</em> account size ਤੇ ਉਹ σ ਪਾਓ ਜੋ ਤੁਸੀਂ section 3 ਵਿੱਚ ਮਾਪਿਆ</span></span></div>
+      <div class="check" onclick="toggle(this)"><div class="box">✓</div><span class="lab"><span class="en">Write that lot size in your journal — it's your max for the next gold trade</span><span class="pa">ਉਹ lot size ਆਪਣੇ journal ਵਿੱਚ ਲਿਖੋ — ਇਹ ਅਗਲੇ ਸੋਨੇ ਦੇ trade ਲਈ ਤੁਹਾਡਾ ਵੱਧ ਤੋਂ ਵੱਧ ਹੈ</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions. Instant feedback. Get them right and you've earned this lesson's badge.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਤੁਰੰਤ ਜਵਾਬ। ਸਹੀ ਕਰੋ ਤਾਂ ਇਸ ਪਾਠ ਦਾ badge ਮਿਲੇਗਾ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. All prices are simplified for clarity and may not reflect live market conditions. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਸਾਰੀਆਂ ਕੀਮਤਾਂ ਸਮਝਾਉਣ ਲਈ ਸੌਖੀਆਂ ਕੀਤੀਆਂ ਹਨ। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+/* language toggle */
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz(); // re-render quiz in current language
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+/* progress + active nav */
+const bar=document.getElementById('progressbar');
+const links=[...document.querySelectorAll('nav.toc a')];
+const secs=['start','concept','rule','calc','bands','risk','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  links.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* σ calculator */
+function calcSD(){
+  const v=[0,1,2,3,4].map(i=>parseFloat(document.getElementById('p'+i).value)).filter(x=>!isNaN(x));
+  const out=document.getElementById('sdout');
+  if(v.length<2){out.className='out show';out.textContent=L('Enter at least two prices.','ਘੱਟੋ-ਘੱਟ ਦੋ ਕੀਮਤਾਂ ਪਾਓ।');return;}
+  const mean=v.reduce((a,b)=>a+b,0)/v.length;
+  const sq=v.map(x=>(x-mean)**2);
+  const variance=sq.reduce((a,b)=>a+b,0)/(v.length-1);
+  const sd=Math.sqrt(variance);
+  out.className='out show';
+  out.innerHTML=`mean (x̄) = $${mean.toFixed(2)}<br>Σ(x−x̄)² = ${sq.reduce((a,b)=>a+b,0).toFixed(2)}<br>variance = ${variance.toFixed(2)}<br><br>`+
+    `<span class="res">σ ≈ $${sd.toFixed(2)}</span><br><span style="color:#9aa0ab">`+
+    L(`Gold moved about ±$${sd.toFixed(2)} per day from its average. That's your volatility baseline.`,
+      `ਸੋਨਾ ਆਪਣੀ ਔਸਤ ਤੋਂ ਲਗਭਗ ±$${sd.toFixed(2)} ਪ੍ਰਤੀ ਦਿਨ ਹਿੱਲਿਆ। ਇਹੀ ਤੁਹਾਡਾ volatility baseline ਹੈ।`)+`</span>`;
+}
+
+/* position sizer */
+function calcSize(){
+  const acct=parseFloat(document.getElementById('acct').value),rp=parseFloat(document.getElementById('riskpct').value),
+        sig=parseFloat(document.getElementById('sigma').value),n=parseFloat(document.getElementById('nsig').value);
+  const out=document.getElementById('sizeout');
+  if([acct,rp,sig,n].some(isNaN)||sig<=0){out.className='out show';out.textContent=L('Check your inputs.','ਆਪਣੇ ਨੰਬਰ ਜਾਂਚੋ।');return;}
+  const risk=acct*(rp/100),stop=n*sig,units=risk/stop;
+  out.className='out show';
+  out.innerHTML=L(`risk amount = $${risk.toFixed(2)} (${rp}% of $${acct.toLocaleString()})<br>stop distance = $${stop.toFixed(2)} (${n} × σ)<br><br>`,
+                  `ਜੋਖਮ ਰਕਮ = $${risk.toFixed(2)} ($${acct.toLocaleString()} ਦਾ ${rp}%)<br>stop ਦੂਰੀ = $${stop.toFixed(2)} (${n} × σ)<br><br>`)+
+    `<span class="res">${units.toFixed(2)} units ≈ ${(units/100).toFixed(2)} lots</span><br><span style="color:#9aa0ab">`+
+    L(`If σ rises, this number shrinks — your risk stays flat.`,`ਜੇ σ ਵਧੇ, ਇਹ ਨੰਬਰ ਘਟਦਾ ਹੈ — ਤੁਹਾਡਾ ਜੋਖਮ ਉਹੀ ਰਹਿੰਦਾ ਹੈ।`)+`</span>`;
+}
+
+function toggle(el){el.classList.toggle('done')}
+
+/* quiz — bilingual */
+const QUIZ=[
+ {q:["A gold move lands beyond +2σ from the mean. Statistically, how unusual is that?","ਸੋਨੇ ਦੀ ਚਾਲ ਔਸਤ ਤੋਂ +2σ ਅੱਗੇ ਜਾਂਦੀ ਹੈ। ਅੰਕੜਿਆਂ ਮੁਤਾਬਕ ਇਹ ਕਿੰਨਾ ਅਸਾਧਾਰਨ ਹੈ?"],
+  o:[["Totally normal — happens most days","ਬਿਲਕੁਲ ਆਮ — ਰੋਜ਼ ਹੁੰਦਾ ਹੈ"],["Unusual — only ~5% of moves go past ±2σ","ਅਸਾਧਾਰਨ — ਸਿਰਫ਼ ~5% ਚਾਲਾਂ ±2σ ਤੋਂ ਅੱਗੇ ਜਾਂਦੀਆਂ ਹਨ"],["Impossible in a normal distribution","Normal distribution ਵਿੱਚ ਅਸੰਭਵ"],["It means the data is broken","ਮਤਲਬ data ਖਰਾਬ ਹੈ"]],
+  a:1,f:["~95% of moves stay within ±2σ, so beyond it sits in the outer ~5% — your signal that something real may be happening.","~95% ਚਾਲਾਂ ±2σ ਦੇ ਅੰਦਰ ਰਹਿੰਦੀਆਂ ਹਨ, ਇਸ ਤੋਂ ਅੱਗੇ ਬਾਹਰਲੇ ~5% ਵਿੱਚ — ਸੰਕੇਤ ਕਿ ਕੁਝ ਅਸਲੀ ਹੋ ਰਿਹਾ ਹੈ।"]},
+ {q:["Price has been riding the UPPER Bollinger Band for three days in a strong uptrend. Best read?","ਤਕੜੇ uptrend ਵਿੱਚ ਕੀਮਤ ਤਿੰਨ ਦਿਨ ਉੱਪਰਲੀ Bollinger Band ਉੱਤੇ ਚੱਲ ਰਹੀ ਹੈ। ਸਭ ਤੋਂ ਵਧੀਆ ਸਮਝ?"],
+  o:[["Guaranteed reversal — sell immediately","ਪੱਕਾ reversal — ਤੁਰੰਤ ਵੇਚੋ"],["Trend is strong; the band is acting as support, not a sell","Trend ਤਕੜਾ ਹੈ; band support ਹੈ, ਵੇਚਣ ਦਾ ਸੰਕੇਤ ਨਹੀਂ"],["σ has dropped to zero","σ ਜ਼ੀਰੋ ਹੋ ਗਿਆ"],["The bands are broken","Bands ਖਰਾਬ ਹਨ"]],
+  a:1,f:["In strong trends price rides the band. Fading every upper touch in a trend is the classic beginner mistake.","ਤਕੜੇ trend ਵਿੱਚ ਕੀਮਤ band ਉੱਤੇ ਚੱਲਦੀ ਹੈ। ਹਰ ਉੱਪਰਲੀ touch ਨੂੰ fade ਕਰਨਾ ਨਵੇਂ ਦੀ ਆਮ ਗਲਤੀ ਹੈ।"]},
+ {q:["You measure σ = $20 today vs $10 last week, same account and risk %. Your position size should…","ਅੱਜ σ = $20 ਜਦਕਿ ਪਿਛਲੇ ਹਫ਼ਤੇ $10, ਉਹੀ account ਤੇ risk %। ਤੁਹਾਡੀ position size…"],
+  o:[["Double","ਦੁੱਗਣੀ ਹੋਵੇ"],["Stay exactly the same","ਬਿਲਕੁਲ ਉਹੀ ਰਹੇ"],["Roughly halve","ਲਗਭਗ ਅੱਧੀ ਹੋਵੇ"],["Go to zero","ਜ਼ੀਰੋ ਹੋ ਜਾਵੇ"]],
+  a:2,f:["Size = risk ÷ (N × σ). Double the σ → double the stop distance → about half the size. Risk stays constant.","Size = risk ÷ (N × σ)। σ ਦੁੱਗਣਾ → stop ਦੂਰੀ ਦੁੱਗਣੀ → size ਲਗਭਗ ਅੱਧੀ। ਜੋਖਮ ਉਹੀ ਰਹਿੰਦਾ ਹੈ।"]},
+ {q:["Why set your stop at 2σ rather than 1σ?","Stop 1σ ਦੀ ਬਜਾਏ 2σ ਉੱਤੇ ਕਿਉਂ ਰੱਖੀਏ?"],
+  o:[["It's wider so you never lose","ਚੌੜਾ ਹੈ ਤਾਂ ਕਦੇ ਨੁਕਸਾਨ ਨਹੀਂ"],["2σ filters ~95% of normal noise while still catching real reversals","2σ ~95% ਆਮ ਸ਼ੋਰ ਫਿਲਟਰ ਕਰਦਾ ਹੈ ਪਰ ਅਸਲੀ reversals ਫੜਦਾ ਹੈ"],["1σ is mathematically invalid","1σ ਗਣਿਤ ਪੱਖੋਂ ਗਲਤ ਹੈ"],["Brokers require 2σ","Brokers 2σ ਮੰਗਦੇ ਹਨ"]],
+  a:1,f:["A 1σ stop sits inside normal daily range and gets tagged by noise. 2σ filters the everyday wiggle.","1σ stop ਆਮ ਰੋਜ਼ਾਨਾ range ਦੇ ਅੰਦਰ ਹੁੰਦਾ ਹੈ ਤੇ ਸ਼ੋਰ ਨਾਲ ਲੱਗ ਜਾਂਦਾ ਹੈ। 2σ ਰੋਜ਼ਾਨਾ ਹਲਚਲ ਫਿਲਟਰ ਕਰਦਾ ਹੈ।"]},
+ {q:["Bollinger Bands squeeze tight on the daily gold chart. What does low σ typically precede?","ਰੋਜ਼ਾਨਾ ਸੋਨੇ ਦੇ chart ਉੱਤੇ Bollinger Bands ਸੁੰਗੜ ਜਾਂਦੀਆਂ ਹਨ। ਘੱਟ σ ਆਮ ਤੌਰ ਤੇ ਕਿਸ ਤੋਂ ਪਹਿਲਾਂ ਹੁੰਦਾ ਹੈ?"],
+  o:[["Nothing — ignore it","ਕੁਝ ਨਹੀਂ — ਛੱਡ ਦਿਓ"],["A period of even lower volatility forever","ਹਮੇਸ਼ਾ ਲਈ ਹੋਰ ਘੱਟ volatility"],["A breakout / expansion in volatility","Breakout / volatility ਦਾ ਵਾਧਾ"],["An automatic sell signal","ਆਪਣੇ ਆਪ ਵੇਚਣ ਦਾ ਸੰਕੇਤ"]],
+  a:2,f:["Volatility is cyclical. A squeeze (low σ) usually loads up the next expansion — prepare for a breakout, either direction.","Volatility ਚੱਕਰ ਵਿੱਚ ਚੱਲਦੀ ਹੈ। Squeeze (ਘੱਟ σ) ਅਗਲੇ ਵਾਧੇ ਨੂੰ ਤਿਆਰ ਕਰਦੀ ਹੈ — ਕਿਸੇ ਵੀ ਪਾਸੇ breakout ਲਈ ਤਿਆਰ ਰਹੋ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Lesson 01 complete','★ ਪਾਠ 01 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You can measure volatility, place a σ-based stop, and size a position from it. That's the foundation everything else builds on.","ਤੁਸੀਂ volatility ਮਾਪ ਸਕਦੇ ਹੋ, σ-ਆਧਾਰਿਤ stop ਲਾ ਸਕਦੇ ਹੋ, ਤੇ ਉਸ ਤੋਂ position size ਕੱਢ ਸਕਦੇ ਹੋ। ਇਹੀ ਨੀਂਹ ਹੈ ਜਿਸ ਉੱਤੇ ਬਾਕੀ ਸਭ ਬਣਦਾ ਹੈ।")
+      : L("Close. Scroll back through the tools, then run the check again — aim for 4/5.","ਨੇੜੇ ਹੋ। ਟੂਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਦੇਖੋ, ਫਿਰ ਟੈਸਟ ਦੁਬਾਰਾ ਕਰੋ — 4/5 ਦਾ ਟੀਚਾ ਰੱਖੋ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Apply your σ to one paper trade this week','ਇਸ ਹਫ਼ਤੇ ਇੱਕ paper trade ਉੱਤੇ ਆਪਣਾ σ ਵਰਤੋ')}</li>
+        <li>→ ${L('Post your measured σ in #gold-discussion','ਆਪਣਾ ਮਾਪਿਆ σ #gold-discussion ਵਿੱਚ ਪਾਓ')}</li>
+        <li>→ ${L('Next lesson: Bollinger squeeze breakouts, live','ਅਗਲਾ ਪਾਠ: Bollinger squeeze breakouts, live')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();
+</script>
+</body>
+</html>
