@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Execution Mastery — Foundation Part 4</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .warn{border-color:var(--gold-dim);background:linear-gradient(180deg,#1a1810,#101216)}
+  .eqn{text-align:center;font-weight:800;font-size:20px;letter-spacing:.02em;color:var(--gold-soft);padding:8px 0}
+
+  /* fail grid */
+  .grid2{display:grid;gap:14px}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .fail{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .fail .ft{font-weight:650;margin:0 0 4px;font-size:15px}
+  .fail .fd{margin:0;color:var(--muted);font-size:13.5px}
+
+  /* 5-step model */
+  .model{display:grid;gap:10px;margin:18px 0}
+  .mstep{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .mstep .mn{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .mstep .mn small{font-size:8px;letter-spacing:.1em;color:var(--muted);margin-top:2px}
+  .mstep .mt{font-weight:700;font-size:15px;margin:0 0 2px}
+  .mstep .md{margin:0;color:var(--muted);font-size:13.5px}
+
+  /* checklist tool */
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .chk{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .chk:last-of-type{border-bottom:none}
+  .chk .bx{flex:0 0 24px;width:24px;height:24px;border:1.5px solid var(--gold-dim);border-radius:7px;margin-top:1px;display:flex;align-items:center;justify-content:center;color:#241d05;font-weight:800;font-size:14px;transition:.15s}
+  .chk.on .bx{background:var(--gold);border-color:var(--gold)}
+  .chk .bx span{opacity:0} .chk.on .bx span{opacity:1}
+  .chk .cl{font-size:14.5px}
+  .chk .cl small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .verdictbar{margin-top:18px;padding:16px;border-radius:11px;text-align:center;font-weight:800;font-size:17px;transition:.2s}
+  .verdictbar.no{background:rgba(224,98,94,.12);border:1px solid rgba(224,98,94,.45);color:#f4c4c2}
+  .verdictbar.yes{background:rgba(70,201,138,.12);border:1px solid rgba(70,201,138,.5);color:#bff0d6}
+
+  .concept{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .concept:last-child{border-bottom:none}
+  .concept .ico{flex:0 0 40px;width:40px;height:40px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:19px}
+  .concept .ct{font-weight:650;margin:0 0 3px;font-size:15.5px}
+  .concept .cd{margin:0;color:var(--muted);font-size:14px}
+
+  .olist{margin:0;padding-left:20px;color:#d3d4d8;font-size:14.5px}
+  .olist li{margin:7px 0}
+  .pn-line{font-size:13px;margin-top:10px}
+  .pn-line .pro{color:var(--green)} .pn-line .con{color:var(--red)}
+
+  .checklist{margin:0;padding:0;list-style:none}
+  .checklist li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:#d3d4d8}
+  .checklist li:last-child{border-bottom:none}
+  .doadd li::before{content:"✓ ";color:var(--green);font-weight:800}
+  .donot li::before{content:"✗ ";color:var(--red);font-weight:800}
+
+  .bigrule{text-align:center;padding:30px 20px}
+  .bigrule .br1{font-size:clamp(26px,5vw,40px);font-weight:800;line-height:1.1}
+  .bigrule .hl{color:var(--gold)}
+
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#fail">1 · <span class="en">Why Traders Fail</span><span class="pa">ਕਿਉਂ ਫੇਲ੍ਹ</span></a>
+      <a href="#model">2 · <span class="en">The Model</span><span class="pa">Model</span></a>
+      <a href="#checklist">3 · <span class="en">A+ Checklist</span><span class="pa">A+ Checklist</span></a>
+      <a href="#entries">4 · <span class="en">Entries</span><span class="pa">Entries</span></a>
+      <a href="#stops">5 · <span class="en">Stops &amp; Size</span><span class="pa">Stops ਤੇ Size</span></a>
+      <a href="#manage">6 · <span class="en">Management</span><span class="pa">ਪ੍ਰਬੰਧਨ</span></a>
+      <a href="#quiz"><span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Foundation · Part 4 of 6</span><span class="pa">ਨੀਂਹ · ਭਾਗ 4 / 6</span></div>
+    <h1><span class="en">Execution Mastery</span><span class="pa">Execution Mastery</span></h1>
+    <p class="lede"><span class="en">Knowing the right trade isn't enough — taking it correctly, every time, is the whole game. A repeatable model, a hard checklist, clean entries, and the discipline to follow your own rules.</span><span class="pa">ਸਹੀ trade ਜਾਣਨਾ ਕਾਫ਼ੀ ਨਹੀਂ — ਇਸਨੂੰ ਹਰ ਵਾਰ ਠੀਕ ਤਰੀਕੇ ਨਾਲ ਲੈਣਾ ਹੀ ਪੂਰੀ ਖੇਡ ਹੈ। ਇੱਕ ਦੁਹਰਾਉਣ ਯੋਗ model, ਇੱਕ ਸਖ਼ਤ checklist, ਸਾਫ਼ entries, ਤੇ ਆਪਣੇ ਨਿਯਮ ਮੰਨਣ ਦਾ ਅਨੁਸ਼ਾਸਨ।</span></p>
+    <div class="meta">
+      <span><b>~15 min</b></span>
+      <span><b>1 <span class="en">tool</span><span class="pa">ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="fail">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">Why most traders fail</span><span class="pa">ਜ਼ਿਆਦਾਤਰ traders ਕਿਉਂ ਫੇਲ੍ਹ ਹੁੰਦੇ ਹਨ</span></h2>
+    <p><span class="en">It's almost never the strategy. It's the execution. These four habits kill more accounts than any bad setup.</span><span class="pa">ਇਹ ਲਗਭਗ ਕਦੇ strategy ਨਹੀਂ ਹੁੰਦੀ। ਇਹ execution ਹੈ। ਇਹ ਚਾਰ ਆਦਤਾਂ ਕਿਸੇ ਵੀ ਮਾੜੇ setup ਨਾਲੋਂ ਜ਼ਿਆਦਾ accounts ਮਾਰਦੀਆਂ ਹਨ।</span></p>
+    <div class="grid2">
+      <div class="fail"><p class="ft">😤 <span class="en">Lack of discipline</span><span class="pa">ਅਨੁਸ਼ਾਸਨ ਦੀ ਕਮੀ</span></p><p class="fd"><span class="en">They know the rules but break them when emotions run high. The #1 account killer.</span><span class="pa">ਨਿਯਮ ਪਤਾ ਹਨ ਪਰ ਭਾਵਨਾਵਾਂ ਵਧਣ ਉੱਤੇ ਤੋੜ ਦਿੰਦੇ ਹਨ। ਸਭ ਤੋਂ ਵੱਡਾ killer।</span></p></div>
+      <div class="fail"><p class="ft">🎲 <span class="en">Inconsistent risk</span><span class="pa">ਅਸਥਿਰ ਜੋਖਮ</span></p><p class="fd"><span class="en">5% one trade, 0.5% the next. Random risk makes results impossible to improve.</span><span class="pa">ਇੱਕ trade 5%, ਅਗਲੇ 0.5%। ਬੇਤਰਤੀਬ ਜੋਖਮ ਨਤੀਜੇ ਸੁਧਾਰਨਾ ਅਸੰਭਵ ਕਰ ਦਿੰਦਾ ਹੈ।</span></p></div>
+      <div class="fail"><p class="ft">🔥 <span class="en">Overtrading</span><span class="pa">Overtrading</span></p><p class="fd"><span class="en">Trading from boredom or to recover losses. More trades ≠ more profit.</span><span class="pa">ਬੋਰੀਅਤ ਜਾਂ ਨੁਕਸਾਨ ਮੋੜਨ ਲਈ trade ਕਰਨਾ। ਜ਼ਿਆਦਾ trades ≠ ਜ਼ਿਆਦਾ ਮੁਨਾਫ਼ਾ।</span></p></div>
+      <div class="fail"><p class="ft">💔 <span class="en">Breaking rules</span><span class="pa">ਨਿਯਮ ਤੋੜਨਾ</span></p><p class="fd"><span class="en">Moving stops, skipping entries from fear, exiting winners early. Each break is a bad habit.</span><span class="pa">Stops ਹਿਲਾਉਣਾ, ਡਰ ਨਾਲ entries ਛੱਡਣਾ, ਜਿੱਤਾਂ ਜਲਦੀ ਛੱਡਣਾ। ਹਰ break ਇੱਕ ਮਾੜੀ ਆਦਤ ਹੈ।</span></p></div>
+    </div>
+    <div class="card warn"><div class="eqn">EDGE + DISCIPLINE = PROFIT</div></div>
+  </div>
+</section>
+
+<section id="model">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">The trading model</span><span class="pa">ਟ੍ਰੇਡਿੰਗ Model</span></h2>
+    <p><span class="en">Run through these five every single trade — no exceptions. Skip a step and you're guessing.</span><span class="pa">ਹਰ trade ਉੱਤੇ ਇਹ ਪੰਜ ਚਲਾਓ — ਕੋਈ ਛੋਟ ਨਹੀਂ। ਇੱਕ ਕਦਮ ਛੱਡੋ ਤੇ ਤੁਸੀਂ ਅੰਦਾਜ਼ਾ ਲਾ ਰਹੇ ਹੋ।</span></p>
+    <div class="model">
+      <div class="mstep"><div class="mn">1<small>BIAS</small></div><div><p class="mt"><span class="en">Market direction</span><span class="pa">ਮਾਰਕੀਟ ਦਿਸ਼ਾ</span></p><p class="md"><span class="en">Is the trend bullish or bearish? This is your filter — only trade with it.</span><span class="pa">Trend bullish ਹੈ ਜਾਂ bearish? ਇਹ ਤੁਹਾਡਾ filter ਹੈ — ਸਿਰਫ਼ ਇਸ ਨਾਲ trade ਕਰੋ।</span></p></div></div>
+      <div class="mstep"><div class="mn">2<small>SETUP</small></div><div><p class="mt"><span class="en">Your strategy</span><span class="pa">ਤੁਹਾਡੀ strategy</span></p><p class="md"><span class="en">Does a valid setup exist by your rules? If it doesn't fit — skip it.</span><span class="pa">ਤੁਹਾਡੇ ਨਿਯਮਾਂ ਮੁਤਾਬਕ ਠੀਕ setup ਹੈ? ਜੇ ਨਹੀਂ — ਛੱਡੋ।</span></p></div></div>
+      <div class="mstep"><div class="mn">3<small>ENTRY</small></div><div><p class="mt"><span class="en">The trigger</span><span class="pa">Trigger</span></p><p class="md"><span class="en">What candle or signal triggers entry? Wait for it. Don't anticipate.</span><span class="pa">ਕਿਹੜਾ candle ਜਾਂ signal entry trigger ਕਰਦਾ ਹੈ? ਇਸਦੀ ਉਡੀਕ ਕਰੋ। ਪਹਿਲਾਂ ਨਾ ਕਰੋ।</span></p></div></div>
+      <div class="mstep"><div class="mn">4<small>RISK</small></div><div><p class="mt"><span class="en">Size + stop loss</span><span class="pa">Size + stop loss</span></p><p class="md"><span class="en">Where's your stop? How much does it risk? Calculate first, then size.</span><span class="pa">Stop ਕਿੱਥੇ ਹੈ? ਕਿੰਨਾ ਜੋਖਮ? ਪਹਿਲਾਂ ਗਣਨਾ, ਫਿਰ size।</span></p></div></div>
+      <div class="mstep"><div class="mn">5<small>MGMT</small></div><div><p class="mt"><span class="en">Take profit &amp; exit</span><span class="pa">Take profit ਤੇ exit</span></p><p class="md"><span class="en">Where's your TP? When do you trail? Know the full exit plan before entering.</span><span class="pa">TP ਕਿੱਥੇ ਹੈ? Trail ਕਦੋਂ? Entry ਤੋਂ ਪਹਿਲਾਂ ਪੂਰਾ exit plan ਜਾਣੋ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="checklist">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">The A+ trade checklist</span><span class="pa">A+ trade checklist</span></h2>
+    <p><span class="en">Before every trade, run all five. <strong>If any box is unchecked — you do not trade.</strong> Try it: tick the boxes and watch the verdict change.</span><span class="pa">ਹਰ trade ਤੋਂ ਪਹਿਲਾਂ ਪੰਜੇ ਚਲਾਓ। <strong>ਜੇ ਕੋਈ ਡੱਬਾ ਖਾਲੀ ਹੈ — trade ਨਾ ਕਰੋ।</strong> ਅਜ਼ਮਾਓ: ਡੱਬੇ ਟਿੱਕ ਕਰੋ ਤੇ verdict ਬਦਲਦਾ ਦੇਖੋ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · A+ gate</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · A+ gate</span></span>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Is the market clearly trending or ranging?</span><span class="pa">ਕੀ ਮਾਰਕੀਟ ਸਾਫ਼ trending ਹੈ ਜਾਂ ranging?</span><small><span class="en">Know your environment — momentum vs mean-reversion.</span><span class="pa">ਆਪਣਾ ਮਾਹੌਲ ਜਾਣੋ — momentum vs mean-reversion।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Is price at a key support/resistance level?</span><span class="pa">ਕੀ ਕੀਮਤ ਕਿਸੇ ਅਹਿਮ support/resistance ਉੱਤੇ ਹੈ?</span><small><span class="en">Best entries are at clear structure — not mid-range.</span><span class="pa">ਵਧੀਆ entries ਸਾਫ਼ structure ਉੱਤੇ — ਵਿਚਕਾਰ ਨਹੀਂ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Is there volume confirmation?</span><span class="pa">ਕੀ volume confirmation ਹੈ?</span><small><span class="en">A move without volume is weak and unreliable.</span><span class="pa">Volume ਤੋਂ ਬਿਨਾਂ ਚਾਲ ਕਮਜ਼ੋਰ ਤੇ ਭਰੋਸੇਯੋਗ ਨਹੀਂ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Does it fit my strategy rules exactly?</span><span class="pa">ਕੀ ਇਹ ਮੇਰੇ strategy ਨਿਯਮਾਂ ਉੱਤੇ ਠੀਕ ਬੈਠਦਾ ਹੈ?</span><small><span class="en">If you have to convince yourself — it's a NO.</span><span class="pa">ਜੇ ਆਪਣੇ ਆਪ ਨੂੰ ਮਨਾਉਣਾ ਪਵੇ — ਇਹ ਨਾਂਹ ਹੈ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Is my R:R at least 1:2?</span><span class="pa">ਕੀ ਮੇਰਾ R:R ਘੱਟੋ-ਘੱਟ 1:2 ਹੈ?</span><small><span class="en">If reward isn't 2× the risk — skip it.</span><span class="pa">ਜੇ reward ਜੋਖਮ ਤੋਂ 2× ਨਹੀਂ — ਛੱਡੋ।</span></small></div></div>
+      <div class="verdictbar no" id="verdictbar"></div>
+    </div>
+  </div>
+</section>
+
+<section id="entries">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Two entry models</span><span class="pa">ਦੋ entry models</span></h2>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">🚀 <span class="en">Breakout entry</span><span class="pa">Breakout entry</span></h3>
+        <ol class="olist">
+          <li><span class="en">Price approaches a key level with momentum</span><span class="pa">ਕੀਮਤ momentum ਨਾਲ ਅਹਿਮ ਪੱਧਰ ਵੱਲ ਆਉਂਦੀ ਹੈ</span></li>
+          <li><span class="en">Wait for a clean close above it (not a wick)</span><span class="pa">ਇਸ ਤੋਂ ਉੱਪਰ ਸਾਫ਼ close ਦੀ ਉਡੀਕ ਕਰੋ (wick ਨਹੀਂ)</span></li>
+          <li><span class="en">Let price retest the broken level</span><span class="pa">ਟੁੱਟੇ ਪੱਧਰ ਦਾ retest ਹੋਣ ਦਿਓ</span></li>
+          <li><span class="en">Enter on the first confirmation candle</span><span class="pa">ਪਹਿਲੇ confirmation candle ਉੱਤੇ enter ਕਰੋ</span></li>
+        </ol>
+        <p class="pn-line"><span class="pro">✓ <span class="en">Catches the start of big moves</span><span class="pa">ਵੱਡੀਆਂ ਚਾਲਾਂ ਦੀ ਸ਼ੁਰੂਆਤ ਫੜਦਾ ਹੈ</span></span><br><span class="con">✗ <span class="en">More false breakouts in low volume</span><span class="pa">ਘੱਟ volume ਵਿੱਚ ਝੂਠੇ breakouts ਵੱਧ</span></span></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">↩️ <span class="en">Pullback entry</span><span class="pa">Pullback entry</span></h3>
+        <ol class="olist">
+          <li><span class="en">Confirm the trend on a higher timeframe</span><span class="pa">ਉੱਚੇ timeframe ਉੱਤੇ trend ਪੱਕਾ ਕਰੋ</span></li>
+          <li><span class="en">Wait for a pullback to a key zone</span><span class="pa">ਅਹਿਮ zone ਵੱਲ pullback ਦੀ ਉਡੀਕ ਕਰੋ</span></li>
+          <li><span class="en">Watch for a confirmation candle there</span><span class="pa">ਉੱਥੇ confirmation candle ਦੇਖੋ</span></li>
+          <li><span class="en">Enter with stop beyond the swing</span><span class="pa">Swing ਤੋਂ ਅੱਗੇ stop ਨਾਲ enter ਕਰੋ</span></li>
+        </ol>
+        <p class="pn-line"><span class="pro">✓ <span class="en">Better R:R, enters near structure</span><span class="pa">ਵਧੀਆ R:R, structure ਨੇੜੇ enter</span></span><br><span class="con">✗ <span class="en">Needs patience — trend first</span><span class="pa">ਸਬਰ ਚਾਹੀਦਾ — ਪਹਿਲਾਂ trend</span></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stops">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">Stops &amp; position sizing</span><span class="pa">Stops ਤੇ position sizing</span></h2>
+    <p><span class="en">Your stop goes where price proves you wrong — at structure, never at a random dollar amount.</span><span class="pa">ਤੁਹਾਡਾ stop ਉੱਥੇ ਜਾਂਦਾ ਹੈ ਜਿੱਥੇ ਕੀਮਤ ਤੁਹਾਨੂੰ ਗਲਤ ਸਾਬਤ ਕਰੇ — structure ਉੱਤੇ, ਕਦੇ ਬੇਤਰਤੀਬ ਡਾਲਰ ਰਕਮ ਉੱਤੇ ਨਹੀਂ।</span></p>
+    <div class="card">
+      <div class="concept"><div class="ico">🟢</div><div><p class="ct"><span class="en">Long trades</span><span class="pa">Long trades</span></p><p class="cd"><span class="en">Stop just below the key support / recent swing low.</span><span class="pa">Stop ਅਹਿਮ support / ਤਾਜ਼ਾ swing low ਤੋਂ ਥੋੜ੍ਹਾ ਹੇਠਾਂ।</span></p></div></div>
+      <div class="concept"><div class="ico">🔴</div><div><p class="ct"><span class="en">Short trades</span><span class="pa">Short trades</span></p><p class="cd"><span class="en">Stop just above the key resistance / recent swing high.</span><span class="pa">Stop ਅਹਿਮ resistance / ਤਾਜ਼ਾ swing high ਤੋਂ ਥੋੜ੍ਹਾ ਉੱਪਰ।</span></p></div></div>
+    </div>
+    <div class="card warn">
+      <p style="margin:0 0 10px"><strong><span class="en">Position size = Account risk ÷ Stop distance</span><span class="pa">Position size = Account ਜੋਖਮ ÷ Stop ਦੂਰੀ</span></strong></p>
+      <p class="muted" style="font-size:14px;margin:0"><span class="en">Worked example: $5,000 account, risk 1% = $50. If your stop is 50 pips away, your size is set so that 50 pips = $50. Always calculate <em>before</em> entering — never guess.</span><span class="pa">ਮਿਸਾਲ: $5,000 account, 1% ਜੋਖਮ = $50। ਜੇ stop 50 pips ਦੂਰ ਹੈ, size ਇੰਝ ਸੈੱਟ ਕਰੋ ਕਿ 50 pips = $50। Entry ਤੋਂ <em>ਪਹਿਲਾਂ</em> ਹਮੇਸ਼ਾ ਗਣਨਾ ਕਰੋ — ਅੰਦਾਜ਼ਾ ਨਾ ਲਾਓ।</span></p>
+    </div>
+    <p class="muted" style="font-size:13px"><span class="en">The Gold lesson has a full interactive position sizer if you want to practise the maths.</span><span class="pa">ਜੇ ਗਣਿਤ ਅਭਿਆਸ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ Gold ਪਾਠ ਵਿੱਚ ਪੂਰਾ interactive position sizer ਹੈ।</span></p>
+  </div>
+</section>
+
+<section id="manage">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Manage the trade. Avoid the traps.</span><span class="pa">Trade ਸੰਭਾਲੋ। ਜਾਲਾਂ ਤੋਂ ਬਚੋ।</span></h2>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">✅ <span class="en">Trade management</span><span class="pa">Trade ਪ੍ਰਬੰਧਨ</span></h3>
+        <ul class="checklist doadd">
+          <li><span class="en">Move stop to breakeven at 1R — now risk-free</span><span class="pa">1R ਉੱਤੇ stop breakeven ਕਰੋ — ਹੁਣ risk-free</span></li>
+          <li><span class="en">Take partial profit at your first target</span><span class="pa">ਪਹਿਲੇ target ਉੱਤੇ partial profit ਲਓ</span></li>
+          <li><span class="en">Let winners run to 1:2, 1:3 or beyond</span><span class="pa">ਜਿੱਤਾਂ ਨੂੰ 1:2, 1:3 ਜਾਂ ਅੱਗੇ ਚੱਲਣ ਦਿਓ</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">❌ <span class="en">Execution mistakes</span><span class="pa">Execution ਗਲਤੀਆਂ</span></h3>
+        <ul class="checklist donot">
+          <li><span class="en">Entering before the trigger candle forms</span><span class="pa">Trigger candle ਬਣਨ ਤੋਂ ਪਹਿਲਾਂ enter ਕਰਨਾ</span></li>
+          <li><span class="en">Widening the stop to avoid being stopped</span><span class="pa">Stop out ਤੋਂ ਬਚਣ ਲਈ stop ਚੌੜਾ ਕਰਨਾ</span></li>
+          <li><span class="en">Cutting winners early out of fear</span><span class="pa">ਡਰ ਨਾਲ ਜਿੱਤਾਂ ਜਲਦੀ ਛੱਡਣਾ</span></li>
+          <li><span class="en">Revenge trading after a loss</span><span class="pa">ਹਾਰ ਬਾਅਦ revenge trading</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card warn bigrule">
+      <p class="br1"><span class="en">Judge yourself on <span class="hl">execution</span>,<br>not profit.</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ <span class="hl">execution</span> ਉੱਤੇ ਪਰਖੋ,<br>ਮੁਨਾਫ਼ੇ ਉੱਤੇ ਨਹੀਂ।</span></p>
+      <p class="muted" style="font-size:14px;margin:12px 0 0"><span class="en">A trader who follows rules on every trade eventually wins — even with a simple strategy. One who breaks rules eventually blows up — even with a great one.</span><span class="pa">ਜੋ ਹਰ trade ਉੱਤੇ ਨਿਯਮ ਮੰਨਦਾ ਹੈ ਉਹ ਆਖ਼ਰ ਜਿੱਤਦਾ ਹੈ — ਸਾਧਾਰਨ strategy ਨਾਲ ਵੀ। ਜੋ ਨਿਯਮ ਤੋੜਦਾ ਹੈ ਉਹ ਆਖ਼ਰ ਉੱਡ ਜਾਂਦਾ ਹੈ — ਵਧੀਆ strategy ਨਾਲ ਵੀ।</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions to lock in Part 4.</span><span class="pa">ਭਾਗ 4 ਪੱਕਾ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();updateVerdict();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','fail','model','checklist','entries','stops','manage','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* A+ checklist gate */
+function tick(el){el.classList.toggle('on');updateVerdict();}
+function updateVerdict(){
+  const total=document.querySelectorAll('#checklist .chk').length;
+  const on=document.querySelectorAll('#checklist .chk.on').length;
+  const v=document.getElementById('verdictbar');
+  if(on===total){
+    v.className='verdictbar yes';
+    v.textContent=L('✓ A+ setup — this one qualifies. Take it.','✓ A+ setup — ਇਹ ਯੋਗ ਹੈ। ਲੈ ਲਓ।');
+  }else{
+    v.className='verdictbar no';
+    v.textContent=L(`✗ ${on}/${total} checked — DO NOT trade`,`✗ ${on}/${total} ਟਿੱਕ — trade ਨਾ ਕਰੋ`);
+  }
+}
+
+/* quiz */
+const QUIZ=[
+ {q:["What is the #1 killer of trading accounts?","ਟ੍ਰੇਡਿੰਗ accounts ਦਾ ਸਭ ਤੋਂ ਵੱਡਾ killer ਕੀ ਹੈ?"],
+  o:[["A bad strategy","ਮਾੜੀ strategy"],["Lack of discipline — breaking rules under emotion","ਅਨੁਸ਼ਾਸਨ ਦੀ ਕਮੀ — ਭਾਵਨਾ ਵਿੱਚ ਨਿਯਮ ਤੋੜਨਾ"],["Using the daily chart","Daily chart ਵਰਤਣਾ"],["Trading gold","ਸੋਨਾ trade ਕਰਨਾ"]],
+  a:1,f:["It's almost never the strategy — it's execution. Edge + discipline = profit.","ਇਹ ਲਗਭਗ ਕਦੇ strategy ਨਹੀਂ — execution ਹੈ। Edge + ਅਨੁਸ਼ਾਸਨ = ਮੁਨਾਫ਼ਾ।"]},
+ {q:["On the A+ checklist, if one box is unchecked, you…","A+ checklist ਉੱਤੇ ਜੇ ਇੱਕ ਡੱਬਾ ਖਾਲੀ ਹੈ, ਤੁਸੀਂ…"],
+  o:[["Take a smaller position","ਛੋਟੀ position ਲਓ"],["Do not trade","Trade ਨਾ ਕਰੋ"],["Trade anyway if you feel good","ਚੰਗਾ ਲੱਗੇ ਤਾਂ ਫਿਰ ਵੀ trade ਕਰੋ"],["Move your stop wider","Stop ਚੌੜਾ ਕਰੋ"]],
+  a:1,f:["Any unchecked box = no trade. The checklist only works if it's absolute.","ਕੋਈ ਵੀ ਖਾਲੀ ਡੱਬਾ = ਕੋਈ trade ਨਹੀਂ। Checklist ਤਾਂ ਹੀ ਕੰਮ ਕਰਦੀ ਜੇ ਪੱਕੀ ਹੋਵੇ।"]},
+ {q:["Where should a stop loss go?","Stop loss ਕਿੱਥੇ ਜਾਣਾ ਚਾਹੀਦਾ?"],
+  o:[["At a round dollar amount you're comfortable with","ਇੱਕ ਆਰਾਮਦਾਇਕ ਡਾਲਰ ਰਕਮ ਉੱਤੇ"],["At structure — where price proves you wrong","Structure ਉੱਤੇ — ਜਿੱਥੇ ਕੀਮਤ ਤੁਹਾਨੂੰ ਗਲਤ ਸਾਬਤ ਕਰੇ"],["As far away as possible","ਜਿੰਨਾ ਦੂਰ ਹੋ ਸਕੇ"],["Wherever the broker suggests","ਜਿੱਥੇ broker ਸੁਝਾਵੇ"]],
+  a:1,f:["Stops belong at structure (below support / above resistance), not at a random number.","Stops structure ਉੱਤੇ (support ਤੋਂ ਹੇਠਾਂ / resistance ਤੋਂ ਉੱਪਰ), ਬੇਤਰਤੀਬ ਨੰਬਰ ਉੱਤੇ ਨਹੀਂ।"]},
+ {q:["At 1R profit, the management rule says…","1R ਮੁਨਾਫ਼ੇ ਉੱਤੇ ਪ੍ਰਬੰਧਨ ਨਿਯਮ ਕੀ ਕਹਿੰਦਾ ਹੈ…"],
+  o:[["Close the whole trade","ਪੂਰਾ trade ਬੰਦ ਕਰੋ"],["Move stop to breakeven — now risk-free","Stop breakeven ਕਰੋ — ਹੁਣ risk-free"],["Add more size","ਹੋਰ size ਜੋੜੋ"],["Remove the stop","Stop ਹਟਾਓ"]],
+  a:1,f:["Move stop to entry at 1R. You're now risk-free and can let the winner breathe.","1R ਉੱਤੇ stop entry ਉੱਤੇ ਲਿਜਾਓ। ਹੁਣ risk-free ਹੋ ਤੇ ਜਿੱਤ ਨੂੰ ਚੱਲਣ ਦੇ ਸਕਦੇ ਹੋ।"]},
+ {q:["The golden rule of Part 4 is to judge yourself on…","ਭਾਗ 4 ਦਾ ਸੁਨਹਿਰੀ ਨਿਯਮ — ਆਪਣੇ ਆਪ ਨੂੰ ਕਿਸ ਉੱਤੇ ਪਰਖੋ…"],
+  o:[["Profit","ਮੁਨਾਫ਼ਾ"],["Execution — did you follow your rules?","Execution — ਕੀ ਤੁਸੀਂ ਨਿਯਮ ਮੰਨੇ?"],["Number of trades","Trades ਦੀ ਗਿਣਤੀ"],["Win streak","Win streak"]],
+  a:1,f:["Execution over profit. Follow rules every trade and profit follows over time.","ਮੁਨਾਫ਼ੇ ਨਾਲੋਂ execution। ਹਰ trade ਨਿਯਮ ਮੰਨੋ, ਮੁਨਾਫ਼ਾ ਸਮੇਂ ਨਾਲ ਆਉਂਦਾ ਹੈ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Part 4 complete','★ ਭਾਗ 4 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You can run a trade through a model, gate it with a checklist, place a structural stop, and manage it without breaking rules. That's execution.","ਤੁਸੀਂ trade ਨੂੰ model ਰਾਹੀਂ ਚਲਾ ਸਕਦੇ ਹੋ, checklist ਨਾਲ gate ਕਰ ਸਕਦੇ ਹੋ, structural stop ਲਾ ਸਕਦੇ ਹੋ, ਤੇ ਨਿਯਮ ਤੋੜੇ ਬਿਨਾਂ ਸੰਭਾਲ ਸਕਦੇ ਹੋ। ਇਹੀ execution ਹੈ।")
+      : L("Almost. Run the A+ gate again and reread the management rules, then retry — aim for 4/5.","ਲਗਭਗ। A+ gate ਦੁਬਾਰਾ ਚਲਾਓ ਤੇ ਪ੍ਰਬੰਧਨ ਨਿਯਮ ਫਿਰ ਪੜ੍ਹੋ, ਫਿਰ ਟੈਸਟ ਕਰੋ — 4/5 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Save the A+ checklist somewhere you trade','A+ checklist ਉੱਥੇ ਰੱਖੋ ਜਿੱਥੇ ਤੁਸੀਂ trade ਕਰਦੇ ਹੋ')}</li>
+        <li>→ ${L('Run your next 10 demo trades through the model','ਅਗਲੇ 10 demo trades model ਰਾਹੀਂ ਚਲਾਓ')}</li>
+        <li>→ ${L('Next: Part 5 — Advanced Market Reading','ਅਗਲਾ: ਭਾਗ 5 — Advanced Market Reading')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();updateVerdict();
+</script>
+</body>
+</html>

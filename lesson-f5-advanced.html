@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Market Reading — Foundation Part 5</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b04a;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .warn{border-color:var(--gold-dim);background:linear-gradient(180deg,#1a1810,#101216)}
+
+  /* MTF tiers */
+  .tiers{display:grid;gap:12px;margin:18px 0}
+  .tier{display:flex;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;align-items:flex-start}
+  .tier .tf{flex:0 0 84px;text-align:center}
+  .tier .tf .tag2{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.06em}
+  .tier .tf .tval{font-size:12px;color:var(--muted);margin-top:3px}
+  .tier .role{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin:0 0 4px}
+  .tier .desc{margin:0;color:var(--muted);font-size:14px}
+  .tier h4{margin:2px 0 4px;font-size:16px;font-weight:700}
+
+  /* top-down Q */
+  .qbox{border-left:3px solid var(--gold);padding:6px 0 6px 18px;margin:16px 0}
+  .qbox .ql{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:3px}
+  .qbox .qq{font-weight:700;font-size:16px;margin:0 0 4px}
+  .qbox .qd{margin:0;color:var(--muted);font-size:14px}
+
+  /* confluence tool */
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .factors{display:grid;gap:9px}
+  @media(min-width:560px){.factors{grid-template-columns:1fr 1fr}}
+  .factor{display:flex;align-items:center;gap:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;font-size:14px;transition:.12s}
+  .factor:hover{border-color:var(--gold-dim)}
+  .factor.on{border-color:var(--gold);background:rgba(212,175,55,.08)}
+  .factor .bx{flex:0 0 20px;width:20px;height:20px;border:1.5px solid var(--gold-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#241d05;font-weight:800;font-size:12px}
+  .factor.on .bx{background:var(--gold);border-color:var(--gold)}
+  .factor .bx span{opacity:0}.factor.on .bx span{opacity:1}
+  .cmeter{margin-top:18px;text-align:center;padding:18px;border-radius:11px;background:#0e1014;border:1px dashed var(--gold-dim)}
+  .cmeter .cn{font-size:38px;font-weight:800;line-height:1}
+  .cmeter .cv{font-weight:700;font-size:15px;margin-top:8px}
+
+  /* SMC concepts */
+  .concept{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .concept:last-child{border-bottom:none}
+  .concept .ico{flex:0 0 40px;width:40px;height:40px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:19px}
+  .concept .ct{font-weight:650;margin:0 0 3px;font-size:15.5px}
+  .concept .cd{margin:0;color:var(--muted);font-size:14px}
+
+  .checklist{margin:0;padding:0;list-style:none}
+  .checklist li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:#d3d4d8}
+  .checklist li:last-child{border-bottom:none}
+  .donot li::before{content:"✗ ";color:var(--red);font-weight:800}
+
+  .takeaways{counter-reset:t;margin:16px 0 0;padding:0;list-style:none}
+  .takeaways li{counter-increment:t;display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px;color:#d3d4d8}
+  .takeaways li:last-child{border-bottom:none}
+  .takeaways li::before{content:counter(t);flex:0 0 28px;width:28px;height:28px;border-radius:8px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#mtf">1 · <span class="en">Timeframes</span><span class="pa">Timeframes</span></a>
+      <a href="#topdown">2 · <span class="en">Top-Down</span><span class="pa">Top-Down</span></a>
+      <a href="#confluence">3 · <span class="en">Confluence</span><span class="pa">Confluence</span></a>
+      <a href="#smc">4 · <span class="en">Smart Money</span><span class="pa">Smart Money</span></a>
+      <a href="#mistakes">5 · <span class="en">Mistakes</span><span class="pa">ਗਲਤੀਆਂ</span></a>
+      <a href="#takeaways">6 · <span class="en">Takeaways</span><span class="pa">ਸਾਰ</span></a>
+      <a href="#quiz"><span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Foundation · Part 5 of 6</span><span class="pa">ਨੀਂਹ · ਭਾਗ 5 / 6</span></div>
+    <h1><span class="en">Advanced Market Reading</span><span class="pa">Advanced Market Reading</span></h1>
+    <p class="lede"><span class="en">Most traders lose because they stare at one timeframe. Learn to read the market at three zoom levels, stack confluence so the odds are with you, and see how institutions actually move price.</span><span class="pa">ਜ਼ਿਆਦਾਤਰ traders ਇਸ ਲਈ ਹਾਰਦੇ ਹਨ ਕਿਉਂਕਿ ਉਹ ਇੱਕੋ timeframe ਦੇਖਦੇ ਹਨ। ਮਾਰਕੀਟ ਨੂੰ ਤਿੰਨ zoom ਪੱਧਰਾਂ ਉੱਤੇ ਪੜ੍ਹਨਾ ਸਿੱਖੋ, confluence ਜੋੜੋ ਤਾਂ ਜੋ ਸੰਭਾਵਨਾ ਤੁਹਾਡੇ ਨਾਲ ਹੋਵੇ, ਤੇ ਦੇਖੋ ਕਿ ਸੰਸਥਾਵਾਂ ਅਸਲ ਵਿੱਚ ਕੀਮਤ ਕਿਵੇਂ ਹਿਲਾਉਂਦੀਆਂ ਹਨ।</span></p>
+    <div class="meta">
+      <span><b>~18 min</b></span>
+      <span><b>1 <span class="en">tool</span><span class="pa">ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="mtf">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">Read three timeframes, not one</span><span class="pa">ਇੱਕ ਨਹੀਂ, ਤਿੰਨ timeframes ਪੜ੍ਹੋ</span></h2>
+    <p><span class="en">Think of it like Google Maps: check the full route first, then zoom into the street. Each timeframe has one job.</span><span class="pa">ਇਸਨੂੰ Google Maps ਵਾਂਗ ਸੋਚੋ: ਪਹਿਲਾਂ ਪੂਰਾ ਰਸਤਾ ਦੇਖੋ, ਫਿਰ ਗਲੀ ਵਿੱਚ zoom ਕਰੋ। ਹਰ timeframe ਦਾ ਇੱਕ ਕੰਮ ਹੈ।</span></p>
+    <div class="tiers">
+      <div class="tier"><div class="tf"><div class="tag2">HTF</div><div class="tval">Daily · Weekly</div></div><div><p class="role"><span class="en">Sets the bias</span><span class="pa">Bias ਤੈਅ ਕਰਦਾ ਹੈ</span></p><h4><span class="en">Which direction?</span><span class="pa">ਕਿਹੜੀ ਦਿਸ਼ਾ?</span></h4><p class="desc"><span class="en">Bullish or bearish? Only trade setups that align with this trend.</span><span class="pa">Bullish ਜਾਂ bearish? ਸਿਰਫ਼ ਉਹ setups ਜੋ ਇਸ trend ਨਾਲ ਮੇਲ ਖਾਂਦੇ ਹਨ।</span></p></div></div>
+      <div class="tier"><div class="tf"><div class="tag2">MTF</div><div class="tval">4H · 1H</div></div><div><p class="role"><span class="en">Finds the setup</span><span class="pa">Setup ਲੱਭਦਾ ਹੈ</span></p><h4><span class="en">Where to trade?</span><span class="pa">ਕਿੱਥੇ trade?</span></h4><p class="desc"><span class="en">Key support, resistance, or order block. This is WHERE you trade from.</span><span class="pa">ਅਹਿਮ support, resistance, ਜਾਂ order block। ਇਹੀ ਉਹ ਥਾਂ ਹੈ ਜਿੱਥੋਂ ਤੁਸੀਂ trade ਕਰੋ।</span></p></div></div>
+      <div class="tier"><div class="tf"><div class="tag2">LTF</div><div class="tval">15m · 5m</div></div><div><p class="role"><span class="en">Times the entry</span><span class="pa">Entry ਦਾ ਸਮਾਂ</span></p><h4><span class="en">When to pull the trigger?</span><span class="pa">Trigger ਕਦੋਂ?</span></h4><p class="desc"><span class="en">The confirmation candle — engulfing, pin bar, break of structure.</span><span class="pa">Confirmation candle — engulfing, pin bar, break of structure।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="topdown">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">The top-down framework</span><span class="pa">Top-Down framework</span></h2>
+    <p><span class="en">Three questions, answered in order, every single trade. All three align → high-probability setup.</span><span class="pa">ਤਿੰਨ ਸਵਾਲ, ਕ੍ਰਮ ਵਿੱਚ, ਹਰ trade ਉੱਤੇ। ਤਿੰਨੇ ਮੇਲ ਖਾਣ → ਉੱਚ-ਸੰਭਾਵਨਾ setup।</span></p>
+    <div class="qbox"><div class="ql">Q1 · Daily / Weekly</div><p class="qq"><span class="en">What is the HTF trend?</span><span class="pa">HTF trend ਕੀ ਹੈ?</span></p><p class="qd"><span class="en">HH + HL = uptrend, LH + LL = downtrend. This is your bias — only trade in this direction.</span><span class="pa">HH + HL = uptrend, LH + LL = downtrend। ਇਹੀ bias — ਸਿਰਫ਼ ਇਸ ਦਿਸ਼ਾ ਵਿੱਚ trade।</span></p></div>
+    <div class="qbox"><div class="ql">Q2 · 4H / 1H</div><p class="qq"><span class="en">Where is the key structure?</span><span class="pa">ਅਹਿਮ structure ਕਿੱਥੇ ਹੈ?</span></p><p class="qd"><span class="en">Find the nearest major support/resistance zone. This is WHERE you trade — not a random spot.</span><span class="pa">ਨੇੜਲਾ ਵੱਡਾ support/resistance zone ਲੱਭੋ। ਇਹੀ ਉਹ ਥਾਂ — ਬੇਤਰਤੀਬ ਨਹੀਂ।</span></p></div>
+    <div class="qbox"><div class="ql">Q3 · 15m / 5m</div><p class="qq"><span class="en">What is the LTF entry signal?</span><span class="pa">LTF entry signal ਕੀ ਹੈ?</span></p><p class="qd"><span class="en">Wait for a confirmation candle AT the level — engulfing, pin bar, break of structure. This is WHEN you enter.</span><span class="pa">ਪੱਧਰ ਉੱਤੇ confirmation candle ਦੀ ਉਡੀਕ ਕਰੋ — engulfing, pin bar, break of structure। ਇਹੀ ਉਹ ਸਮਾਂ ਜਦੋਂ enter ਕਰੋ।</span></p></div>
+  </div>
+</section>
+
+<section id="confluence">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Confluence stacks the odds</span><span class="pa">Confluence ਸੰਭਾਵਨਾ ਜੋੜਦਾ ਹੈ</span></h2>
+    <p><span class="en">Confluence = several independent signals pointing to the same trade at the same level. The deck's rule: <strong>3 real factors minimum, or no trade.</strong> Tick what aligns and see if your setup qualifies.</span><span class="pa">Confluence = ਕਈ ਵੱਖਰੇ signals ਜੋ ਇੱਕੋ ਪੱਧਰ ਉੱਤੇ ਇੱਕੋ trade ਵੱਲ ਇਸ਼ਾਰਾ ਕਰਦੇ ਹਨ। ਨਿਯਮ: <strong>ਘੱਟੋ-ਘੱਟ 3 ਅਸਲੀ factors, ਨਹੀਂ ਤਾਂ ਕੋਈ trade ਨਹੀਂ।</strong> ਜੋ ਮੇਲ ਖਾਂਦਾ ਹੈ ਟਿੱਕ ਕਰੋ ਤੇ ਦੇਖੋ setup ਯੋਗ ਹੈ ਜਾਂ ਨਹੀਂ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · confluence counter</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · confluence ਗਿਣਤੀ</span></span>
+      <div class="factors">
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>📈 <span class="en">HTF trend bias</span><span class="pa">HTF trend bias</span></div>
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>🔲 <span class="en">Key S/R level</span><span class="pa">ਅਹਿਮ S/R ਪੱਧਰ</span></div>
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>📊 <span class="en">RSI confirmation</span><span class="pa">RSI confirmation</span></div>
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>🕯️ <span class="en">Confirmation candle</span><span class="pa">Confirmation candle</span></div>
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>📦 <span class="en">Volume spike</span><span class="pa">Volume spike</span></div>
+        <div class="factor" onclick="cf(this)"><div class="bx"><span>✓</span></div>📅 <span class="en">3+ timeframes align</span><span class="pa">3+ timeframes ਮੇਲ</span></div>
+      </div>
+      <div class="cmeter">
+        <div class="cn" id="cf-n">0</div>
+        <div class="cv" id="cf-v"></div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:13px"><span class="en">Don't force it — 3 real factors beat 6 weak ones. Never convince yourself things align when they don't.</span><span class="pa">ਜ਼ਬਰਦਸਤੀ ਨਾ ਕਰੋ — 3 ਅਸਲੀ factors 6 ਕਮਜ਼ੋਰਾਂ ਤੋਂ ਵਧੀਆ ਹਨ। ਆਪਣੇ ਆਪ ਨੂੰ ਕਦੇ ਨਾ ਮਨਾਓ ਕਿ ਚੀਜ਼ਾਂ ਮੇਲ ਖਾਂਦੀਆਂ ਜਦੋਂ ਨਹੀਂ ਖਾਂਦੀਆਂ।</span></p>
+  </div>
+</section>
+
+<section id="smc">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">How smart money thinks</span><span class="pa">Smart money ਕਿਵੇਂ ਸੋਚਦਾ ਹੈ</span></h2>
+    <p><span class="en">Smart Money Concepts explain WHY price moves. Three ideas worth knowing:</span><span class="pa">Smart Money Concepts ਦੱਸਦੇ ਹਨ ਕਿ ਕੀਮਤ ਕਿਉਂ ਹਿੱਲਦੀ ਹੈ। ਤਿੰਨ ਜਾਣਨ ਯੋਗ ਗੱਲਾਂ:</span></p>
+    <div class="card">
+      <div class="concept"><div class="ico">📐</div><div><p class="ct"><span class="en">Market structure: BOS &amp; CHoCH</span><span class="pa">Market structure: BOS ਤੇ CHoCH</span></p><p class="cd"><span class="en">A Break of Structure (BOS) confirms the trend continues. A Change of Character (CHoCH) is the first sign it may be reversing. Identify structure before any trade.</span><span class="pa">Break of Structure (BOS) ਪੁਸ਼ਟੀ ਕਰਦਾ ਹੈ ਕਿ trend ਜਾਰੀ ਹੈ। Change of Character (CHoCH) ਪਹਿਲਾ ਸੰਕੇਤ ਕਿ ਇਹ ਪਲਟ ਸਕਦਾ ਹੈ। ਕਿਸੇ trade ਤੋਂ ਪਹਿਲਾਂ structure ਪਛਾਣੋ।</span></p></div></div>
+      <div class="concept"><div class="ico">📦</div><div><p class="ct"><span class="en">Order blocks</span><span class="pa">Order blocks</span></p><p class="cd"><span class="en">The last candle before a strong institutional move — where banks placed large orders. Price often returns here for liquidity, making them high-probability entry zones.</span><span class="pa">ਕਿਸੇ ਤਕੜੀ institutional ਚਾਲ ਤੋਂ ਪਹਿਲਾਂ ਆਖ਼ਰੀ candle — ਜਿੱਥੇ ਬੈਂਕਾਂ ਨੇ ਵੱਡੇ orders ਲਾਏ। ਕੀਮਤ ਅਕਸਰ liquidity ਲਈ ਇੱਥੇ ਵਾਪਸ ਆਉਂਦੀ ਹੈ।</span></p></div></div>
+      <div class="concept"><div class="ico">🌊</div><div><p class="ct"><span class="en">Liquidity sweeps</span><span class="pa">Liquidity sweeps</span></p><p class="cd"><span class="en">Banks hunt retail stops at obvious highs/lows. Price briefly breaks a level then reverses sharply. Don't get swept — wait for the rejection candle AFTER the sweep.</span><span class="pa">ਬੈਂਕ ਸਾਫ਼ highs/lows ਉੱਤੇ retail stops ਦਾ ਸ਼ਿਕਾਰ ਕਰਦੇ ਹਨ। ਕੀਮਤ ਥੋੜ੍ਹਾ ਪੱਧਰ ਤੋੜ ਕੇ ਤੇਜ਼ੀ ਨਾਲ ਪਲਟਦੀ ਹੈ। Sweep ਤੋਂ ਬਾਅਦ rejection candle ਦੀ ਉਡੀਕ ਕਰੋ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="mistakes">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">MTF mistakes to avoid</span><span class="pa">MTF ਗਲਤੀਆਂ ਜੋ ਟਾਲਣੀਆਂ</span></h2>
+    <div class="card">
+      <ul class="checklist donot">
+        <li><span class="en">Ignoring the HTF trend — trading a 5m buy when the Daily is bearish</span><span class="pa">HTF trend ਨੂੰ ਨਜ਼ਰਅੰਦਾਜ਼ ਕਰਨਾ — Daily bearish ਹੋਣ ਉੱਤੇ 5m buy</span></li>
+        <li><span class="en">Entering on the HTF — use it for bias only, drop to LTF for entries</span><span class="pa">HTF ਉੱਤੇ enter ਕਰਨਾ — ਇਸਨੂੰ ਸਿਰਫ਼ bias ਲਈ ਵਰਤੋ, entries ਲਈ LTF</span></li>
+        <li><span class="en">Mixing signals — HTF says buy but your setup says sell? Skip it</span><span class="pa">Signals ਰਲਾਉਣਾ — HTF buy ਕਹੇ ਪਰ setup sell? ਛੱਡੋ</span></li>
+        <li><span class="en">Forcing confluence — 3 real factors beat 6 weak ones</span><span class="pa">Confluence ਜ਼ਬਰਦਸਤੀ — 3 ਅਸਲੀ 6 ਕਮਜ਼ੋਰਾਂ ਤੋਂ ਵਧੀਆ</span></li>
+        <li><span class="en">Analysis paralysis — stick to exactly 3 timeframes</span><span class="pa">Analysis paralysis — ਠੀਕ 3 timeframes ਉੱਤੇ ਟਿਕੋ</span></li>
+        <li><span class="en">Skipping the LTF trigger — HTF + MTF is not enough alone</span><span class="pa">LTF trigger ਛੱਡਣਾ — ਸਿਰਫ਼ HTF + MTF ਕਾਫ਼ੀ ਨਹੀਂ</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="takeaways">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਾਰ</span></h2>
+    <ol class="takeaways">
+      <li><span class="en">Always start on the highest timeframe — never the lowest.</span><span class="pa">ਹਮੇਸ਼ਾ ਸਭ ਤੋਂ ਉੱਚੇ timeframe ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ — ਸਭ ਤੋਂ ਨੀਵੇਂ ਤੋਂ ਕਦੇ ਨਹੀਂ।</span></li>
+      <li><span class="en">The HTF sets your bias. Never trade against it on lower timeframes.</span><span class="pa">HTF bias ਤੈਅ ਕਰਦਾ ਹੈ। ਨੀਵੇਂ timeframes ਉੱਤੇ ਇਸਦੇ ਖ਼ਿਲਾਫ਼ ਕਦੇ trade ਨਾ ਕਰੋ।</span></li>
+      <li><span class="en">Confluence is your filter. No confluence = no trade.</span><span class="pa">Confluence ਤੁਹਾਡਾ filter ਹੈ। ਕੋਈ confluence ਨਹੀਂ = ਕੋਈ trade ਨਹੀਂ।</span></li>
+      <li><span class="en">Smart Money Concepts explain WHY price moves — study OBs and sweeps.</span><span class="pa">Smart Money Concepts ਦੱਸਦੇ ਹਨ ਕੀਮਤ ਕਿਉਂ ਹਿੱਲਦੀ ਹੈ — OBs ਤੇ sweeps ਪੜ੍ਹੋ।</span></li>
+      <li><span class="en">MTF analysis reduces guesswork — you trade structure, not emotion.</span><span class="pa">MTF analysis ਅੰਦਾਜ਼ਾ ਘਟਾਉਂਦਾ ਹੈ — ਤੁਸੀਂ structure trade ਕਰਦੇ ਹੋ, ਭਾਵਨਾ ਨਹੀਂ।</span></li>
+    </ol>
+    <div class="card warn" style="margin-top:18px"><p style="margin:0"><strong><span class="en">This week:</span><span class="pa">ਇਸ ਹਫ਼ਤੇ:</span></strong> <span class="en">pick 2 markets, chart the Daily trend, mark 2–3 key zones on the 4H, drop to 15m at those zones, count confluence, and journal everything — even trades you skipped. Share your marked-up charts in Discord for feedback.</span><span class="pa">2 ਮਾਰਕੀਟ ਚੁਣੋ, Daily trend chart ਕਰੋ, 4H ਉੱਤੇ 2–3 ਅਹਿਮ zones ਮਾਰਕ ਕਰੋ, ਉਨ੍ਹਾਂ zones ਉੱਤੇ 15m ਉੱਤੇ ਜਾਓ, confluence ਗਿਣੋ, ਤੇ ਸਭ journal ਕਰੋ — ਛੱਡੇ trades ਵੀ। ਆਪਣੇ marked-up charts Discord ਵਿੱਚ ਸਾਂਝੇ ਕਰੋ।</span></p></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions to lock in Part 5.</span><span class="pa">ਭਾਗ 5 ਪੱਕਾ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();updateCf();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','mtf','topdown','confluence','smc','mistakes','takeaways','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* confluence counter */
+function cf(el){el.classList.toggle('on');updateCf();}
+function updateCf(){
+  const n=document.querySelectorAll('.factor.on').length;
+  const cn=document.getElementById('cf-n'), cv=document.getElementById('cf-v');
+  cn.textContent=n;
+  if(n>=3){cn.style.color='var(--green)';cv.style.color='var(--green)';cv.textContent=L('High-probability setup ✓ — take it','ਉੱਚ-ਸੰਭਾਵਨਾ setup ✓ — ਲੈ ਲਓ');}
+  else if(n===2){cn.style.color='var(--amber)';cv.style.color='var(--amber)';cv.textContent=L('One more factor needed','ਇੱਕ ਹੋਰ factor ਚਾਹੀਦਾ');}
+  else{cn.style.color='var(--red)';cv.style.color='var(--red)';cv.textContent=L('Not enough confluence — NO TRADE','ਕਾਫ਼ੀ confluence ਨਹੀਂ — ਕੋਈ TRADE ਨਹੀਂ');}
+}
+
+/* quiz */
+const QUIZ=[
+ {q:["Which timeframe should you analyse FIRST?","ਪਹਿਲਾਂ ਕਿਹੜਾ timeframe ਵਿਸ਼ਲੇਸ਼ਣ ਕਰਨਾ ਚਾਹੀਦਾ?"],
+  o:[["The 5-minute — for the precise entry","5-minute — ਠੀਕ entry ਲਈ"],["The highest (Daily/Weekly) — for bias","ਸਭ ਤੋਂ ਉੱਚਾ (Daily/Weekly) — bias ਲਈ"],["Whichever is open","ਜੋ ਖੁੱਲ੍ਹਾ ਹੋਵੇ"],["All at once","ਸਾਰੇ ਇੱਕੋ ਵਾਰ"]],
+  a:1,f:["Always start on the highest timeframe to set your bias, then zoom down. Maps, not microscopes.","ਹਮੇਸ਼ਾ ਸਭ ਤੋਂ ਉੱਚੇ timeframe ਤੋਂ bias ਤੈਅ ਕਰੋ, ਫਿਰ ਹੇਠਾਂ zoom ਕਰੋ।"]},
+ {q:["The HTF (Daily) is bearish but your 5m shows a buy setup. You…","HTF (Daily) bearish ਹੈ ਪਰ 5m buy setup ਦਿਖਾਉਂਦਾ ਹੈ। ਤੁਸੀਂ…"],
+  o:[["Take the buy — lower timeframes win","Buy ਲਓ — ਨੀਵੇਂ timeframes ਜਿੱਤਦੇ ਹਨ"],["Skip it — never trade against the HTF bias","ਛੱਡੋ — HTF bias ਦੇ ਖ਼ਿਲਾਫ਼ ਕਦੇ trade ਨਹੀਂ"],["Take a bigger position","ਵੱਡੀ position ਲਓ"],["Switch to the 1m chart","1m chart ਉੱਤੇ ਜਾਓ"]],
+  a:1,f:["Trading against the HTF is fighting the tide. The HTF bias is non-negotiable.","HTF ਦੇ ਖ਼ਿਲਾਫ਼ trade ਲਹਿਰ ਨਾਲ ਲੜਨਾ ਹੈ। HTF bias ਨਾ-ਟਾਲਣਯੋਗ ਹੈ।"]},
+ {q:["What's the minimum confluence for a valid setup?","ਠੀਕ setup ਲਈ ਘੱਟੋ-ਘੱਟ confluence ਕਿੰਨਾ?"],
+  o:[["1 factor","1 factor"],["3 real factors","3 ਅਸਲੀ factors"],["6 factors always","ਹਮੇਸ਼ਾ 6 factors"],["It doesn't matter","ਕੋਈ ਫ਼ਰਕ ਨਹੀਂ"]],
+  a:1,f:["3 real factors minimum — no confluence, no trade. And 3 real beats 6 forced.","ਘੱਟੋ-ਘੱਟ 3 ਅਸਲੀ factors — ਕੋਈ confluence ਨਹੀਂ, ਕੋਈ trade ਨਹੀਂ।"]},
+ {q:["A liquidity sweep is when…","Liquidity sweep ਉਦੋਂ ਹੁੰਦਾ ਹੈ ਜਦੋਂ…"],
+  o:[["Volume disappears completely","Volume ਪੂਰੀ ਤਰ੍ਹਾਂ ਗਾਇਬ ਹੋ ਜਾਵੇ"],["Price briefly breaks a level then sharply reverses","ਕੀਮਤ ਥੋੜ੍ਹਾ ਪੱਧਰ ਤੋੜ ਕੇ ਤੇਜ਼ੀ ਨਾਲ ਪਲਟੇ"],["The market closes","ਮਾਰਕੀਟ ਬੰਦ ਹੋ ਜਾਵੇ"],["RSI hits 50","RSI 50 ਉੱਤੇ ਆਵੇ"]],
+  a:1,f:["Banks hunt stops at obvious highs/lows — price spikes through then reverses. Wait for the rejection candle after.","ਬੈਂਕ ਸਾਫ਼ highs/lows ਉੱਤੇ stops ਦਾ ਸ਼ਿਕਾਰ ਕਰਦੇ ਹਨ — sweep ਬਾਅਦ rejection candle ਦੀ ਉਡੀਕ ਕਰੋ।"]},
+ {q:["How many timeframes should you use per session?","ਹਰ session ਕਿੰਨੇ timeframes ਵਰਤਣੇ ਚਾਹੀਦੇ?"],
+  o:[["As many as possible","ਜਿੰਨੇ ਹੋ ਸਕਣ"],["Exactly 3 — HTF, MTF, LTF","ਠੀਕ 3 — HTF, MTF, LTF"],["Just 1","ਸਿਰਫ਼ 1"],["At least 6","ਘੱਟੋ-ਘੱਟ 6"]],
+  a:1,f:["Three timeframes — bias, setup, entry. More than that is analysis paralysis.","ਤਿੰਨ timeframes — bias, setup, entry। ਇਸ ਤੋਂ ਵੱਧ analysis paralysis ਹੈ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Part 5 complete','★ ਭਾਗ 5 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You can read three timeframes top-down, stack confluence, and recognise how institutions move price. One lesson left — building your full system and going live.","ਤੁਸੀਂ ਤਿੰਨ timeframes top-down ਪੜ੍ਹ ਸਕਦੇ ਹੋ, confluence ਜੋੜ ਸਕਦੇ ਹੋ, ਤੇ ਪਛਾਣ ਸਕਦੇ ਹੋ ਸੰਸਥਾਵਾਂ ਕੀਮਤ ਕਿਵੇਂ ਹਿਲਾਉਂਦੀਆਂ ਹਨ। ਇੱਕ ਪਾਠ ਬਾਕੀ — ਪੂਰਾ system ਤੇ going live।")
+      : L("Almost. Replay the confluence counter and reread the top-down questions, then retry — aim for 4/5.","ਲਗਭਗ। Confluence counter ਦੁਬਾਰਾ ਚਲਾਓ ਤੇ top-down ਸਵਾਲ ਫਿਰ ਪੜ੍ਹੋ, ਫਿਰ ਟੈਸਟ ਕਰੋ — 4/5 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Do the weekly practice: chart 2 markets top-down','ਇਸ ਹਫ਼ਤੇ ਦਾ ਅਭਿਆਸ: 2 ਮਾਰਕੀਟ top-down chart ਕਰੋ')}</li>
+        <li>→ ${L('Post a marked-up chart in Discord','Discord ਵਿੱਚ marked-up chart ਪਾਓ')}</li>
+        <li>→ ${L('Next: Part 6 — Full System &amp; Going Live','ਅਗਲਾ: ਭਾਗ 6 — ਪੂਰਾ System ਤੇ Going Live')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();updateCf();
+</script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full System &amp; Going Live — Foundation Part 6</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b04a;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .warn{border-color:var(--gold-dim);background:linear-gradient(180deg,#1a1810,#101216)}
+
+  .grid2{display:grid;gap:12px}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .grid3{display:grid;gap:12px}
+  @media(min-width:620px){.grid3{grid-template-columns:repeat(3,1fr)}}
+
+  /* system components */
+  .comp{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .comp .ci{font-size:22px}
+  .comp .cn{font-weight:700;font-size:15px;margin:6px 0 4px}
+  .comp .cd{margin:0;color:var(--muted);font-size:13.5px}
+
+  /* blueprint numbered */
+  .blue{display:grid;gap:10px;margin:16px 0}
+  .brow{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .brow .bn{flex:0 0 30px;width:30px;height:30px;border-radius:8px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .brow .bt{font-weight:700;font-size:15px;margin:0 0 2px}
+  .brow .bd{margin:0;color:var(--muted);font-size:13.5px}
+
+  /* readiness gate */
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .chk{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .chk:last-of-type{border-bottom:none}
+  .chk .bx{flex:0 0 24px;width:24px;height:24px;border:1.5px solid var(--gold-dim);border-radius:7px;margin-top:1px;display:flex;align-items:center;justify-content:center;color:#241d05;font-weight:800;font-size:14px;transition:.15s}
+  .chk.on .bx{background:var(--gold);border-color:var(--gold)}
+  .chk .bx span{opacity:0} .chk.on .bx span{opacity:1}
+  .chk .cl{font-size:14.5px}
+  .chk .cl small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .verdictbar{margin-top:18px;padding:16px;border-radius:11px;text-align:center;font-weight:800;font-size:16px;transition:.2s}
+  .verdictbar.no{background:rgba(224,98,94,.12);border:1px solid rgba(224,98,94,.45);color:#f4c4c2}
+  .verdictbar.yes{background:rgba(70,201,138,.12);border:1px solid rgba(70,201,138,.5);color:#bff0d6}
+
+  /* tiers */
+  .tier{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .tier .tl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .tier .tv{font-size:22px;font-weight:800;margin:6px 0 8px}
+  .tier .td{margin:0;color:var(--muted);font-size:13px}
+
+  /* weeks */
+  .week{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px}
+  .week .wk{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .week .wt{font-weight:700;font-size:15px;margin:3px 0 8px}
+  .week ul{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px}
+  .week li{margin:4px 0}
+
+  /* gap two cols */
+  .gap{display:grid;gap:12px}
+  @media(min-width:560px){.gap{grid-template-columns:1fr 1fr}}
+  .gapcol{border-radius:12px;padding:16px}
+  .gapcol.demo{background:rgba(70,201,138,.06);border:1px solid rgba(70,201,138,.3)}
+  .gapcol.live{background:rgba(224,98,94,.06);border:1px solid rgba(224,98,94,.3)}
+  .gapcol h4{margin:0 0 10px;font-size:14px}
+  .gapcol ul{margin:0;padding:0;list-style:none;font-size:13.5px;color:#d3d4d8}
+  .gapcol li{padding:6px 0;border-bottom:1px solid var(--line)}
+  .gapcol li:last-child{border-bottom:none}
+  .gapcol.demo li::before{content:"✓ ";color:var(--green);font-weight:800}
+  .gapcol.live li::before{content:"✗ ";color:var(--red);font-weight:800}
+
+  /* drawdown steps */
+  .dd{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:10px}
+  .dd .dn{flex:0 0 52px;width:52px;height:52px;border-radius:11px;background:var(--panel-2);border:1px solid var(--gold-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .dd .dn b{font-size:22px;color:var(--gold);font-weight:800}
+  .dd .dn small{font-size:8px;color:var(--muted);letter-spacing:.05em;margin-top:2px}
+  .dd .dt{font-weight:700;font-size:14.5px;margin:0 0 2px}
+  .dd .ddd{margin:0;color:var(--muted);font-size:13.5px}
+
+  /* metrics */
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .metric .mn{font-weight:700;font-size:14.5px}
+  .metric .mtg{font-size:12px;color:var(--gold-soft);font-weight:700;margin:3px 0 6px}
+  .metric .md{margin:0;color:var(--muted);font-size:13px}
+
+  .checklist{margin:0;padding:0;list-style:none}
+  .checklist li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:#d3d4d8}
+  .checklist li:last-child{border-bottom:none}
+  .donot li::before{content:"✗ ";color:var(--red);font-weight:800}
+
+  .mind{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .mind:last-child{border-bottom:none}
+  .mind .mi{font-size:24px;flex:0 0 32px}
+  .mind .mt{font-weight:650;margin:0 0 3px;font-size:15.5px}
+  .mind .mdd{margin:0;color:var(--muted);font-size:14px}
+
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:46px 24px;background:linear-gradient(180deg,#1f1c10,#101216);border:1px solid var(--gold);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .journey{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:22px 0 0}
+  .jchip{font-size:11px;font-weight:700;color:var(--gold);border:1px solid var(--gold-dim);border-radius:999px;padding:5px 11px;background:rgba(212,175,55,.06)}
+  .nextlist{text-align:left;max-width:440px;margin:22px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#system">1 · <span class="en">The System</span><span class="pa">System</span></a>
+      <a href="#blueprint">2 · <span class="en">Blueprint</span><span class="pa">Blueprint</span></a>
+      <a href="#ready">3 · <span class="en">Ready?</span><span class="pa">ਤਿਆਰ?</span></a>
+      <a href="#capital">4 · <span class="en">Capital &amp; 30 Days</span><span class="pa">ਪੂੰਜੀ ਤੇ 30 ਦਿਨ</span></a>
+      <a href="#gap">5 · <span class="en">Demo→Live</span><span class="pa">Demo→Live</span></a>
+      <a href="#survive">6 · <span class="en">Survive &amp; Measure</span><span class="pa">ਬਚੋ ਤੇ ਮਾਪੋ</span></a>
+      <a href="#mindset">7 · <span class="en">Mindset</span><span class="pa">ਸੋਚ</span></a>
+      <a href="#quiz"><span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Foundation · Part 6 of 6 · The final step</span><span class="pa">ਨੀਂਹ · ਭਾਗ 6 / 6 · ਆਖ਼ਰੀ ਕਦਮ</span></div>
+    <h1><span class="en">Full System &amp; Going Live</span><span class="pa">ਪੂਰਾ System ਤੇ Going Live</span></h1>
+    <p class="lede"><span class="en">Everything you've learned now becomes one written system — and then, carefully, real money. This is where most people rush and blow up. You won't. Knowing the rules is 10%; following them is 90%.</span><span class="pa">ਜੋ ਕੁਝ ਤੁਸੀਂ ਸਿੱਖਿਆ ਹੁਣ ਇੱਕ ਲਿਖਤੀ system ਬਣਦਾ ਹੈ — ਤੇ ਫਿਰ, ਧਿਆਨ ਨਾਲ, ਅਸਲੀ ਪੈਸਾ। ਇੱਥੇ ਜ਼ਿਆਦਾਤਰ ਲੋਕ ਕਾਹਲੀ ਕਰ ਕੇ ਉੱਡ ਜਾਂਦੇ ਹਨ। ਤੁਸੀਂ ਨਹੀਂ। ਨਿਯਮ ਜਾਣਨਾ 10% ਹੈ; ਮੰਨਣਾ 90%।</span></p>
+    <div class="meta">
+      <span><b>~18 min</b></span>
+      <span><b>1 <span class="en">tool</span><span class="pa">ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="system">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">What a trading system is</span><span class="pa">ਟ੍ਰੇਡਿੰਗ System ਕੀ ਹੈ</span></h2>
+    <p><span class="en">A complete, repeatable set of rules that tells you exactly what to do — when to enter, when to exit, how much to risk, when to walk away. No guessing, no emotion, just process. It has six parts.</span><span class="pa">ਇੱਕ ਪੂਰਾ, ਦੁਹਰਾਉਣ ਯੋਗ ਨਿਯਮਾਂ ਦਾ ਸੈੱਟ ਜੋ ਦੱਸਦਾ ਹੈ ਕਿ ਠੀਕ ਕੀ ਕਰਨਾ — ਕਦੋਂ enter, ਕਦੋਂ exit, ਕਿੰਨਾ ਜੋਖਮ, ਕਦੋਂ ਹਟਣਾ। ਕੋਈ ਅੰਦਾਜ਼ਾ ਨਹੀਂ, ਕੋਈ ਭਾਵਨਾ ਨਹੀਂ, ਸਿਰਫ਼ process। ਇਸਦੇ ਛੇ ਹਿੱਸੇ ਹਨ।</span></p>
+    <div class="grid3">
+      <div class="comp"><div class="ci">🧭</div><p class="cn"><span class="en">Market &amp; bias</span><span class="pa">ਮਾਰਕੀਟ ਤੇ bias</span></p><p class="cd"><span class="en">Which markets, and how you read direction.</span><span class="pa">ਕਿਹੜੇ ਮਾਰਕੀਟ, ਤੇ ਦਿਸ਼ਾ ਕਿਵੇਂ ਪੜ੍ਹਦੇ ਹੋ।</span></p></div>
+      <div class="comp"><div class="ci">🎯</div><p class="cn"><span class="en">Setup rules</span><span class="pa">Setup ਨਿਯਮ</span></p><p class="cd"><span class="en">Exact conditions that define a valid trade.</span><span class="pa">ਠੀਕ ਹਾਲਾਤ ਜੋ ਇੱਕ ਠੀਕ trade ਤੈਅ ਕਰਦੇ ਹਨ।</span></p></div>
+      <div class="comp"><div class="ci">🚦</div><p class="cn"><span class="en">Entry trigger</span><span class="pa">Entry trigger</span></p><p class="cd"><span class="en">The specific signal that confirms entry.</span><span class="pa">ਉਹ ਖ਼ਾਸ signal ਜੋ entry ਪੱਕਾ ਕਰਦਾ ਹੈ।</span></p></div>
+      <div class="comp"><div class="ci">🛡️</div><p class="cn"><span class="en">Risk rules</span><span class="pa">ਜੋਖਮ ਨਿਯਮ</span></p><p class="cd"><span class="en">Size formula, stop placement, max risk.</span><span class="pa">Size formula, stop, ਵੱਧ ਤੋਂ ਵੱਧ ਜੋਖਮ।</span></p></div>
+      <div class="comp"><div class="ci">🎬</div><p class="cn"><span class="en">Exit plan</span><span class="pa">Exit plan</span></p><p class="cd"><span class="en">Take profit, trailing, breakeven, partials.</span><span class="pa">Take profit, trailing, breakeven, partials।</span></p></div>
+      <div class="comp"><div class="ci">📔</div><p class="cn"><span class="en">Review loop</span><span class="pa">Review loop</span></p><p class="cd"><span class="en">Journal format and weekly review process.</span><span class="pa">Journal format ਤੇ ਹਫ਼ਤਾਵਾਰ review।</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="blueprint">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">Write your blueprint down</span><span class="pa">ਆਪਣਾ Blueprint ਲਿਖੋ</span></h2>
+    <div class="card warn"><p style="margin:0"><strong><span class="en">If it's not written, it doesn't exist.</span><span class="pa">ਜੇ ਲਿਖਿਆ ਨਹੀਂ, ਤਾਂ ਇਹ ਮੌਜੂਦ ਨਹੀਂ।</span></strong> <span class="en">Open a doc and fill out all six sections before going live.</span><span class="pa">ਇੱਕ doc ਖੋਲ੍ਹੋ ਤੇ live ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਛੇਆਂ ਭਾਗ ਭਰੋ।</span></p></div>
+    <div class="blue">
+      <div class="brow"><div class="bn">1</div><div><p class="bt"><span class="en">Trader profile</span><span class="pa">Trader profile</span></p><p class="bd"><span class="en">Day/swing/position? Which markets? Hours per day?</span><span class="pa">Day/swing/position? ਕਿਹੜੇ ਮਾਰਕੀਟ? ਰੋਜ਼ ਕਿੰਨੇ ਘੰਟੇ?</span></p></div></div>
+      <div class="brow"><div class="bn">2</div><div><p class="bt"><span class="en">Edge definition</span><span class="pa">Edge ਦੀ ਪਰਿਭਾਸ਼ਾ</span></p><p class="bd"><span class="en">Your specific setup, what makes it work, why it repeats.</span><span class="pa">ਤੁਹਾਡਾ ਖ਼ਾਸ setup, ਇਹ ਕਿਉਂ ਕੰਮ ਕਰਦਾ, ਕਿਉਂ ਦੁਹਰਾਉਂਦਾ।</span></p></div></div>
+      <div class="brow"><div class="bn">3</div><div><p class="bt"><span class="en">Entry criteria</span><span class="pa">Entry ਮਾਪਦੰਡ</span></p><p class="bd"><span class="en">HTF bias confirmed, price at key zone, LTF trigger present.</span><span class="pa">HTF bias ਪੱਕਾ, ਕੀਮਤ key zone ਉੱਤੇ, LTF trigger ਹਾਜ਼ਰ।</span></p></div></div>
+      <div class="brow"><div class="bn">4</div><div><p class="bt"><span class="en">Risk framework</span><span class="pa">ਜੋਖਮ framework</span></p><p class="bd"><span class="en">Max 1% per trade, max 3% per day, structure-based stops.</span><span class="pa">ਹਰ trade 1%, ਰੋਜ਼ 3%, structure-based stops।</span></p></div></div>
+      <div class="brow"><div class="bn">5</div><div><p class="bt"><span class="en">Exit strategy</span><span class="pa">Exit strategy</span></p><p class="bd"><span class="en">TP1 at 1:2 take 50%, stop to breakeven at 1R, let runner go 1:3.</span><span class="pa">1:2 ਉੱਤੇ TP1 50%, 1R ਉੱਤੇ breakeven, runner 1:3 ਤੱਕ।</span></p></div></div>
+      <div class="brow"><div class="bn">6</div><div><p class="bt"><span class="en">Daily routine</span><span class="pa">ਰੋਜ਼ਾਨਾ ਰੁਟੀਨ</span></p><p class="bd"><span class="en">Pre-market analysis, focused trade window, post-market journal.</span><span class="pa">Pre-market ਵਿਸ਼ਲੇਸ਼ਣ, trade window, post-market journal।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="ready">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Are you ready to go live?</span><span class="pa">ਕੀ ਤੁਸੀਂ live ਜਾਣ ਲਈ ਤਿਆਰ ਹੋ?</span></h2>
+    <p><span class="en">Every box must be true before risking real money. Be brutally honest — even one "no" means stay on demo. Tick what's genuinely true for you.</span><span class="pa">ਅਸਲੀ ਪੈਸਾ ਜੋਖਮ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਹਰ ਡੱਬਾ ਸੱਚ ਹੋਣਾ ਚਾਹੀਦਾ। ਪੂਰੀ ਇਮਾਨਦਾਰੀ ਨਾਲ — ਇੱਕ ਵੀ "ਨਾਂਹ" ਮਤਲਬ demo ਉੱਤੇ ਰਹੋ। ਜੋ ਸੱਚਮੁੱਚ ਸੱਚ ਹੈ ਟਿੱਕ ਕਰੋ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · go-live readiness gate</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · go-live readiness gate</span></span>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Demo-profitable for 3+ months</span><span class="pa">3+ ਮਹੀਨੇ demo ਉੱਤੇ ਮੁਨਾਫ਼ਾ</span><small><span class="en">Sustained — across different market conditions, not one lucky month.</span><span class="pa">ਲਗਾਤਾਰ — ਵੱਖ-ਵੱਖ ਹਾਲਾਤ ਵਿੱਚ, ਇੱਕ ਖ਼ੁਸ਼ਕਿਸਮਤ ਮਹੀਨਾ ਨਹੀਂ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Win rate + R:R = positive expectancy</span><span class="pa">Win rate + R:R = positive expectancy</span><small><span class="en">Run the math on your real stats — even 40% at 1:2 works.</span><span class="pa">ਆਪਣੇ ਅਸਲੀ stats ਉੱਤੇ ਗਣਿਤ ਕਰੋ — 1:2 ਉੱਤੇ 40% ਵੀ ਚੱਲਦਾ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Followed rules on 90%+ of trades</span><span class="pa">90%+ trades ਉੱਤੇ ਨਿਯਮ ਮੰਨੇ</span><small><span class="en">Can't follow rules with fake money? Real money will be a disaster.</span><span class="pa">ਨਕਲੀ ਪੈਸੇ ਨਾਲ ਨਿਯਮ ਨਹੀਂ ਮੰਨ ਸਕਦੇ? ਅਸਲੀ ਪੈਸਾ ਤਬਾਹੀ ਹੋਵੇਗਾ।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Trading plan written and tested</span><span class="pa">Trading plan ਲਿਖਿਆ ਤੇ ਟੈਸਟ ਕੀਤਾ</span><small><span class="en">Every component documented — bias, setup, entry, risk, exit, review.</span><span class="pa">ਹਰ ਹਿੱਸਾ ਲਿਖਿਆ — bias, setup, entry, risk, exit, review।</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Lost 5 in a row without tilting</span><span class="pa">ਲਗਾਤਾਰ 5 ਹਾਰੇ ਬਿਨਾਂ tilt ਹੋਏ</span><small><span class="en">Drawdowns happen. Can you take loss #6 with the same discipline?</span><span class="pa">Drawdowns ਹੁੰਦੇ ਹਨ। ਕੀ ਤੁਸੀਂ ਹਾਰ #6 ਉਸੇ ਅਨੁਸ਼ਾਸਨ ਨਾਲ ਲੈ ਸਕਦੇ ਹੋ?</span></small></div></div>
+      <div class="chk" onclick="tick(this)"><div class="bx"><span>✓</span></div><div class="cl"><span class="en">Capital is money I can afford to lose</span><span class="pa">ਪੂੰਜੀ ਉਹ ਪੈਸਾ ਜੋ ਮੈਂ ਗੁਆ ਸਕਦਾ ਹਾਂ</span><small><span class="en">Never rent, savings goals, or borrowed money. Period.</span><span class="pa">ਕਦੇ ਕਿਰਾਇਆ, ਬੱਚਤ ਟੀਚੇ, ਜਾਂ ਉਧਾਰ ਪੈਸਾ ਨਹੀਂ। ਬੱਸ।</span></small></div></div>
+      <div class="verdictbar no" id="verdictbar"></div>
+    </div>
+  </div>
+</section>
+
+<section id="capital">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Live capital &amp; your first 30 days</span><span class="pa">Live ਪੂੰਜੀ ਤੇ ਪਹਿਲੇ 30 ਦਿਨ</span></h2>
+    <p><span class="en">The only rule on capital: trade with money you can lose completely without changing your lifestyle. Grow account size over time — never your risk %.</span><span class="pa">ਪੂੰਜੀ ਦਾ ਇੱਕੋ ਨਿਯਮ: ਉਹ ਪੈਸਾ ਵਰਤੋ ਜੋ ਜ਼ਿੰਦਗੀ ਬਦਲੇ ਬਿਨਾਂ ਪੂਰਾ ਗੁਆ ਸਕਦੇ ਹੋ। ਸਮੇਂ ਨਾਲ account size ਵਧਾਓ — ਕਦੇ ਆਪਣਾ risk % ਨਹੀਂ।</span></p>
+    <div class="grid3">
+      <div class="tier"><div class="tl"><span class="en">Tier 1 · Starter</span><span class="pa">Tier 1 · Starter</span></div><div class="tv">$500–$2k</div><p class="td"><span class="en">"Expensive demo" — feel real emotions, expect to lose some and learn.</span><span class="pa">"ਮਹਿੰਗਾ demo" — ਅਸਲੀ ਭਾਵਨਾਵਾਂ ਮਹਿਸੂਸ ਕਰੋ, ਕੁਝ ਗੁਆਉਣ ਤੇ ਸਿੱਖਣ ਦੀ ਉਮੀਦ।</span></p></div>
+      <div class="tier"><div class="tl"><span class="en">Tier 2 · Building</span><span class="pa">Tier 2 · Building</span></div><div class="tv">$2k–$10k</div><p class="td"><span class="en">Only after 2–3 months consistent profit on Tier 1. Same rules.</span><span class="pa">ਸਿਰਫ਼ Tier 1 ਉੱਤੇ 2–3 ਮਹੀਨੇ ਮੁਨਾਫ਼ੇ ਬਾਅਦ। ਉਹੀ ਨਿਯਮ।</span></p></div>
+      <div class="tier"><div class="tl"><span class="en">Tier 3 · Scaling</span><span class="pa">Tier 3 · Scaling</span></div><div class="tv">$10k+</div><p class="td"><span class="en">Risk stays 1% per trade. Only the account grows — never the risk %.</span><span class="pa">ਜੋਖਮ 1% ਪ੍ਰਤੀ trade ਰਹਿੰਦਾ। ਸਿਰਫ਼ account ਵਧਦਾ — risk % ਨਹੀਂ।</span></p></div>
+    </div>
+    <h3><span class="en">Your first 30 days — the most dangerous month</span><span class="pa">ਪਹਿਲੇ 30 ਦਿਨ — ਸਭ ਤੋਂ ਖ਼ਤਰਨਾਕ ਮਹੀਨਾ</span></h3>
+    <div class="week"><div class="wk">Week 1 · <span class="en">Half risk, full process</span><span class="pa">ਅੱਧਾ ਜੋਖਮ, ਪੂਰਾ process</span></div><ul>
+      <li><span class="en">Risk only 0.5% — half your normal</span><span class="pa">ਸਿਰਫ਼ 0.5% ਜੋਖਮ — ਅੱਧਾ</span></li>
+      <li><span class="en">Goal is to execute, not profit. One trade per day max</span><span class="pa">ਟੀਚਾ execute, ਮੁਨਾਫ਼ਾ ਨਹੀਂ। ਰੋਜ਼ ਵੱਧ ਤੋਂ ਵੱਧ ਇੱਕ trade</span></li>
+      <li><span class="en">Journal every emotion you feel</span><span class="pa">ਹਰ ਭਾਵਨਾ journal ਕਰੋ</span></li>
+    </ul></div>
+    <div class="week"><div class="wk">Week 2 · <span class="en">Full process, honest review</span><span class="pa">ਪੂਰਾ process, ਇਮਾਨਦਾਰ review</span></div><ul>
+      <li><span class="en">Keep 0.5% risk. Compare live vs demo behaviour</span><span class="pa">0.5% ਰੱਖੋ। Live vs demo ਵਿਹਾਰ ਤੁਲਨਾ ਕਰੋ</span></li>
+      <li><span class="en">Identify any rule breaks immediately; watch for revenge urges</span><span class="pa">ਨਿਯਮ ਤੋੜ ਤੁਰੰਤ ਪਛਾਣੋ; revenge ਦੀ ਇੱਛਾ ਉੱਤੇ ਨਜ਼ਰ</span></li>
+    </ul></div>
+    <div class="week"><div class="wk">Week 3 · <span class="en">Step up gradually</span><span class="pa">ਹੌਲੀ-ਹੌਲੀ ਵਧੋ</span></div><ul>
+      <li><span class="en">Increase to 1% IF consistent. Up to 2 trades/day</span><span class="pa">ਜੇ ਇਕਸਾਰ ਤਾਂ 1% ਤੱਕ। ਰੋਜ਼ 2 trades ਤੱਕ</span></li>
+      <li><span class="en">Still no trade if no setup. Weekly review, brutal honesty</span><span class="pa">Setup ਨਹੀਂ ਤਾਂ ਕੋਈ trade ਨਹੀਂ। ਹਫ਼ਤਾਵਾਰ review</span></li>
+    </ul></div>
+    <div class="week"><div class="wk">Week 4 · <span class="en">Steady state</span><span class="pa">ਸਥਿਰ ਹਾਲਤ</span></div><ul>
+      <li><span class="en">Standard 1% risk. Trade only A+ setups</span><span class="pa">ਮਿਆਰੀ 1% ਜੋਖਮ। ਸਿਰਫ਼ A+ setups</span></li>
+      <li><span class="en">Full monthly review. Decide: continue or pause?</span><span class="pa">ਪੂਰਾ ਮਹੀਨਾਵਾਰ review। ਫ਼ੈਸਲਾ: ਜਾਰੀ ਜਾਂ ਰੁਕਣਾ?</span></li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="gap">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">The demo-to-live gap</span><span class="pa">Demo-to-live ਫ਼ਰਕ</span></h2>
+    <p><span class="en">Real money changes everything. The same person behaves completely differently. Knowing this in advance is half the battle.</span><span class="pa">ਅਸਲੀ ਪੈਸਾ ਸਭ ਕੁਝ ਬਦਲ ਦਿੰਦਾ ਹੈ। ਉਹੀ ਵਿਅਕਤੀ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖਰਾ ਵਿਹਾਰ ਕਰਦਾ ਹੈ। ਇਹ ਪਹਿਲਾਂ ਜਾਣਨਾ ਅੱਧੀ ਲੜਾਈ ਹੈ।</span></p>
+    <div class="gap">
+      <div class="gapcol demo"><h4><span class="en">On demo (fake money)</span><span class="pa">Demo ਉੱਤੇ (ਨਕਲੀ ਪੈਸਾ)</span></h4><ul>
+        <li><span class="en">Calmly wait for A+ setups</span><span class="pa">ਸ਼ਾਂਤੀ ਨਾਲ A+ setups ਦੀ ਉਡੀਕ</span></li>
+        <li><span class="en">Hold winners to full target</span><span class="pa">ਜਿੱਤਾਂ ਪੂਰੇ target ਤੱਕ ਫੜੋ</span></li>
+        <li><span class="en">Accept losses without emotion</span><span class="pa">ਹਾਰਾਂ ਬਿਨਾਂ ਭਾਵਨਾ ਮੰਨੋ</span></li>
+        <li><span class="en">Skip mediocre setups easily</span><span class="pa">ਮਾੜੇ setups ਸੌਖੇ ਛੱਡੋ</span></li>
+      </ul></div>
+      <div class="gapcol live"><h4><span class="en">On live (real money)</span><span class="pa">Live ਉੱਤੇ (ਅਸਲੀ ਪੈਸਾ)</span></h4><ul>
+        <li><span class="en">Force trades out of impatience</span><span class="pa">ਬੇਸਬਰੀ ਵਿੱਚ trades ਧੱਕੋ</span></li>
+        <li><span class="en">Cut winners early in fear</span><span class="pa">ਡਰ ਵਿੱਚ ਜਿੱਤਾਂ ਜਲਦੀ ਛੱਡੋ</span></li>
+        <li><span class="en">Get tilted by a single loss</span><span class="pa">ਇੱਕ ਹਾਰ ਨਾਲ tilt ਹੋ ਜਾਓ</span></li>
+        <li><span class="en">Sneak risk up to "recover"</span><span class="pa">"ਮੋੜਨ" ਲਈ ਜੋਖਮ ਵਧਾਓ</span></li>
+      </ul></div>
+    </div>
+    <p class="muted" style="font-size:14px;margin-top:14px"><span class="en">This is exactly why your first 30 days run at half risk. Close the gap before you scale.</span><span class="pa">ਇਸੇ ਲਈ ਪਹਿਲੇ 30 ਦਿਨ ਅੱਧੇ ਜੋਖਮ ਉੱਤੇ ਚੱਲਦੇ ਹਨ। Scale ਤੋਂ ਪਹਿਲਾਂ ਫ਼ਰਕ ਘਟਾਓ।</span></p>
+  </div>
+</section>
+
+<section id="survive">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Survive drawdowns, measure what matters</span><span class="pa">Drawdowns ਤੋਂ ਬਚੋ, ਜੋ ਜ਼ਰੂਰੀ ਹੈ ਮਾਪੋ</span></h2>
+    <p><span class="en">Drawdown isn't <em>if</em> — it's <em>when</em>. Pros survive losing streaks with pre-set rules, not willpower.</span><span class="pa">Drawdown <em>ਜੇ</em> ਨਹੀਂ — <em>ਕਦੋਂ</em> ਹੈ। ਮਾਹਿਰ ਪਹਿਲਾਂ ਤੈਅ ਨਿਯਮਾਂ ਨਾਲ ਬਚਦੇ ਹਨ, ਇੱਛਾ-ਸ਼ਕਤੀ ਨਾਲ ਨਹੀਂ।</span></p>
+    <div class="dd"><div class="dn"><b>2</b><small><span class="en">IN A ROW</span><span class="pa">ਲਗਾਤਾਰ</span></small></div><div><p class="dt"><span class="en">Pause 30 minutes</span><span class="pa">30 ਮਿੰਟ ਰੁਕੋ</span></p><p class="ddd"><span class="en">Reset. Re-check the next setup truly meets your criteria.</span><span class="pa">Reset। ਅਗਲਾ setup ਸੱਚਮੁੱਚ ਮਾਪਦੰਡ ਪੂਰੇ ਕਰਦਾ ਹੈ, ਮੁੜ ਜਾਂਚੋ।</span></p></div></div>
+    <div class="dd"><div class="dn"><b>3</b><small><span class="en">IN A DAY</span><span class="pa">ਇੱਕ ਦਿਨ</span></small></div><div><p class="dt"><span class="en">Stop for the day</span><span class="pa">ਦਿਨ ਲਈ ਰੁਕੋ</span></p><p class="ddd"><span class="en">Walk away. Tomorrow is another opportunity — protect the account.</span><span class="pa">ਹਟ ਜਾਓ। ਕੱਲ੍ਹ ਹੋਰ ਮੌਕਾ — account ਬਚਾਓ।</span></p></div></div>
+    <div class="dd"><div class="dn"><b>5</b><small><span class="en">IN A WEEK</span><span class="pa">ਇੱਕ ਹਫ਼ਤਾ</span></small></div><div><p class="dt"><span class="en">Cut risk in half</span><span class="pa">ਜੋਖਮ ਅੱਧਾ ਕਰੋ</span></p><p class="ddd"><span class="en">Drop to 0.5%. Review every trade — off your A-game, or is the market different?</span><span class="pa">0.5% ਉੱਤੇ ਜਾਓ। ਹਰ trade review ਕਰੋ — ਤੁਸੀਂ ਠੀਕ ਨਹੀਂ, ਜਾਂ ਮਾਰਕੀਟ ਵੱਖਰਾ ਹੈ?</span></p></div></div>
+    <h3><span class="en">Metrics that actually matter</span><span class="pa">ਜੋ metrics ਸੱਚਮੁੱਚ ਜ਼ਰੂਰੀ ਹਨ</span></h3>
+    <p class="muted" style="font-size:14px"><span class="en">Track these monthly — they tell the truth your P&amp;L can't.</span><span class="pa">ਇਹ ਮਹੀਨਾਵਾਰ track ਕਰੋ — ਇਹ ਉਹ ਸੱਚ ਦੱਸਦੇ ਹਨ ਜੋ P&amp;L ਨਹੀਂ ਦੱਸ ਸਕਦਾ।</span></p>
+    <div class="grid3">
+      <div class="metric"><p class="mn"><span class="en">Win rate</span><span class="pa">Win rate</span></p><p class="mtg">40%+ <span class="en">(at 1:2)</span><span class="pa">(1:2 ਉੱਤੇ)</span></p><p class="md"><span class="en">Wins ÷ total. Higher isn't always better.</span><span class="pa">Wins ÷ ਕੁੱਲ। ਉੱਚਾ ਹਮੇਸ਼ਾ ਵਧੀਆ ਨਹੀਂ।</span></p></div>
+      <div class="metric"><p class="mn"><span class="en">Average R:R</span><span class="pa">ਔਸਤ R:R</span></p><p class="mtg">1:2+</p><p class="md"><span class="en">Avg winner ÷ avg loser. The key metric.</span><span class="pa">ਔਸਤ ਜਿੱਤ ÷ ਔਸਤ ਹਾਰ। ਮੁੱਖ metric।</span></p></div>
+      <div class="metric"><p class="mn"><span class="en">Profit factor</span><span class="pa">Profit factor</span></p><p class="mtg">1.5+</p><p class="md"><span class="en">Gross wins ÷ gross losses. 2.0+ = excellent.</span><span class="pa">ਕੁੱਲ ਜਿੱਤਾਂ ÷ ਕੁੱਲ ਹਾਰਾਂ। 2.0+ = ਸ਼ਾਨਦਾਰ।</span></p></div>
+      <div class="metric"><p class="mn"><span class="en">Max drawdown</span><span class="pa">Max drawdown</span></p><p class="mtg">&lt; 15%</p><p class="md"><span class="en">Largest peak-to-trough drop. Over 15%? Fix risk.</span><span class="pa">ਸਭ ਤੋਂ ਵੱਡੀ ਗਿਰਾਵਟ। 15% ਤੋਂ ਵੱਧ? ਜੋਖਮ ਠੀਕ ਕਰੋ।</span></p></div>
+      <div class="metric"><p class="mn"><span class="en">Rule compliance</span><span class="pa">ਨਿਯਮ ਪਾਲਣਾ</span></p><p class="mtg">90%+</p><p class="md"><span class="en">Predicts success better than P&amp;L itself.</span><span class="pa">P&amp;L ਤੋਂ ਵੀ ਵਧੀਆ ਸਫਲਤਾ ਦੱਸਦਾ ਹੈ।</span></p></div>
+      <div class="metric"><p class="mn"><span class="en">Trades / week</span><span class="pa">Trades / ਹਫ਼ਤਾ</span></p><p class="mtg"><span class="en">Quality &gt; quantity</span><span class="pa">ਗੁਣਵੱਤਾ &gt; ਗਿਣਤੀ</span></p><p class="md"><span class="en">5 great trades beat 25 mediocre ones.</span><span class="pa">5 ਵਧੀਆ trades 25 ਮਾੜਿਆਂ ਤੋਂ ਬਿਹਤਰ।</span></p></div>
+    </div>
+    <h3><span class="en">Mistakes that kill live accounts</span><span class="pa">ਜੋ ਗਲਤੀਆਂ live accounts ਮਾਰਦੀਆਂ ਹਨ</span></h3>
+    <div class="card">
+      <ul class="checklist donot">
+        <li><span class="en">Going live too early — real money amplifies chaos</span><span class="pa">ਬਹੁਤ ਜਲਦੀ live ਜਾਣਾ — ਅਸਲੀ ਪੈਸਾ ਗੜਬੜ ਵਧਾਉਂਦਾ ਹੈ</span></li>
+        <li><span class="en">Risking too much — 1% feels boring, that's the point</span><span class="pa">ਬਹੁਤ ਜ਼ਿਆਦਾ ਜੋਖਮ — 1% ਬੋਰਿੰਗ ਲੱਗਦਾ, ਇਹੀ ਮਕਸਦ ਹੈ</span></li>
+        <li><span class="en">Adding to losing trades — turns small Ls into killers</span><span class="pa">ਹਾਰਨ ਵਾਲੇ trades ਵਿੱਚ ਜੋੜਨਾ — ਛੋਟੀਆਂ ਹਾਰਾਂ killer ਬਣਾਉਂਦਾ ਹੈ</span></li>
+        <li><span class="en">Trading without a stop loss — never acceptable, ever</span><span class="pa">ਬਿਨਾਂ stop loss trade — ਕਦੇ ਵੀ ਸਵੀਕਾਰ ਨਹੀਂ</span></li>
+        <li><span class="en">Chasing every move — missed moves aren't losses</span><span class="pa">ਹਰ ਚਾਲ ਪਿੱਛੇ ਭੱਜਣਾ — ਖੁੰਝੀਆਂ ਚਾਲਾਂ ਹਾਰ ਨਹੀਂ</span></li>
+        <li><span class="en">Ignoring your journal — it's where your leaks hide</span><span class="pa">Journal ਨਜ਼ਰਅੰਦਾਜ਼ ਕਰਨਾ — ਇੱਥੇ ਤੁਹਾਡੀਆਂ ਕਮੀਆਂ ਲੁਕੀਆਂ ਹਨ</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="mindset">
+  <div class="wrap">
+    <span class="knum">07</span>
+    <h2><span class="en">The long-term mindset</span><span class="pa">ਲੰਮੇ ਸਮੇਂ ਦੀ ਸੋਚ</span></h2>
+    <div class="card">
+      <div class="mind"><div class="mi">♾️</div><div><p class="mt"><span class="en">Trading is a marathon</span><span class="pa">ਟ੍ਰੇਡਿੰਗ ਇੱਕ ਮੈਰਾਥਨ ਹੈ</span></p><p class="mdd"><span class="en">Compounding works over years. Steady 2–5% monthly beats chasing 50% in a week and blowing up.</span><span class="pa">Compounding ਸਾਲਾਂ ਵਿੱਚ ਕੰਮ ਕਰਦੀ ਹੈ। ਸਥਿਰ 2–5% ਮਹੀਨਾਵਾਰ, ਹਫ਼ਤੇ ਵਿੱਚ 50% ਪਿੱਛੇ ਭੱਜ ਕੇ ਉੱਡਣ ਤੋਂ ਬਿਹਤਰ।</span></p></div></div>
+      <div class="mind"><div class="mi">🎯</div><div><p class="mt"><span class="en">Process &gt; profit</span><span class="pa">Process &gt; ਮੁਨਾਫ਼ਾ</span></p><p class="mdd"><span class="en">Profit is an outcome, not a goal. Execute the system perfectly; money follows discipline.</span><span class="pa">ਮੁਨਾਫ਼ਾ ਨਤੀਜਾ ਹੈ, ਟੀਚਾ ਨਹੀਂ। System ਸਹੀ ਚਲਾਓ; ਪੈਸਾ ਅਨੁਸ਼ਾਸਨ ਪਿੱਛੇ ਆਉਂਦਾ ਹੈ।</span></p></div></div>
+      <div class="mind"><div class="mi">🔄</div><div><p class="mt"><span class="en">Evolve your system</span><span class="pa">ਆਪਣਾ system ਵਿਕਸਿਤ ਕਰੋ</span></p><p class="mdd"><span class="en">Markets change. Adjust every 3–6 months based on data — not emotions or random videos.</span><span class="pa">ਮਾਰਕੀਟ ਬਦਲਦੇ ਹਨ। ਹਰ 3–6 ਮਹੀਨੇ data ਮੁਤਾਬਕ ਢਾਲੋ — ਭਾਵਨਾਵਾਂ ਜਾਂ random videos ਨਹੀਂ।</span></p></div></div>
+      <div class="mind"><div class="mi">🧘</div><div><p class="mt"><span class="en">Detach from outcomes</span><span class="pa">ਨਤੀਜਿਆਂ ਤੋਂ ਵੱਖ ਹੋਵੋ</span></p><p class="mdd"><span class="en">Any single trade means nothing — your edge plays out over hundreds. Stick to the plan.</span><span class="pa">ਕੋਈ ਇੱਕ trade ਕੁਝ ਨਹੀਂ — ਤੁਹਾਡਾ edge ਸੈਂਕੜਿਆਂ ਉੱਤੇ ਚੱਲਦਾ ਹੈ। ਯੋਜਨਾ ਉੱਤੇ ਟਿਕੋ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <h2><span class="en">Final check</span><span class="pa">ਆਖ਼ਰੀ ਟੈਸਟ</span></h2>
+    <p class="muted"><span class="en">Five questions to complete the Foundation.</span><span class="pa">ਨੀਂਹ ਪੂਰੀ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();updateVerdict();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','system','blueprint','ready','capital','gap','survive','mindset','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* readiness gate */
+function tick(el){el.classList.toggle('on');updateVerdict();}
+function updateVerdict(){
+  const total=document.querySelectorAll('#ready .chk').length;
+  const on=document.querySelectorAll('#ready .chk.on').length;
+  const v=document.getElementById('verdictbar');
+  if(on===total){
+    v.className='verdictbar yes';
+    v.textContent=L('✓ All six true — you are ready to go live (start tiny)','✓ ਛੇਆਂ ਸੱਚ — ਤੁਸੀਂ live ਜਾਣ ਲਈ ਤਿਆਰ ਹੋ (ਛੋਟਾ ਸ਼ੁਰੂ ਕਰੋ)');
+  }else{
+    v.className='verdictbar no';
+    v.textContent=L(`${on}/${total} true — even one "no" means stay on demo`,`${on}/${total} ਸੱਚ — ਇੱਕ ਵੀ "ਨਾਂਹ" ਮਤਲਬ demo ਉੱਤੇ ਰਹੋ`);
+  }
+}
+
+/* quiz */
+const QUIZ=[
+ {q:["If even one go-live readiness box is unchecked, you should…","ਜੇ go-live readiness ਦਾ ਇੱਕ ਵੀ ਡੱਬਾ ਖਾਲੀ ਹੈ, ਤੁਹਾਨੂੰ…"],
+  o:[["Go live with less capital","ਘੱਟ ਪੂੰਜੀ ਨਾਲ live ਜਾਓ"],["Stay on demo — don't rush it","Demo ਉੱਤੇ ਰਹੋ — ਕਾਹਲੀ ਨਾ ਕਰੋ"],["Go live anyway, you'll learn faster","ਫਿਰ ਵੀ live ਜਾਓ, ਤੇਜ਼ ਸਿੱਖੋਗੇ"],["Switch markets","ਮਾਰਕੀਟ ਬਦਲੋ"]],
+  a:1,f:["Every box must be true. One 'no' means stay on demo — this step can't be rushed.","ਹਰ ਡੱਬਾ ਸੱਚ ਹੋਣਾ ਚਾਹੀਦਾ। ਇੱਕ 'ਨਾਂਹ' ਮਤਲਬ demo ਉੱਤੇ ਰਹੋ।"]},
+ {q:["What risk % should you use in Week 1 of going live?","Live ਜਾਣ ਦੇ Week 1 ਵਿੱਚ ਕਿੰਨਾ risk % ਵਰਤਣਾ?"],
+  o:[["2% — be aggressive early","2% — ਸ਼ੁਰੂ ਵਿੱਚ ਹਮਲਾਵਰ"],["0.5% — half your normal","0.5% — ਅੱਧਾ"],["5% to grow fast","ਤੇਜ਼ ਵਧਣ ਲਈ 5%"],["Whatever feels right","ਜੋ ਠੀਕ ਲੱਗੇ"]],
+  a:1,f:["Start at half risk (0.5%). The goal of week 1 is to execute under real emotion, not to profit.","ਅੱਧੇ ਜੋਖਮ (0.5%) ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ। Week 1 ਦਾ ਟੀਚਾ execute ਕਰਨਾ ਹੈ, ਮੁਨਾਫ਼ਾ ਨਹੀਂ।"]},
+ {q:["As your account grows from Tier 1 to Tier 3, your risk % should…","ਜਿਵੇਂ account Tier 1 ਤੋਂ Tier 3 ਵਧਦਾ, ਤੁਹਾਡਾ risk % ਚਾਹੀਦਾ…"],
+  o:[["Grow with the account","Account ਨਾਲ ਵਧੇ"],["Stay the same (≈1% per trade)","ਉਹੀ ਰਹੇ (≈1% ਪ੍ਰਤੀ trade)"],["Double at each tier","ਹਰ tier ਉੱਤੇ ਦੁੱਗਣਾ"],["Drop to 0.1%","0.1% ਤੱਕ ਡਿੱਗੇ"]],
+  a:1,f:["Only the account size grows — never the risk %. 1% per trade stays constant at every tier.","ਸਿਰਫ਼ account size ਵਧਦਾ — risk % ਕਦੇ ਨਹੀਂ। ਹਰ tier ਉੱਤੇ 1% ਸਥਿਰ ਰਹਿੰਦਾ ਹੈ।"]},
+ {q:["After 3 losing trades in a single day, the rule is…","ਇੱਕ ਦਿਨ ਵਿੱਚ 3 ਹਾਰਾਂ ਬਾਅਦ ਨਿਯਮ ਹੈ…"],
+  o:[["Increase size to recover","ਮੋੜਨ ਲਈ size ਵਧਾਓ"],["Stop trading for the day","ਦਿਨ ਲਈ trading ਰੋਕੋ"],["Switch to a new strategy","ਨਵੀਂ strategy ਉੱਤੇ ਜਾਓ"],["Remove stops to give room","ਥਾਂ ਦੇਣ ਲਈ stops ਹਟਾਓ"]],
+  a:1,f:["3 losses in a day = stop and walk away. Protect the account; tomorrow is another opportunity.","ਦਿਨ ਵਿੱਚ 3 ਹਾਰਾਂ = ਰੁਕੋ ਤੇ ਹਟ ਜਾਓ। Account ਬਚਾਓ; ਕੱਲ੍ਹ ਹੋਰ ਮੌਕਾ।"]},
+ {q:["Which metric predicts long-term success better than P&L?","ਕਿਹੜਾ metric P&L ਤੋਂ ਵਧੀਆ ਲੰਮੀ ਸਫਲਤਾ ਦੱਸਦਾ ਹੈ?"],
+  o:[["Number of trades","Trades ਦੀ ਗਿਣਤੀ"],["Rule compliance %","ਨਿਯਮ ਪਾਲਣਾ %"],["Account balance","Account ਬੈਲੇਂਸ"],["Biggest single win","ਸਭ ਤੋਂ ਵੱਡੀ ਜਿੱਤ"]],
+  a:1,f:["Rule compliance (target 90%+) predicts success better than P&L. Follow the process; profit follows.","ਨਿਯਮ ਪਾਲਣਾ (90%+) P&L ਤੋਂ ਵਧੀਆ ਸਫਲਤਾ ਦੱਸਦੀ ਹੈ। Process ਮੰਨੋ; ਮੁਨਾਫ਼ਾ ਪਿੱਛੇ ਆਉਂਦਾ ਹੈ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Foundation complete','★ ਨੀਂਹ ਪੂਰੀ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:48ch;color:#e9e8e4;font-size:16px">${pass
+      ? L("That's the entire Foundation done. You can read a market, build and test a system, execute with discipline, and go live without blowing up. Knowing the rules was 10% — following them is the 90% that starts now.","ਇਹ ਪੂਰੀ ਨੀਂਹ ਮੁਕੰਮਲ ਹੋ ਗਈ। ਤੁਸੀਂ ਮਾਰਕੀਟ ਪੜ੍ਹ ਸਕਦੇ ਹੋ, system ਬਣਾ ਤੇ ਟੈਸਟ ਕਰ ਸਕਦੇ ਹੋ, ਅਨੁਸ਼ਾਸਨ ਨਾਲ execute ਕਰ ਸਕਦੇ ਹੋ, ਤੇ ਉੱਡੇ ਬਿਨਾਂ live ਜਾ ਸਕਦੇ ਹੋ। ਨਿਯਮ ਜਾਣਨਾ 10% ਸੀ — ਮੰਨਣਾ ਉਹ 90% ਹੈ ਜੋ ਹੁਣ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ।")
+      : L("Almost there. Replay the readiness gate and reread the drawdown rules, then retry — aim for 4/5.","ਲਗਭਗ ਪਹੁੰਚ ਗਏ। Readiness gate ਦੁਬਾਰਾ ਚਲਾਓ ਤੇ drawdown ਨਿਯਮ ਫਿਰ ਪੜ੍ਹੋ, ਫਿਰ ਟੈਸਟ ਕਰੋ — 4/5 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<div class="journey">
+        <span class="jchip">P1 ${L('Basics','Basics')}</span><span class="jchip">P2 ${L('Analysis','Analysis')}</span><span class="jchip">P3 ${L('Strategy','Strategy')}</span><span class="jchip">P4 ${L('Execution','Execution')}</span><span class="jchip">P5 ${L('MTF','MTF')}</span><span class="jchip">P6 ${L('Live','Live')}</span>
+      </div>
+      <ul class="nextlist">
+        <li>→ ${L('Write your full system blueprint this week','ਇਸ ਹਫ਼ਤੇ ਆਪਣਾ ਪੂਰਾ system blueprint ਲਿਖੋ')}</li>
+        <li>→ ${L('Run the readiness gate honestly before any live trade','ਕਿਸੇ live trade ਤੋਂ ਪਹਿਲਾਂ readiness gate ਇਮਾਨਦਾਰੀ ਨਾਲ ਚਲਾਓ')}</li>
+        <li>→ ${L('Explore Tier II Gold &amp; Tier III Microstructure next','ਅਗਲਾ: Tier II Gold ਤੇ Tier III Microstructure')}</li>
+        <li>→ ${L('Stay active in Discord — share trades, ask questions','Discord ਵਿੱਚ ਸਰਗਰਮ ਰਹੋ — trades ਸਾਂਝੇ ਕਰੋ, ਸਵਾਲ ਪੁੱਛੋ')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();updateVerdict();
+</script>
+</body>
+</html>
