@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basics &amp; Platforms — Foundation Part 1</title>
+<style>
+  :root{
+    --ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;
+    --r:14px;--maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+
+  /* numbered steps */
+  .steps{display:grid;gap:12px;margin:20px 0}
+  .step{display:flex;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .step .n{flex:0 0 38px;width:38px;height:38px;border-radius:10px;background:var(--panel-2);border:1px solid var(--gold-dim);
+    color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step .t{font-weight:650;margin:0 0 3px;font-size:16px}
+  .step .d{margin:0;color:var(--muted);font-size:14.5px}
+
+  /* app/broker cards */
+  .cards{display:grid;gap:12px;margin:20px 0}
+  .grid2{grid-template-columns:1fr 1fr}
+  @media(min-width:620px){.cards.g2{grid-template-columns:1fr 1fr}}
+  .ic{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .ic .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+  .ic .nm{font-weight:700;font-size:17px;margin:0 0 5px}
+  .ic .ds{margin:0;color:var(--muted);font-size:14px}
+
+  /* broker picker */
+  .picker{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;
+    box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .picker .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .picker .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .choices{display:flex;gap:9px;flex-wrap:wrap}
+  .choice{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    padding:11px 16px;border-radius:10px;font-size:14.5px;font-weight:600}
+  .choice:hover{border-color:var(--gold-dim)}
+  .choice.sel{background:var(--gold);color:#241d05;border-color:var(--gold)}
+  .result{margin-top:16px;display:none}
+  .result.show{display:block}
+
+  /* golden rules */
+  .rules{display:grid;gap:12px;margin:20px 0}
+  @media(min-width:620px){.rules{grid-template-columns:1fr 1fr}}
+  .rule{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;padding:16px 18px}
+  .rule .rt{font-weight:700;margin:0 0 4px;font-size:15.5px}
+  .rule .rd{margin:0;color:var(--muted);font-size:14px}
+
+  /* quiz */
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#how">1 · <span class="en">How to Start</span><span class="pa">ਕਿਵੇਂ ਸ਼ੁਰੂ</span></a>
+      <a href="#apps">2 · <span class="en">Apps</span><span class="pa">ਐਪਸ</span></a>
+      <a href="#where">3 · <span class="en">Where to Trade</span><span class="pa">ਕਿੱਥੇ Trade</span></a>
+      <a href="#rules">4 · <span class="en">Golden Rules</span><span class="pa">ਸੁਨਹਿਰੀ ਨਿਯਮ</span></a>
+      <a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Foundation · Part 1 of 6</span><span class="pa">ਨੀਂਹ · ਭਾਗ 1 / 6</span></div>
+    <h1><span class="en">Basics &amp; Platforms</span><span class="pa">ਮੁੱਢਲੀਆਂ ਗੱਲਾਂ ਤੇ Platforms</span></h1>
+    <p class="lede"><span class="en">Before you risk a dollar: how to start the right way, the apps you actually need, where to trade from Australia, and the rules that keep you in the game.</span><span class="pa">ਇੱਕ ਡਾਲਰ ਜੋਖਮ ਵਿੱਚ ਪਾਉਣ ਤੋਂ ਪਹਿਲਾਂ: ਸਹੀ ਤਰੀਕੇ ਨਾਲ ਕਿਵੇਂ ਸ਼ੁਰੂ ਕਰੀਏ, ਕਿਹੜੀਆਂ ਐਪਸ ਅਸਲ ਵਿੱਚ ਚਾਹੀਦੀਆਂ, ਆਸਟ੍ਰੇਲੀਆ ਤੋਂ ਕਿੱਥੇ trade ਕਰੀਏ, ਅਤੇ ਉਹ ਨਿਯਮ ਜੋ ਤੁਹਾਨੂੰ ਖੇਡ ਵਿੱਚ ਰੱਖਦੇ ਹਨ।</span></p>
+    <div class="meta">
+      <span><b>~10 min</b> · <span class="en">read</span><span class="pa">ਪੜ੍ਹੋ</span></span>
+      <span><b><span class="en">No experience needed</span><span class="pa">ਕੋਈ ਤਜਰਬਾ ਨਹੀਂ ਚਾਹੀਦਾ</span></b></span>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">The right way to start</span><span class="pa">ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਸਹੀ ਤਰੀਕਾ</span></h2>
+    <p><span class="en">Most beginners blow their first account because they skip straight to real money. Do these four in order — none costs you anything.</span><span class="pa">ਜ਼ਿਆਦਾਤਰ ਨਵੇਂ ਆਪਣਾ ਪਹਿਲਾ account ਇਸ ਲਈ ਗੁਆ ਦਿੰਦੇ ਹਨ ਕਿਉਂਕਿ ਉਹ ਸਿੱਧੇ ਅਸਲੀ ਪੈਸੇ ਵੱਲ ਜਾਂਦੇ ਹਨ। ਇਹ ਚਾਰ ਕ੍ਰਮ ਵਿੱਚ ਕਰੋ — ਕੋਈ ਪੈਸਾ ਨਹੀਂ ਲੱਗਦਾ।</span></p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><p class="t"><span class="en">Education first</span><span class="pa">ਪਹਿਲਾਂ ਸਿੱਖਿਆ</span></p><p class="d"><span class="en">Learn the basic terminology before risking a single dollar.</span><span class="pa">ਇੱਕ ਡਾਲਰ ਜੋਖਮ ਵਿੱਚ ਪਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਮੁੱਢਲੇ ਸ਼ਬਦ ਸਿੱਖੋ।</span></p></div></div>
+      <div class="step"><div class="n">2</div><div><p class="t"><span class="en">Paper trade</span><span class="pa">Paper Trading</span></p><p class="d"><span class="en">Open a demo account with fake money. Practise without pressure.</span><span class="pa">ਨਕਲੀ ਪੈਸੇ ਨਾਲ demo account ਖੋਲ੍ਹੋ। ਬਿਨਾਂ ਦਬਾਅ ਅਭਿਆਸ ਕਰੋ।</span></p></div></div>
+      <div class="step"><div class="n">3</div><div><p class="t"><span class="en">Start small</span><span class="pa">ਛੋਟਾ ਸ਼ੁਰੂ ਕਰੋ</span></p><p class="d"><span class="en">When ready, focus on consistency over massive gains.</span><span class="pa">ਜਦੋਂ ਤਿਆਰ ਹੋਵੋ, ਵੱਡੇ ਮੁਨਾਫ਼ੇ ਨਾਲੋਂ ਇਕਸਾਰਤਾ ਉੱਤੇ ਧਿਆਨ ਦਿਓ।</span></p></div></div>
+      <div class="step"><div class="n">4</div><div><p class="t"><span class="en">Pick a lane</span><span class="pa">ਆਪਣਾ ਰਾਹ ਚੁਣੋ</span></p><p class="d"><span class="en">Decide: long-term investor or short-term trader. Stick to it.</span><span class="pa">ਫ਼ੈਸਲਾ ਕਰੋ: ਲੰਮੇ ਸਮੇਂ ਦਾ ਨਿਵੇਸ਼ਕ ਜਾਂ ਥੋੜ੍ਹੇ ਸਮੇਂ ਦਾ trader। ਉਸੇ ਉੱਤੇ ਟਿਕੇ ਰਹੋ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="apps">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">Essential apps to download</span><span class="pa">ਜ਼ਰੂਰੀ ਐਪਸ ਜੋ download ਕਰਨੀਆਂ</span></h2>
+    <p><span class="en">You need three, not thirty. Get these before anything else.</span><span class="pa">ਤੁਹਾਨੂੰ ਤਿੰਨ ਚਾਹੀਦੀਆਂ, ਤੀਹ ਨਹੀਂ। ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਲਓ।</span></p>
+    <div class="cards">
+      <div class="ic"><div class="lab"><span class="en">Charting · Must have</span><span class="pa">ਚਾਰਟਿੰਗ · ਜ਼ਰੂਰੀ</span></div><p class="nm">TradingView</p><p class="ds"><span class="en">The gold standard for charting. Your main workspace for all chart analysis and trade planning.</span><span class="pa">ਚਾਰਟਿੰਗ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਟੂਲ। ਤੁਹਾਡਾ ਮੁੱਖ workspace — ਸਾਰਾ chart ਵਿਸ਼ਲੇਸ਼ਣ ਤੇ trade planning ਇੱਥੇ।</span></p></div>
+      <div class="ic"><div class="lab"><span class="en">Security · Must have</span><span class="pa">ਸੁਰੱਖਿਆ · ਜ਼ਰੂਰੀ</span></div><p class="nm"><span class="en">Authenticator App</span><span class="pa">Authenticator ਐਪ</span></p><p class="ds"><span class="en">Google Authenticator or Authy. Crucial for 2FA — never skip it. It protects your accounts and funds.</span><span class="pa">Google Authenticator ਜਾਂ Authy। 2FA ਲਈ ਜ਼ਰੂਰੀ — ਕਦੇ ਨਾ ਛੱਡੋ। ਇਹ ਤੁਹਾਡੇ accounts ਤੇ ਪੈਸੇ ਬਚਾਉਂਦਾ ਹੈ।</span></p></div>
+      <div class="ic"><div class="lab"><span class="en">Management</span><span class="pa">ਪ੍ਰਬੰਧਨ</span></div><p class="nm"><span class="en">Broker Mobile App</span><span class="pa">Broker ਮੋਬਾਈਲ ਐਪ</span></p><p class="ds"><span class="en">Your broker's official app. Monitor positions, set alerts, manage trades from anywhere.</span><span class="pa">ਤੁਹਾਡੇ broker ਦੀ ਅਧਿਕਾਰਤ ਐਪ। Positions ਦੇਖੋ, alerts ਲਾਓ, ਕਿਤੇ ਵੀ trades ਸੰਭਾਲੋ।</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="where">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Where to trade — from Australia</span><span class="pa">ਕਿੱਥੇ Trade ਕਰੀਏ — ਆਸਟ੍ਰੇਲੀਆ ਤੋਂ</span></h2>
+    <p><span class="en">Tell the tool what you want to trade, and it shows the platforms picked for that. Full lists are below it.</span><span class="pa">ਟੂਲ ਨੂੰ ਦੱਸੋ ਤੁਸੀਂ ਕੀ trade ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਇਹ ਉਸ ਲਈ ਚੁਣੇ platforms ਦਿਖਾਏਗਾ। ਪੂਰੀ ਸੂਚੀ ਹੇਠਾਂ ਹੈ।</span></p>
+
+    <div class="picker">
+      <span class="tag"><span class="en">Interactive · find your platform</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · ਆਪਣਾ platform ਲੱਭੋ</span></span>
+      <div class="choices">
+        <button class="choice" onclick="pick('crypto',this)"><span class="en">Crypto</span><span class="pa">ਕ੍ਰਿਪਟੋ</span></button>
+        <button class="choice" onclick="pick('stocks',this)"><span class="en">Stocks &amp; ETFs</span><span class="pa">Stocks ਤੇ ETFs</span></button>
+        <button class="choice" onclick="pick('day',this)"><span class="en">Forex / Day trading</span><span class="pa">Forex / Day trading</span></button>
+      </div>
+      <div class="result" id="pickres"></div>
+    </div>
+
+    <h3 style="font-size:16px;margin:26px 0 10px;color:var(--muted)"><span class="en">Full reference</span><span class="pa">ਪੂਰਾ ਹਵਾਲਾ</span></h3>
+
+    <div class="ic" style="margin-bottom:12px"><div class="lab"><span class="en">Crypto exchanges 🇦🇺</span><span class="pa">ਕ੍ਰਿਪਟੋ exchanges 🇦🇺</span></div>
+      <p class="ds"><strong>CoinSpot</strong> — <span class="en">easiest UI, 500+ coins. Best for beginners.</span><span class="pa">ਸਭ ਤੋਂ ਸੌਖਾ UI, 500+ ਸਿੱਕੇ। ਨਵਿਆਂ ਲਈ ਵਧੀਆ।</span><br>
+      <strong>Swyftx</strong> — <span class="en">great app with demo mode. Runner-up.</span><span class="pa">ਵਧੀਆ ਐਪ, demo mode ਨਾਲ।</span><br>
+      <strong>Kraken Pro</strong> — <span class="en">low fees at volume. For advanced.</span><span class="pa">ਜ਼ਿਆਦਾ volume ਉੱਤੇ ਘੱਟ fees। ਉੱਨਤ ਲਈ।</span></p></div>
+
+    <div class="ic" style="margin-bottom:12px"><div class="lab"><span class="en">Stocks &amp; ETFs 🇦🇺</span><span class="pa">Stocks ਤੇ ETFs 🇦🇺</span></div>
+      <p class="ds"><strong>Interactive Brokers</strong> — <span class="en">best overall, US &amp; global, low fees.</span><span class="pa">ਸਭ ਤੋਂ ਵਧੀਆ, US ਤੇ global, ਘੱਟ fees।</span><br>
+      <strong>CMC Markets</strong> — <span class="en">best for ASX.</span><span class="pa">ASX ਲਈ ਵਧੀਆ।</span><br>
+      <strong>Webull</strong> — <span class="en">clean tools for US markets.</span><span class="pa">US markets ਲਈ ਸਾਫ਼ ਟੂਲ।</span><br>
+      <strong>CommSec / bank brokers</strong> — <span class="en">convenient but higher fees.</span><span class="pa">ਸੌਖਾ ਪਰ fees ਜ਼ਿਆਦਾ।</span></p></div>
+
+    <div class="ic"><div class="lab"><span class="en">Forex &amp; day trading 🇦🇺</span><span class="pa">Forex ਤੇ day trading 🇦🇺</span></div>
+      <p class="ds"><strong>Vantage Markets</strong> — <span class="en">fast execution, MT4/5, TradingView. Top FX/CFD pick.</span><span class="pa">ਤੇਜ਼ execution, MT4/5, TradingView। ਵਧੀਆ FX/CFD।</span><br>
+      <strong>Pepperstone</strong> — <span class="en">tight spreads, ASIC regulated.</span><span class="pa">ਤੰਗ spreads, ASIC regulated।</span><br>
+      <strong>Interactive Brokers</strong> — <span class="en">pro-grade for equities &amp; options.</span><span class="pa">equities ਤੇ options ਲਈ pro-grade।</span></p></div>
+    <p class="muted" style="font-size:12.5px;margin-top:14px"><span class="en">Platforms and fees change — always check the broker's current terms and that it's licensed before depositing.</span><span class="pa">Platforms ਤੇ fees ਬਦਲਦੇ ਰਹਿੰਦੇ ਹਨ — ਪੈਸੇ ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਮੌਜੂਦਾ ਸ਼ਰਤਾਂ ਤੇ license ਜਾਂਚੋ।</span></p>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Golden rules</span><span class="pa">ਸੁਨਹਿਰੀ ਨਿਯਮ</span></h2>
+    <p><span class="en">Four rules separate traders who last from those who don't. Learn them now — you'll spend the rest of the course living them.</span><span class="pa">ਚਾਰ ਨਿਯਮ ਟਿਕਣ ਵਾਲੇ traders ਨੂੰ ਬਾਕੀਆਂ ਤੋਂ ਵੱਖ ਕਰਦੇ ਹਨ। ਹੁਣੇ ਸਿੱਖੋ — ਬਾਕੀ ਕੋਰਸ ਇਨ੍ਹਾਂ ਨੂੰ ਜੀਓਗੇ।</span></p>
+    <div class="rules">
+      <div class="rule"><p class="rt">🛡️ <span class="en">Always use a stop loss</span><span class="pa">ਹਮੇਸ਼ਾ stop loss ਵਰਤੋ</span></p><p class="rd"><span class="en">Know your exit BEFORE you enter. It limits how much you can lose on any one trade.</span><span class="pa">Entry ਤੋਂ ਪਹਿਲਾਂ exit ਜਾਣੋ। ਇਹ ਸੀਮਤ ਕਰਦਾ ਹੈ ਕਿ ਇੱਕ trade ਉੱਤੇ ਕਿੰਨਾ ਗੁਆ ਸਕਦੇ ਹੋ।</span></p></div>
+      <div class="rule"><p class="rt">⚖️ <span class="en">Manage your risk</span><span class="pa">ਆਪਣਾ ਜੋਖਮ ਸੰਭਾਲੋ</span></p><p class="rd"><span class="en">Risk only 1–2% of your account per trade. It keeps you in the game long enough to learn.</span><span class="pa">ਹਰ trade ਉੱਤੇ ਸਿਰਫ਼ account ਦਾ 1–2% ਜੋਖਮ। ਇਹ ਤੁਹਾਨੂੰ ਸਿੱਖਣ ਜੋਗਾ ਖੇਡ ਵਿੱਚ ਰੱਖਦਾ ਹੈ।</span></p></div>
+      <div class="rule"><p class="rt">🧠 <span class="en">Beware of FOMO</span><span class="pa">FOMO ਤੋਂ ਬਚੋ</span></p><p class="rd"><span class="en">Fear Of Missing Out is your worst enemy. Never buy the top because everyone's talking about it.</span><span class="pa">Fear Of Missing Out ਤੁਹਾਡਾ ਸਭ ਤੋਂ ਵੱਡਾ ਦੁਸ਼ਮਣ ਹੈ। ਸਿਰਫ਼ ਇਸ ਲਈ top ਨਾ ਖਰੀਦੋ ਕਿ ਸਭ ਗੱਲ ਕਰ ਰਹੇ ਹਨ।</span></p></div>
+      <div class="rule"><p class="rt">⚠️ <span class="en">Avoid high leverage</span><span class="pa">ਜ਼ਿਆਦਾ leverage ਤੋਂ ਬਚੋ</span></p><p class="rd"><span class="en">As a beginner, stay away from heavy leverage. It multiplies losses as fast as profits — often faster.</span><span class="pa">ਨਵੇਂ ਵਜੋਂ, ਭਾਰੀ leverage ਤੋਂ ਦੂਰ ਰਹੋ। ਇਹ ਨੁਕਸਾਨ ਮੁਨਾਫ਼ੇ ਜਿੰਨੀ ਤੇਜ਼ੀ ਨਾਲ ਵਧਾਉਂਦਾ ਹੈ — ਅਕਸਰ ਤੇਜ਼।</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Four quick questions to lock in Part 1.</span><span class="pa">ਭਾਗ 1 ਪੱਕਾ ਕਰਨ ਲਈ ਚਾਰ ਛੋਟੇ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Broker mentions are not endorsements; verify licensing and current terms yourself. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR। Broker ਦੇ ਜ਼ਿਕਰ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ; license ਤੇ ਮੌਜੂਦਾ ਸ਼ਰਤਾਂ ਖੁਦ ਜਾਂਚੋ। ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਨੁਕਸਾਨ ਦਾ ਵੱਡਾ ਜੋਖਮ ਹੈ।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();
+  if(curPick)pick(curPick,document.querySelector('.choice.sel'),true);
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+
+const bar=document.getElementById('progressbar');
+const links=[...document.querySelectorAll('nav.toc a')];
+const secs=['start','how','apps','where','rules','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  links.forEach((l,i)=>{if(l.classList.contains('home'))return;});
+  // active among section links only
+  const sl=links.filter(l=>!l.classList.contains('home'));
+  sl.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* broker picker */
+let curPick=null;
+const PICKS={
+  crypto:{en:["<strong>CoinSpot</strong> — easiest start, 500+ coins","<strong>Swyftx</strong> — great app with a demo mode","<strong>Kraken Pro</strong> — when you want lower fees at volume"],
+          pa:["<strong>CoinSpot</strong> — ਸਭ ਤੋਂ ਸੌਖੀ ਸ਼ੁਰੂਆਤ, 500+ ਸਿੱਕੇ","<strong>Swyftx</strong> — demo mode ਵਾਲੀ ਵਧੀਆ ਐਪ","<strong>Kraken Pro</strong> — ਜਦੋਂ volume ਉੱਤੇ ਘੱਟ fees ਚਾਹੀਦੀਆਂ"]},
+  stocks:{en:["<strong>Interactive Brokers</strong> — best overall for US &amp; global","<strong>CMC Markets</strong> — best for ASX stocks","<strong>Webull</strong> — clean tools for US markets"],
+          pa:["<strong>Interactive Brokers</strong> — US ਤੇ global ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ","<strong>CMC Markets</strong> — ASX stocks ਲਈ ਵਧੀਆ","<strong>Webull</strong> — US markets ਲਈ ਸਾਫ਼ ਟੂਲ"]},
+  day:{en:["<strong>Vantage Markets</strong> — top FX/CFD pick, TradingView integration","<strong>Pepperstone</strong> — tight spreads, ASIC regulated","<strong>Interactive Brokers</strong> — pro-grade equities &amp; options"],
+       pa:["<strong>Vantage Markets</strong> — ਵਧੀਆ FX/CFD, TradingView integration","<strong>Pepperstone</strong> — ਤੰਗ spreads, ASIC regulated","<strong>Interactive Brokers</strong> — pro-grade equities ਤੇ options"]}
+};
+function pick(key,el,keep){
+  curPick=key;
+  document.querySelectorAll('.choice').forEach(c=>c.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  const list=document.body.classList.contains('lang-pa')?PICKS[key].pa:PICKS[key].en;
+  const res=document.getElementById('pickres');
+  res.className='result show';
+  res.innerHTML='<div class="steps">'+list.map(x=>`<div class="step"><div class="n">✓</div><div><p class="d" style="color:#d3d4d8;font-size:15px;margin:0">${x}</p></div></div>`).join('')+'</div>';
+}
+
+/* quiz */
+const QUIZ=[
+ {q:["Before risking real money, what should you do first?","ਅਸਲੀ ਪੈਸਾ ਜੋਖਮ ਵਿੱਚ ਪਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਕੀ ਕਰਨਾ ਚਾਹੀਦਾ?"],
+  o:[["Deposit and start trading fast","ਪੈਸਾ ਪਾ ਕੇ ਜਲਦੀ trading ਸ਼ੁਰੂ ਕਰੋ"],["Learn the terminology, then paper trade","ਸ਼ਬਦ ਸਿੱਖੋ, ਫਿਰ paper trade ਕਰੋ"],["Use maximum leverage to grow fast","ਜਲਦੀ ਵਧਣ ਲਈ ਵੱਧ ਤੋਂ ਵੱਧ leverage"],["Copy whatever is trending","ਜੋ trend ਵਿੱਚ ਹੈ ਉਹੀ ਨਕਲ ਕਰੋ"]],
+  a:1,f:["Education then a demo account first — practise with fake money before any real risk.","ਪਹਿਲਾਂ ਸਿੱਖਿਆ ਤੇ demo account — ਅਸਲੀ ਜੋਖਮ ਤੋਂ ਪਹਿਲਾਂ ਨਕਲੀ ਪੈਸੇ ਨਾਲ ਅਭਿਆਸ।"]},
+ {q:["How much of your account should you risk per trade?","ਹਰ trade ਉੱਤੇ account ਦਾ ਕਿੰਨਾ ਜੋਖਮ ਲੈਣਾ ਚਾਹੀਦਾ?"],
+  o:[["10–20%","10–20%"],["Whatever feels right","ਜੋ ਠੀਕ ਲੱਗੇ"],["1–2%","1–2%"],["100% on the best setup","ਵਧੀਆ setup ਉੱਤੇ 100%"]],
+  a:2,f:["1–2% per trade keeps you in the game long enough to actually learn and grow.","ਹਰ trade ਉੱਤੇ 1–2% ਤੁਹਾਨੂੰ ਸਿੱਖਣ ਤੇ ਵਧਣ ਜੋਗਾ ਖੇਡ ਵਿੱਚ ਰੱਖਦਾ ਹੈ।"]},
+ {q:["Which app is the 'must-have' for security?","ਸੁਰੱਖਿਆ ਲਈ ਕਿਹੜੀ ਐਪ 'ਜ਼ਰੂਰੀ' ਹੈ?"],
+  o:[["A second charting app","ਦੂਜੀ charting ਐਪ"],["An authenticator app for 2FA","2FA ਲਈ authenticator ਐਪ"],["A news app","ਖ਼ਬਰਾਂ ਦੀ ਐਪ"],["A social trading app","Social trading ਐਪ"]],
+  a:1,f:["Google Authenticator or Authy. 2FA protects your accounts and funds — never skip it.","Google Authenticator ਜਾਂ Authy। 2FA ਤੁਹਾਡੇ accounts ਤੇ ਪੈਸੇ ਬਚਾਉਂਦਾ ਹੈ — ਕਦੇ ਨਾ ਛੱਡੋ।"]},
+ {q:["Why avoid high leverage as a beginner?","ਨਵੇਂ ਵਜੋਂ ਜ਼ਿਆਦਾ leverage ਕਿਉਂ ਨਾ ਵਰਤੀਏ?"],
+  o:[["It's banned in Australia","ਆਸਟ੍ਰੇਲੀਆ ਵਿੱਚ ਮਨ੍ਹਾ ਹੈ"],["It multiplies losses as fast as profits — often faster","ਇਹ ਨੁਕਸਾਨ ਮੁਨਾਫ਼ੇ ਜਿੰਨੀ ਤੇਜ਼ੀ ਨਾਲ ਵਧਾਉਂਦਾ ਹੈ"],["It makes fees higher","ਇਹ fees ਵਧਾਉਂਦਾ ਹੈ"],["It slows execution","ਇਹ execution ਹੌਲੀ ਕਰਦਾ ਹੈ"]],
+  a:1,f:["Leverage cuts both ways and amplifies losses fast. Keep it low while you're learning.","Leverage ਦੋਵੇਂ ਪਾਸੇ ਕੱਟਦਾ ਹੈ ਤੇ ਨੁਕਸਾਨ ਤੇਜ਼ੀ ਨਾਲ ਵਧਾਉਂਦਾ ਹੈ। ਸਿੱਖਦੇ ਸਮੇਂ ਘੱਟ ਰੱਖੋ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=3;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ Part 1 complete','★ ਭਾਗ 1 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You've got the foundations: how to start, what to install, where to trade, and the rules that protect you. Next up — reading the market.","ਤੁਹਾਡੀ ਨੀਂਹ ਤਿਆਰ ਹੈ: ਕਿਵੇਂ ਸ਼ੁਰੂ ਕਰੀਏ, ਕੀ install ਕਰੀਏ, ਕਿੱਥੇ trade ਕਰੀਏ, ਤੇ ਬਚਾਉਣ ਵਾਲੇ ਨਿਯਮ। ਅਗਲਾ — ਮਾਰਕੀਟ ਪੜ੍ਹਨਾ।")
+      : L("Almost. Scroll back through the sections, then run the check again — aim for 3/4.","ਲਗਭਗ। ਭਾਗ ਦੁਬਾਰਾ ਦੇਖੋ, ਫਿਰ ਟੈਸਟ ਦੁਬਾਰਾ ਕਰੋ — 3/4 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Open a TradingView account and a demo broker account','TradingView account ਤੇ ਇੱਕ demo broker account ਖੋਲ੍ਹੋ')}</li>
+        <li>→ ${L('Set up your authenticator app today','ਅੱਜ ਆਪਣੀ authenticator ਐਪ ਸੈੱਟ ਕਰੋ')}</li>
+        <li>→ ${L('Next: Part 2 — Market Analysis','ਅਗਲਾ: ਭਾਗ 2 — ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+renderQuiz();
+</script>
+</body>
+</html>
