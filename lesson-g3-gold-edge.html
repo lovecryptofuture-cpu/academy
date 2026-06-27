@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Gold Trading Edge — Gold G3</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#why">1 · <span class="en">Why Physical</span><span class="pa">ਅਸਲੀ ਬਾਜ਼ਾਰ</span></a>
+      <a href="#sge">2 · <span class="en">SGE Premium</span><span class="pa">SGE Premium</span></a>
+      <a href="#efp">3 · <span class="en">EFP Spread</span><span class="pa">EFP Spread</span></a>
+      <a href="#yields">4 · <span class="en">Broken Model</span><span class="pa">ਟੁੱਟਿਆ Model</span></a>
+      <a href="#regime">5 · <span class="en">Regimes</span><span class="pa">ਦੌਰ</span></a>
+      <a href="#quiz">6 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Gold Tier · G3 · Insider Playbook</span><span class="pa">ਸੋਨਾ ਟੀਅਰ · G3</span></div>
+    <h1><span class="en">The Gold Trading Edge</span><span class="pa">ਸੋਨੇ ਦਾ Trading Edge</span></h1>
+    <p class="lede"><span class="en">Everyone reads the same charts. The real edge is reading the physical market — Shanghai's premium, the COMEX–London spread, and the gold–real-yield link that quietly broke.</span><span class="pa">ਹਰ ਕੋਈ ਉਹੀ charts ਪੜ੍ਹਦਾ ਹੈ। ਅਸਲੀ edge ਅਸਲੀ ਬਾਜ਼ਾਰ ਪੜ੍ਹਨ ਵਿੱਚ ਹੈ — Shanghai ਦਾ premium, COMEX–London spread, ਤੇ ਟੁੱਟਿਆ gold–real-yield ਰਿਸ਼ਤਾ।</span></p>
+    <div class="meta">
+      <span><b>~16 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span>
+      <span><b>1 <span class="en">live tool</span><span class="pa">ਲਾਈਵ ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="why">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">Read the market, not just the chart</span><span class="pa">ਸਿਰਫ਼ chart ਨਹੀਂ — ਬਾਜ਼ਾਰ ਪੜ੍ਹੋ</span></h2>
+    <p><span class="en">Three structural signals most retail traders never see. Each one shows pressure in the <em>physical</em> gold market before it reaches the paper price you trade.</span><span class="pa">ਤਿੰਨ ਢਾਂਚਾਗਤ ਸੰਕੇਤ ਜੋ ਜ਼ਿਆਦਾਤਰ retail traders ਨਹੀਂ ਦੇਖਦੇ। ਹਰ ਇੱਕ <em>ਅਸਲੀ</em> ਸੋਨੇ ਦੇ ਬਾਜ਼ਾਰ ਦਾ ਦਬਾਅ paper ਕੀਮਤ ਤੋਂ ਪਹਿਲਾਂ ਦਿਖਾਉਂਦਾ ਹੈ।</span></p>
+    <div class="card">
+      <div class="signalrow"><div class="ico">01</div><div><p class="st"><span class="en">Shanghai (SGE) premium</span><span class="pa">Shanghai (SGE) premium</span></p><p class="sd"><span class="en">China is the largest physical consumer. SGE pricing reveals real demand pressure before paper markets catch up.</span><span class="pa">ਚੀਨ ਸਭ ਤੋਂ ਵੱਡਾ ਅਸਲੀ ਖਪਤਕਾਰ। SGE ਕੀਮਤ paper ਤੋਂ ਪਹਿਲਾਂ ਅਸਲੀ ਮੰਗ ਦਿਖਾਉਂਦੀ ਹੈ।</span></p></div></div>
+      <div class="signalrow"><div class="ico">02</div><div><p class="st"><span class="en">COMEX EFP spread</span><span class="pa">COMEX EFP spread</span></p><p class="sd"><span class="en">The privately-negotiated spread between COMEX futures and London physical — a stress gauge for the whole paper–physical system.</span><span class="pa">COMEX futures ਤੇ London physical ਵਿਚਕਾਰ spread — ਪੂਰੇ paper–physical system ਦਾ stress gauge।</span></p></div></div>
+      <div class="signalrow"><div class="ico">03</div><div><p class="st"><span class="en">Real-yield decoupling</span><span class="pa">Real-yield ਟੁੱਟਣਾ</span></p><p class="sd"><span class="en">The 2006–2021 model that drove gold pricing has structurally broken. Central-bank flows now explain the gap.</span><span class="pa">2006–2021 ਵਾਲਾ model ਟੁੱਟ ਗਿਆ। ਹੁਣ ਕੇਂਦਰੀ ਬੈਂਕ ਦੀ ਖਰੀਦ ਫਰਕ ਸਮਝਾਉਂਦੀ ਹੈ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="sge">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">SGE premium — Shanghai before London</span><span class="pa">SGE premium — London ਤੋਂ ਪਹਿਲਾਂ Shanghai</span></h2>
+    <p><span class="en">The Shanghai Gold Exchange is China's only legal gold-import channel. Its price versus London is a real-time gauge of Chinese physical demand. Here's the exact calculation — try it.</span><span class="pa">Shanghai Gold Exchange ਚੀਨ ਦਾ ਇਕਲੌਤਾ ਕਾਨੂੰਨੀ gold-import ਰਾਹ ਹੈ। London ਦੇ ਮੁਕਾਬਲੇ ਇਸਦੀ ਕੀਮਤ ਚੀਨੀ ਅਸਲੀ ਮੰਗ ਦਾ real-time gauge ਹੈ। ਇਹ ਰਿਹਾ ਹਿਸਾਬ — ਅਜ਼ਮਾਓ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · SGE premium calculator</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · SGE premium calculator</span></span>
+      <div class="fields">
+        <div class="field">
+          <label><span class="en">SGE Au9999 (CNY / gram)</span><span class="pa">SGE Au9999 (CNY / ਗ੍ਰਾਮ)</span></label>
+          <input id="sge" type="number" value="845" min="0" step="0.5" oninput="calcSge()">
+        </div>
+        <div class="field">
+          <label><span class="en">USD / CNY fix</span><span class="pa">USD / CNY fix</span></label>
+          <input id="cny" type="number" value="7.10" min="0.1" step="0.01" oninput="calcSge()">
+        </div>
+        <div class="field">
+          <label><span class="en">London PM fix (USD / oz)</span><span class="pa">London PM fix (USD / oz)</span></label>
+          <input id="lon" type="number" value="3650" min="0" step="1" oninput="calcSge()">
+        </div>
+      </div>
+      <div class="calcflow">
+        <span class="step"><span class="en">CNY/g</span><span class="pa">CNY/g</span></span>
+        <span>× 31.1035 →</span>
+        <span class="step"><b id="f-ozcny">—</b> CNY/oz</span>
+        <span>÷ USDCNY →</span>
+        <span class="step"><b id="f-ozusd">—</b> USD/oz</span>
+        <span>− London →</span>
+        <span class="step"><b id="f-prem">—</b></span>
+      </div>
+      <div class="verdict">
+        <div class="vbig" id="v-prem">+$0</div>
+        <div class="vlbl"><span class="en">SGE premium / discount vs London, per oz</span><span class="pa">London ਦੇ ਮੁਕਾਬਲੇ SGE premium / discount, ਪ੍ਰਤੀ oz</span></div>
+        <div class="vsig" id="v-sig"></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Try a sustained premium above $8–10 — that's physical demand "screaming". Flip it to a discount and any rally is running on Western paper flow alone.</span><span class="pa">$8–10 ਤੋਂ ਉੱਪਰ ਲਗਾਤਾਰ premium ਅਜ਼ਮਾਓ — ਉਹ ਅਸਲੀ ਮੰਗ "ਚੀਕ" ਰਹੀ ਹੈ। Discount ਕਰੋ ਤੇ rally ਸਿਰਫ਼ Western paper flow ਉੱਤੇ ਚੱਲ ਰਹੀ ਹੈ।</span></p>
+    </div>
+
+    <div class="twocol">
+      <div class="rcard bull">
+        <p class="rh"><span class="en">Bullish · premium &gt; $8–10/oz</span><span class="pa">Bullish · premium &gt; $8–10/oz</span></p>
+        <p><span class="en">Importers must source metal from London/Swiss refiners, draining LBMA vaults. In Q3 2023, SGE premiums of $40–50 preceded a run from $1,820 → $2,050. Physical is screaming before paper catches up.</span><span class="pa">ਆਯਾਤਕਾਂ ਨੂੰ London/Swiss ਤੋਂ ਧਾਤ ਲੈਣੀ ਪੈਂਦੀ ਹੈ, LBMA vaults ਖਾਲੀ ਹੁੰਦੇ ਹਨ। Q3 2023 ਵਿੱਚ $40–50 premium ਤੋਂ ਬਾਅਦ $1,820 → $2,050।</span></p>
+      </div>
+      <div class="rcard frag">
+        <p class="rh"><span class="en">Fragility · flip to discount</span><span class="pa">ਕਮਜ਼ੋਰੀ · discount</span></p>
+        <p><span class="en">The PBoC loosened quotas or domestic demand is weak. Any rally runs on Western ETF and spec flow alone — far more fragile. Technical short setups get meaningfully safer here.</span><span class="pa">PBoC ਨੇ quota ਢਿੱਲੇ ਕੀਤੇ ਜਾਂ ਮੰਗ ਕਮਜ਼ੋਰ ਹੈ। Rally ਸਿਰਫ਼ Western flow ਉੱਤੇ — ਬਹੁਤ ਕਮਜ਼ੋਰ। Short setups ਇੱਥੇ ਸੁਰੱਖਿਅਤ ਹਨ।</span></p>
+      </div>
+    </div>
+    <div class="cavbox"><span class="en">⚠ Caveat: the signal goes dark during Chinese holidays (Golden Week, CNY) — post-holiday reopens often gap. Decompose CNY moves carefully when USDCNY is volatile.</span><span class="pa">⚠ ਸਾਵਧਾਨੀ: ਚੀਨੀ ਛੁੱਟੀਆਂ (Golden Week, CNY) ਵਿੱਚ ਸੰਕੇਤ ਬੰਦ ਹੋ ਜਾਂਦਾ ਹੈ — ਛੁੱਟੀ ਬਾਅਦ ਅਕਸਰ gap। USDCNY volatile ਹੋਵੇ ਤਾਂ ਧਿਆਨ ਨਾਲ ਪੜ੍ਹੋ।</span></div>
+  </div>
+</section>
+
+<section id="efp">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">EFP spread — the dislocation gauge</span><span class="pa">EFP spread — dislocation gauge</span></h2>
+    <p><span class="en">An Exchange-for-Physical swaps a COMEX futures position for equivalent London metal. The price difference is what someone will pay to turn paper into real loco-London gold — the cleanest stress test of the whole arbitrage system.</span><span class="pa">Exchange-for-Physical ਇੱਕ COMEX futures position ਨੂੰ London ਧਾਤ ਨਾਲ ਬਦਲਦਾ ਹੈ। ਕੀਮਤ ਦਾ ਫਰਕ ਦੱਸਦਾ ਹੈ ਕਿ ਕੋਈ paper ਨੂੰ ਅਸਲੀ ਸੋਨੇ ਵਿੱਚ ਬਦਲਣ ਲਈ ਕਿੰਨਾ ਦੇਵੇਗਾ।</span></p>
+    <div class="card">
+      <div class="signalrow"><div class="ico" style="font-size:14px">&lt;$5</div><div><p class="st"><span class="en">Normal — arbitrage working</span><span class="pa">ਆਮ — arbitrage ਚੱਲ ਰਿਹਾ</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:13px">$5–15</div><div><p class="st"><span class="en">Stress — watch closely</span><span class="pa">Stress — ਧਿਆਨ ਨਾਲ ਦੇਖੋ</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:14px">$15+</div><div><p class="st"><span class="en">Dislocation — expect volatility</span><span class="pa">Dislocation — volatility ਦੀ ਉਮੀਦ</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:12px">neg</div><div><p class="st"><span class="en">Negative — rare physical-to-paper dump</span><span class="pa">Negative — ਦੁਰਲੱਭ physical-to-paper dump</span></p></div></div>
+    </div>
+    <p><span class="en"><strong>March 2020:</strong> EFP went from ~$2 to <strong>$70+</strong> as refiners couldn't recast 400oz London bars into 100oz COMEX bars — visible days before mainstream coverage. <strong>Early 2025:</strong> banks pre-positioned metal into US vaults on tariff fears, draining London and driving the rally. EFPs gave both away early.</span><span class="pa"><strong>ਮਾਰਚ 2020:</strong> EFP ~$2 ਤੋਂ <strong>$70+</strong> ਹੋ ਗਿਆ — refiners 400oz bars ਨੂੰ 100oz COMEX bars ਵਿੱਚ ਨਹੀਂ ਢਾਲ ਸਕੇ। <strong>2025 ਸ਼ੁਰੂ:</strong> ਬੈਂਕਾਂ ਨੇ tariff ਡਰ ਤੋਂ US vaults ਵਿੱਚ ਧਾਤ ਭੇਜੀ। EFPs ਨੇ ਦੋਵੇਂ ਪਹਿਲਾਂ ਦੱਸ ਦਿੱਤੇ।</span></p>
+    <div class="cavbox"><span class="en">Without Bloomberg: use GC1 (front-month COMEX) minus XAU spot at London close, adjusted for days-to-expiry carry. The CME Daily Bulletin publishes EFP volumes — surging volume itself is informative.</span><span class="pa">Bloomberg ਤੋਂ ਬਿਨਾਂ: GC1 (front-month COMEX) − XAU spot, London close ਉੱਤੇ, carry ਲਈ adjust ਕਰ ਕੇ। CME Daily Bulletin EFP volumes ਛਾਪਦਾ ਹੈ — ਵਧਦਾ volume ਖੁਦ ਜਾਣਕਾਰੀ ਹੈ।</span></div>
+  </div>
+</section>
+
+<section id="yields">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Gold ≠ inverse real yields (not anymore)</span><span class="pa">Gold ≠ ਉਲਟ real yields (ਹੁਣ ਨਹੀਂ)</span></h2>
+    <div class="twocol">
+      <div class="rcard">
+        <p class="rh" style="color:var(--muted)"><span class="en">2006–2021 · old regime</span><span class="pa">2006–2021 · ਪੁਰਾਣਾ ਦੌਰ</span></p>
+        <p><span class="en">Gold tracked the inverse 10Y TIPS yield with high precision. Rate-of-change in real yields was the dominant driver. The macro framework was simple and robust.</span><span class="pa">ਸੋਨਾ ਉਲਟ 10Y TIPS yield ਨੂੰ ਬਾਰੀਕੀ ਨਾਲ track ਕਰਦਾ ਸੀ। Real yields ਮੁੱਖ ਚਾਲਕ ਸਨ।</span></p>
+      </div>
+      <div class="rcard frag">
+        <p class="rh"><span class="en">2022 → now · the break</span><span class="pa">2022 → ਹੁਣ · ਟੁੱਟਣਾ</span></p>
+        <p><span class="en">The correlation broke and hasn't reverted. The large unexplained residual now maps to central-bank buying (the PBoC reports late to the IMF) and de-dollarisation flows.</span><span class="pa">ਸਬੰਧ ਟੁੱਟ ਗਿਆ ਤੇ ਵਾਪਸ ਨਹੀਂ ਆਇਆ। ਵੱਡਾ ਫਰਕ ਹੁਣ ਕੇਂਦਰੀ ਬੈਂਕ ਖਰੀਦ ਤੇ de-dollarisation ਨਾਲ ਜੁੜਦਾ ਹੈ।</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="regime">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">Read the regime, not the indicator</span><span class="pa">Indicator ਨਹੀਂ — ਦੌਰ ਪੜ੍ਹੋ</span></h2>
+    <p><span class="en">The edge is combining all three signals into one regime read.</span><span class="pa">Edge ਤਿੰਨੇ ਸੰਕੇਤਾਂ ਨੂੰ ਇੱਕ ਦੌਰ ਵਿੱਚ ਜੋੜਨ ਵਿੱਚ ਹੈ।</span></p>
+    <div class="twocol">
+      <div class="rcard bull">
+        <p class="rh"><span class="en">Regime A · physical scarcity</span><span class="pa">ਦੌਰ A · ਅਸਲੀ ਕਮੀ</span></p>
+        <p><span class="en"><strong>Trifecta:</strong> SGE premium widening + EFP widening + LBMA vault draws.<br><br><strong>The play:</strong> shorting rallies is genuinely dangerous regardless of DXY or real yields. Price is set by physical scarcity, not macro speculation.</span><span class="pa"><strong>Trifecta:</strong> SGE premium ਵਧੇ + EFP ਵਧੇ + LBMA vault ਖਾਲੀ।<br><br><strong>ਖੇਡ:</strong> rallies short ਕਰਨਾ ਖ਼ਤਰਨਾਕ। ਕੀਮਤ ਅਸਲੀ ਕਮੀ ਨਾਲ ਤੈਅ।</span></p>
+      </div>
+      <div class="rcard frag">
+        <p class="rh"><span class="en">Regime B · paper-driven</span><span class="pa">ਦੌਰ B · paper-ਚਾਲਿਤ</span></p>
+        <p><span class="en"><strong>Trifecta:</strong> SGE at discount + EFP normal + ETF outflows.<br><br><strong>The play:</strong> the rally runs on speculative flow alone — much more shortable on technical exhaustion. Mean-reversion setups regain their edge.</span><span class="pa"><strong>Trifecta:</strong> SGE discount + EFP ਆਮ + ETF outflows।<br><br><strong>ਖੇਡ:</strong> rally ਸਿਰਫ਼ spec flow ਉੱਤੇ — short ਕਰਨ ਯੋਗ। Mean-reversion ਵਾਪਸ।</span></p>
+      </div>
+    </div>
+    <h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3>
+    <div class="takeaways">
+      <div class="ta"><div class="tk">›</div><div><span class="en">SGE premium: build it daily — a 20-minute spreadsheet. Sustained widening = physical screaming.</span><span class="pa">SGE premium ਰੋਜ਼ ਕੱਢੋ। ਲਗਾਤਾਰ ਵਧਣਾ = ਅਸਲੀ ਮੰਗ ਚੀਕ ਰਹੀ।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">EFP spread: watch the GC1-vs-spot basis; track CME Daily Bulletin volumes for stress.</span><span class="pa">EFP: GC1-vs-spot basis ਦੇਖੋ; CME volumes track ਕਰੋ।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">Regime check: the trifecta confirms the regime. Don't short physical scarcity; don't buy paper exhaustion.</span><span class="pa">Trifecta ਦੌਰ ਪੱਕਾ ਕਰਦਾ ਹੈ। ਅਸਲੀ ਕਮੀ short ਨਾ ਕਰੋ; paper exhaustion ਨਾ ਖਰੀਦੋ।</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions on the physical-market edge.</span><span class="pa">ਅਸਲੀ-ਬਾਜ਼ਾਰ edge ਉੱਤੇ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','why','sge','efp','yields','regime','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+function calcSge(){
+  const sge=+document.getElementById('sge').value||0;
+  const cny=+document.getElementById('cny').value||1;
+  const lon=+document.getElementById('lon').value||0;
+  const ozcny=sge*31.1035;
+  const ozusd=ozcny/cny;
+  const prem=ozusd-lon;
+  document.getElementById('f-ozcny').textContent=ozcny.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('f-ozusd').textContent=ozusd.toLocaleString(undefined,{maximumFractionDigits:0});
+  const psign=(prem>=0?'+$':'−$')+Math.abs(prem).toFixed(0);
+  document.getElementById('f-prem').textContent=psign;
+  const vp=document.getElementById('v-prem'); vp.textContent=psign;
+  const vs=document.getElementById('v-sig');
+  if(prem>=8){vp.style.color='var(--green)';vs.style.color='var(--green)';vs.textContent=L('Bullish — physical demand screaming','Bullish — ਅਸਲੀ ਮੰਗ ਚੀਕ ਰਹੀ');}
+  else if(prem<0){vp.style.color='var(--red)';vs.style.color='var(--red)';vs.textContent=L('Fragility — rally on Western paper alone','ਕਮਜ਼ੋਰੀ — ਸਿਰਫ਼ Western paper ਉੱਤੇ rally');}
+  else{vp.style.color='var(--amber)';vs.style.color='var(--amber)';vs.textContent=L('Neutral — within normal band','Neutral — ਆਮ ਦਾਇਰੇ ਵਿੱਚ');}
+}
+
+const QUIZ=[
+ {q:["What does the SGE premium versus London tell you?","London ਦੇ ਮੁਕਾਬਲੇ SGE premium ਕੀ ਦੱਸਦਾ ਹੈ?"],
+  o:[["The COMEX margin rate","COMEX margin rate"],["Real-time Chinese physical demand pressure","Real-time ਚੀਨੀ ਅਸਲੀ ਮੰਗ ਦਾ ਦਬਾਅ"],["The US interest rate","US interest rate"],["Mining supply costs","Mining ਸਪਲਾਈ ਲਾਗਤ"]],
+  a:1,f:["SGE is China's only legal import channel, so its premium reads physical demand before paper markets react.","SGE ਚੀਨ ਦਾ ਇਕਲੌਤਾ ਕਾਨੂੰਨੀ ਰਾਹ ਹੈ — premium ਅਸਲੀ ਮੰਗ paper ਤੋਂ ਪਹਿਲਾਂ ਦੱਸਦਾ ਹੈ।"]},
+ {q:["A sustained SGE premium above ~$8–10/oz is…","~$8–10/oz ਤੋਂ ਉੱਪਰ ਲਗਾਤਾਰ SGE premium…"],
+  o:[["A bearish exhaustion signal","Bearish exhaustion signal"],["A bullish signal — physical screaming","Bullish — ਅਸਲੀ ਮੰਗ ਚੀਕ ਰਹੀ"],["Meaningless noise","ਬੇਮਤਲਬ ਰੌਲਾ"],["A broker error","Broker ਗਲਤੀ"]],
+  a:1,f:["Importers drain London/Swiss vaults to meet Chinese demand — physical is screaming before paper catches up.","ਆਯਾਤਕ London vaults ਖਾਲੀ ਕਰਦੇ ਹਨ — ਅਸਲੀ ਮੰਗ paper ਤੋਂ ਪਹਿਲਾਂ।"]},
+ {q:["In March 2020, the COMEX EFP spread blew out from ~$2 to…","ਮਾਰਚ 2020 ਵਿੱਚ COMEX EFP spread ~$2 ਤੋਂ…"],
+  o:[["~$10","~$10"],["~$25","~$25"],["$70+","$70+"],["It went to zero","ਜ਼ੀਰੋ ਹੋ ਗਿਆ"]],
+  a:2,f:["Refiners couldn't recast 400oz London bars into 100oz COMEX bars; the spread hit $70+ days before mainstream coverage.","Refiners bars ਨਹੀਂ ਢਾਲ ਸਕੇ; spread $70+ ਹੋ ਗਿਆ।"]},
+ {q:["Why do gold dislocations now last longer (post-2021)?","Gold dislocations ਹੁਣ (2021 ਤੋਂ ਬਾਅਦ) ਜ਼ਿਆਦਾ ਦੇਰ ਕਿਉਂ ਰਹਿੰਦੇ ਹਨ?"],
+  o:[["More retail traders","ਜ਼ਿਆਦਾ retail traders"],["Basel III made banks' paper-gold arbitrage too expensive","Basel III ਨੇ paper-gold arbitrage ਮਹਿੰਗਾ ਕਰ ਦਿੱਤਾ"],["Lower volatility","ਘੱਟ volatility"],["Exchanges widened limits","Exchanges ਨੇ limits ਵਧਾਈਆਂ"]],
+  a:1,f:["Basel III made holding paper gold expensive, so banks no longer rush to arb dislocations — they persist.","Basel III ਨੇ paper gold ਮਹਿੰਗਾ ਕੀਤਾ — ਬੈਂਕ ਜਲਦੀ arb ਨਹੀਂ ਕਰਦੇ।"]},
+ {q:["In a physical-scarcity regime (SGE + EFP widening, vault draws), you should…","ਅਸਲੀ-ਕਮੀ ਦੌਰ ਵਿੱਚ (SGE + EFP ਵਧੇ) ਤੁਹਾਨੂੰ…"],
+  o:[["Short every rally aggressively","ਹਰ rally ਜ਼ੋਰ ਨਾਲ short ਕਰੋ"],["Avoid shorting rallies — scarcity sets the price","Rallies short ਨਾ ਕਰੋ — ਕਮੀ ਕੀਮਤ ਤੈਅ ਕਰਦੀ ਹੈ"],["Ignore the chart entirely","Chart ਪੂਰੀ ਤਰ੍ਹਾਂ ਛੱਡੋ"],["Only trade real yields","ਸਿਰਫ਼ real yields trade ਕਰੋ"]],
+  a:1,f:["When physical scarcity sets the marginal price, shorting rallies is dangerous regardless of DXY or yields.","ਜਦੋਂ ਅਸਲੀ ਕਮੀ ਕੀਮਤ ਤੈਅ ਕਰੇ, rallies short ਕਰਨਾ ਖ਼ਤਰਨਾਕ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ G3 complete','★ G3 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You can now read the physical market the way institutions do — SGE premium, EFP spread, and the regime they define. Next — the institutional signal stack: lease rates, Basel III, COT and the vol surface.","ਹੁਣ ਤੁਸੀਂ ਅਸਲੀ ਬਾਜ਼ਾਰ ਸੰਸਥਾਵਾਂ ਵਾਂਗ ਪੜ੍ਹ ਸਕਦੇ ਹੋ। ਅਗਲਾ — ਸੰਸਥਾਗਤ ਸੰਕੇਤ: lease rates, Basel III, COT, vol surface।")
+      : L("Close. Re-read the SGE and EFP sections, replay the calculator, then try again. Aim for 4/5.","ਲਗਭਗ। SGE ਤੇ EFP ਦੁਬਾਰਾ ਪੜ੍ਹੋ, calculator ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Add CBOE:GVZ and a GC1-vs-spot note to your watchlist','CBOE:GVZ ਤੇ GC1-vs-spot watchlist ਵਿੱਚ ਜੋੜੋ')}</li>
+        <li>→ ${L('Start a simple daily SGE-premium log','ਰੋਜ਼ਾਨਾ SGE-premium log ਸ਼ੁਰੂ ਕਰੋ')}</li>
+        <li>→ ${L('Next: G4 — Institutional Gold Signals','ਅਗਲਾ: G4 — ਸੰਸਥਾਗਤ ਸੋਨਾ ਸੰਕੇਤ')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+calcSge();renderQuiz();
+</script>
+</body>
+</html>

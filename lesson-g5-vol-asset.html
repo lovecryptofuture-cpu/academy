@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volatility Is an Asset Class — Gold G5</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#reframe">1 · <span class="en">IV vs RV</span><span class="pa">IV vs RV</span></a>
+      <a href="#vix">2 · <span class="en">VIX Decoded</span><span class="pa">VIX</span></a>
+      <a href="#term">3 · <span class="en">Term Structure</span><span class="pa">Term Structure</span></a>
+      <a href="#skew">4 · <span class="en">Skew</span><span class="pa">Skew</span></a>
+      <a href="#vrp">5 · <span class="en">Variance Premium</span><span class="pa">VRP</span></a>
+      <a href="#gvz">6 · <span class="en">Gold's GVZ</span><span class="pa">GVZ</span></a>
+      <a href="#quiz">7 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Gold Tier · G5 · The Quant Side</span><span class="pa">ਸੋਨਾ ਟੀਅਰ · G5</span></div>
+    <h1><span class="en">Volatility Is an Asset Class</span><span class="pa">Volatility ਇੱਕ Asset Class ਹੈ</span></h1>
+    <p class="lede"><span class="en">Direction tells you where price might go. Volatility tells you how, when, and how much the market is afraid getting there — and you can read it as a signal, free, every day.</span><span class="pa">Direction ਦੱਸਦਾ ਹੈ ਕੀਮਤ ਕਿੱਥੇ ਜਾ ਸਕਦੀ ਹੈ। Volatility ਦੱਸਦੀ ਹੈ ਕਿਵੇਂ, ਕਦੋਂ, ਤੇ ਬਾਜ਼ਾਰ ਕਿੰਨਾ ਡਰਿਆ ਹੋਇਆ ਹੈ — ਤੇ ਤੁਸੀਂ ਇਸਨੂੰ ਰੋਜ਼ਾਨਾ ਮੁਫ਼ਤ ਸੰਕੇਤ ਵਜੋਂ ਪੜ੍ਹ ਸਕਦੇ ਹੋ।</span></p>
+    <div class="meta">
+      <span><b>~15 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span>
+      <span><b>1 <span class="en">live tool</span><span class="pa">ਲਾਈਵ ਟੂਲ</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="reframe">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">Stop thinking of vol as "how much it moved"</span><span class="pa">Vol ਨੂੰ ਸਿਰਫ਼ "ਕਿੰਨਾ ਹਿੱਲਿਆ" ਨਾ ਸਮਝੋ</span></h2>
+    <p><span class="en">Most discretionary traders treat volatility as a side-effect — "ATR is high today". To institutions, volatility itself is a product with a price, a market, and a risk premium. You can be long or short volatility independent of direction. Reading it gives you a sentiment signal the price chart alone can't show.</span><span class="pa">ਜ਼ਿਆਦਾਤਰ traders volatility ਨੂੰ side-effect ਸਮਝਦੇ ਹਨ — "ਅੱਜ ATR ਉੱਚਾ ਹੈ"। ਸੰਸਥਾਵਾਂ ਲਈ volatility ਆਪ ਇੱਕ product ਹੈ ਜਿਸਦੀ ਕੀਮਤ, ਬਾਜ਼ਾਰ ਤੇ risk premium ਹੈ। ਤੁਸੀਂ direction ਤੋਂ ਵੱਖ vol long ਜਾਂ short ਹੋ ਸਕਦੇ ਹੋ।</span></p>
+    <div class="ivrv">
+      <div class="rcard"><p class="rh"><span class="en">📉 Realized Vol (RV)</span><span class="pa">📉 Realized Vol (RV)</span></p><p><span class="en">What ACTUALLY happened — the statistical movement of price over a past window. Backward-looking. This is the "ATR" world you already know.</span><span class="pa">ਜੋ ਅਸਲ ਵਿੱਚ ਹੋਇਆ — ਪਿਛਲੇ ਸਮੇਂ ਦੀ ਕੀਮਤ ਦੀ ਹਰਕਤ। ਪਿੱਛੇ ਵੱਲ ਦੇਖਦਾ। ਇਹ "ATR" ਵਾਲੀ ਦੁਨੀਆ ਹੈ ਜੋ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ।</span></p></div>
+      <div class="rcard"><p class="rh"><span class="en">🔮 Implied Vol (IV)</span><span class="pa">🔮 Implied Vol (IV)</span></p><p><span class="en">What the market EXPECTS — extracted from option prices, the vol traders are paying for right now. Forward-looking. This is the part you've been missing.</span><span class="pa">ਜੋ ਬਾਜ਼ਾਰ ਉਮੀਦ ਕਰਦਾ ਹੈ — option ਕੀਮਤਾਂ ਤੋਂ ਕੱਢਿਆ, ਜੋ vol traders ਹੁਣ ਖਰੀਦ ਰਹੇ ਹਨ। ਅੱਗੇ ਵੱਲ ਦੇਖਦਾ। ਇਹ ਹਿੱਸਾ ਤੁਸੀਂ ਖੁੰਝ ਰਹੇ ਸੀ।</span></p></div>
+    </div>
+    <p class="muted"><span class="en">The gap between them — IV minus RV — is where the whole vol-trading edge lives. Keep that idea in mind; it returns in section 5.</span><span class="pa">ਇਹਨਾਂ ਵਿਚਕਾਰ ਫਰਕ — IV ਘਟਾਓ RV — ਜਿੱਥੇ ਪੂਰਾ vol-trading edge ਰਹਿੰਦਾ ਹੈ। ਇਹ ਗੱਲ ਯਾਦ ਰੱਖੋ; ਸੈਕਸ਼ਨ 5 ਵਿੱਚ ਵਾਪਸ ਆਉਂਦੀ ਹੈ।</span></p>
+  </div>
+</section>
+
+<section id="vix">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">The VIX is a variance swap in disguise</span><span class="pa">VIX ਅਸਲ ਵਿੱਚ ਇੱਕ variance swap ਹੈ</span></h2>
+    <p><span class="en">The VIX isn't a number someone picks. It's calculated from a whole strip of S&P 500 option prices — puts and calls across many strikes — weighted to produce the market's expected 30-day volatility, annualised. The shortcut: <strong>daily move ≈ index level ÷ 16</strong>. Drag the slider and read the regime.</span><span class="pa">VIX ਕੋਈ ਚੁਣਿਆ ਨੰਬਰ ਨਹੀਂ। ਇਹ S&P 500 ਦੇ ਬਹੁਤ ਸਾਰੇ option ਭਾਵਾਂ ਤੋਂ ਗਿਣਿਆ ਜਾਂਦਾ ਹੈ — 30-ਦਿਨ ਦੀ ਉਮੀਦ ਕੀਤੀ vol, annualised। ਸ਼ਾਰਟਕੱਟ: <strong>ਰੋਜ਼ਾਨਾ move ≈ level ÷ 16</strong>। Slider ਖਿੱਚੋ ਤੇ regime ਪੜ੍ਹੋ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · Vol index → daily move &amp; regime</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · Vol index → ਰੋਜ਼ਾਨਾ move ਤੇ regime</span></span>
+      <div class="slabel">
+        <label style="margin:0"><span class="en">Vol index level (VIX or GVZ)</span><span class="pa">Vol index level (VIX ਜਾਂ GVZ)</span></label>
+        <span class="lv" id="lv">16</span>
+      </div>
+      <input type="range" id="vol" min="5" max="80" value="16" step="1" oninput="calcVol()">
+      <div class="scale"><span>5</span><span>20</span><span>35</span><span>50</span><span>65</span><span>80</span></div>
+      <div class="verdict">
+        <div class="vbig" id="v-daily">±1.0%</div>
+        <div class="vlbl"><span class="en">Expected 1-day move (level ÷ √252)</span><span class="pa">ਉਮੀਦ ਕੀਤਾ 1-ਦਿਨ move (level ÷ √252)</span></div>
+        <div class="vsig" id="v-regime"></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Same math works for GVZ on gold — just read it against gold's own daily ranges. Push it past 30 and watch the regime flip to crisis pricing.</span><span class="pa">ਇਹੀ ਹਿਸਾਬ GVZ (ਸੋਨਾ) ਉੱਤੇ ਚੱਲਦਾ ਹੈ — ਸੋਨੇ ਦੇ ਆਪਣੇ ਰੋਜ਼ਾਨਾ range ਨਾਲ ਪੜ੍ਹੋ। 30 ਤੋਂ ਉੱਪਰ ਲੈ ਜਾਓ ਤੇ regime crisis ਵੱਲ ਮੁੜਦਾ ਦੇਖੋ।</span></p>
+    </div>
+
+    <h3><span class="en">The map in words</span><span class="pa">ਨਕਸ਼ਾ ਸ਼ਬਦਾਂ ਵਿੱਚ</span></h3>
+    <div class="card">
+      <div class="signalrow"><div class="ico" style="font-size:13px;color:var(--green)">10-15</div><div><p class="st"><span class="en">Calm · ~0.6–0.9% daily</span><span class="pa">ਸ਼ਾਂਤ · ~0.6–0.9% ਰੋਜ਼ਾਨਾ</span></p><p class="sd"><span class="en">Complacency zone.</span><span class="pa">ਬੇਫ਼ਿਕਰੀ ਦਾ ਦੌਰ।</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:13px;color:var(--green)">15-20</div><div><p class="st"><span class="en">Normal · ~0.9–1.25% daily</span><span class="pa">ਆਮ · ~0.9–1.25% ਰੋਜ਼ਾਨਾ</span></p><p class="sd"><span class="en">Healthy market.</span><span class="pa">ਸਿਹਤਮੰਦ ਬਾਜ਼ਾਰ।</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:13px;color:var(--amber)">20-30</div><div><p class="st"><span class="en">Elevated · ~1.25–1.9% daily</span><span class="pa">ਉੱਚਾ · ~1.25–1.9% ਰੋਜ਼ਾਨਾ</span></p><p class="sd"><span class="en">Stress building.</span><span class="pa">Stress ਵਧ ਰਿਹਾ।</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:13px;color:var(--red)">30-50</div><div><p class="st"><span class="en">Fear · ~1.9–3.1% daily</span><span class="pa">ਡਰ · ~1.9–3.1% ਰੋਜ਼ਾਨਾ</span></p><p class="sd"><span class="en">Crisis pricing.</span><span class="pa">Crisis pricing।</span></p></div></div>
+      <div class="signalrow"><div class="ico" style="font-size:14px;color:var(--red)">50+</div><div><p class="st"><span class="en">Panic · 3%+ daily</span><span class="pa">ਘਬਰਾਹਟ · 3%+ ਰੋਜ਼ਾਨਾ</span></p><p class="sd"><span class="en">2008 / 2020 territory.</span><span class="pa">2008 / 2020 ਵਾਲਾ ਇਲਾਕਾ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="term">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">Volatility has a yield curve too</span><span class="pa">Volatility ਦਾ ਵੀ yield curve ਹੁੰਦਾ ਹੈ</span></h2>
+    <p><span class="en">Plot IV by expiry — near months to far months — and you get the vol term structure. Its shape is a sentiment read in itself.</span><span class="pa">IV ਨੂੰ expiry ਅਨੁਸਾਰ plot ਕਰੋ — ਨੇੜੇ ਤੋਂ ਦੂਰ — ਤੇ ਤੁਹਾਨੂੰ vol term structure ਮਿਲਦਾ ਹੈ। ਇਸਦੀ ਸ਼ਕਲ ਆਪ ਇੱਕ sentiment ਪੜ੍ਹਤ ਹੈ।</span></p>
+    <div class="twocol">
+      <div class="rcard bull">
+        <p class="rh"><span class="en">Contango · upward · normal</span><span class="pa">Contango · ਉੱਪਰ · ਆਮ</span></p>
+        <p><span class="en">Far months pricier — calm now, more uncertainty priced later. The normal state. Vol sellers harvest the roll.</span><span class="pa">ਦੂਰ ਮਹੀਨੇ ਮਹਿੰਗੇ — ਹੁਣ ਸ਼ਾਂਤ, ਅੱਗੇ ਜ਼ਿਆਦਾ ਅਨਿਸ਼ਚਿਤਤਾ। ਆਮ ਹਾਲਤ। Vol sellers roll ਤੋਂ ਕਮਾਉਂਦੇ ਹਨ।</span></p>
+      </div>
+      <div class="rcard frag">
+        <p class="rh"><span class="en">Backwardation · inverted · stress</span><span class="pa">Backwardation · ਉਲਟ · stress</span></p>
+        <p><span class="en">Front-month IV spikes above far months. Acute fear RIGHT NOW. Often marks capitulation or near-term panic.</span><span class="pa">Front-month IV ਦੂਰ ਮਹੀਨਿਆਂ ਤੋਂ ਉੱਪਰ ਚੜ੍ਹਦੀ। ਹੁਣੇ ਤਿੱਖਾ ਡਰ। ਅਕਸਰ capitulation ਜਾਂ panic ਦਾ ਨਿਸ਼ਾਨ।</span></p>
+      </div>
+    </div>
+    <div class="cavbox"><span class="en">The signal: a flip into backwardation is a genuine stress alarm — often more honest than price, which may not have cracked yet.</span><span class="pa">ਸੰਕੇਤ: backwardation ਵੱਲ ਮੁੜਨਾ ਅਸਲੀ stress ਅਲਾਰਮ ਹੈ — ਅਕਸਰ ਕੀਮਤ ਤੋਂ ਜ਼ਿਆਦਾ ਇਮਾਨਦਾਰ, ਜੋ ਹਾਲੇ ਟੁੱਟੀ ਨਹੀਂ ਹੋ ਸਕਦੀ।</span></div>
+  </div>
+</section>
+
+<section id="skew">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">Not all strikes cost the same vol</span><span class="pa">ਹਰ strike ਦੀ vol ਇੱਕੋ ਜਿਹੀ ਨਹੀਂ</span></h2>
+    <p><span class="en">Plot IV across strikes and you get the smile or smirk. Skew shows <em>which tail</em> the market fears and is paying to hedge — a direct read on positioning.</span><span class="pa">IV ਨੂੰ strikes ਅਨੁਸਾਰ plot ਕਰੋ ਤੇ smile/smirk ਮਿਲਦੀ ਹੈ। Skew ਦੱਸਦਾ ਹੈ ਬਾਜ਼ਾਰ <em>ਕਿਹੜੀ tail</em> ਤੋਂ ਡਰਦਾ ਹੈ ਤੇ hedge ਲਈ ਪੈਸੇ ਦੇ ਰਿਹਾ ਹੈ।</span></p>
+    <div class="card">
+      <div class="signalrow"><div class="ico">↓</div><div><p class="st"><span class="en">Equity put skew (the classic smirk)</span><span class="pa">Equity put skew</span></p><p class="sd"><span class="en">Stocks crash DOWN fast. Everyone wants downside puts, so OTM puts cost more IV.</span><span class="pa">ਸਟਾਕ ਤੇਜ਼ੀ ਨਾਲ ਹੇਠਾਂ ਡਿੱਗਦੇ ਹਨ। ਸਾਰੇ downside puts ਚਾਹੁੰਦੇ ਹਨ, ਇਸ ਲਈ OTM puts ਦੀ IV ਜ਼ਿਆਦਾ।</span></p></div></div>
+      <div class="signalrow"><div class="ico">⏱</div><div><p class="st"><span class="en">It's dynamic</span><span class="pa">ਇਹ ਬਦਲਦਾ ਰਹਿੰਦਾ</span></p><p class="sd"><span class="en">Steepening put skew = rising crash fear even if price is flat. A leading stress tell most chartists never see.</span><span class="pa">Put skew ਤਿੱਖਾ ਹੋਣਾ = ਡਿੱਗਣ ਦਾ ਡਰ ਵਧ ਰਿਹਾ, ਭਾਵੇਂ ਕੀਮਤ flat ਹੋਵੇ। ਅਜਿਹਾ ਸੰਕੇਤ ਜੋ ਜ਼ਿਆਦਾਤਰ chartists ਨਹੀਂ ਦੇਖਦੇ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="vrp">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">Why option sellers get paid (until they don't)</span><span class="pa">Option sellers ਨੂੰ ਪੈਸੇ ਕਿਉਂ ਮਿਲਦੇ ਹਨ (ਜਦ ਤੱਕ ਨਹੀਂ ਮਿਲਦੇ)</span></h2>
+    <p><span class="en">On average, implied vol is HIGHER than the vol that actually shows up. Buyers systematically overpay for insurance; sellers collect that overpayment. This persistent gap — IV minus RV — is the <strong>Variance Risk Premium (VRP)</strong>. It's why selling options is profitable over time… and occasionally catastrophic.</span><span class="pa">ਔਸਤਨ, implied vol ਉਸ vol ਤੋਂ ਉੱਚੀ ਹੁੰਦੀ ਹੈ ਜੋ ਅਸਲ ਵਿੱਚ ਆਉਂਦੀ ਹੈ। ਖਰੀਦਦਾਰ insurance ਲਈ ਵੱਧ ਦਿੰਦੇ ਹਨ; sellers ਉਹ ਇਕੱਠਾ ਕਰਦੇ ਹਨ। ਇਹ ਫਰਕ — IV ਘਟਾਓ RV — <strong>Variance Risk Premium (VRP)</strong> ਹੈ।</span></p>
+    <div class="twocol">
+      <div class="rcard bull">
+        <p class="rh"><span class="en">✅ Why it exists</span><span class="pa">✅ ਕਿਉਂ ਹੈ</span></p>
+        <p><span class="en">People pay up for crash insurance; fear is worth more than its average cost. Sellers earn the premium like an insurer — and it works in calm &amp; normal regimes, most of the time.</span><span class="pa">ਲੋਕ crash insurance ਲਈ ਵੱਧ ਦਿੰਦੇ ਹਨ; ਡਰ ਆਪਣੀ ਔਸਤ ਲਾਗਤ ਤੋਂ ਵੱਧ ਕੀਮਤੀ ਹੈ। Sellers insurer ਵਾਂਗ premium ਕਮਾਉਂਦੇ ਹਨ — ਜ਼ਿਆਦਾਤਰ ਸਮਾਂ।</span></p>
+      </div>
+      <div class="rcard frag">
+        <p class="rh"><span class="en">☠️ The tail that bites</span><span class="pa">☠️ ਖ਼ਤਰਨਾਕ tail</span></p>
+        <p><span class="en">Feb 2018 "Volmageddon" wiped out short-vol ETPs overnight. Mar 2020 COVID erased years of carry in days. Selling vol = picking up pennies in front of a steamroller. The premium is payment for real, occasionally ruinous risk.</span><span class="pa">Feb 2018 "Volmageddon" ਨੇ short-vol ETPs ਰਾਤੋ-ਰਾਤ ਮਿਟਾ ਦਿੱਤੇ। Mar 2020 COVID ਨੇ ਸਾਲਾਂ ਦੀ ਕਮਾਈ ਦਿਨਾਂ ਵਿੱਚ। Vol ਵੇਚਣਾ = steamroller ਅੱਗੇ ਸਿੱਕੇ ਚੁੱਕਣਾ।</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gvz">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Gold's own fear gauge — meet GVZ</span><span class="pa">ਸੋਨੇ ਦਾ ਆਪਣਾ fear gauge — GVZ</span></h2>
+    <p><span class="en">GVZ applies the exact VIX methodology to GLD options — the market's expected 30-day vol for gold. Free to watch on TradingView (<strong>CBOE:GVZ</strong>) or FRED. As a gold trader, this is a sentiment layer sitting right on top of the instrument you trade every day.</span><span class="pa">GVZ ਉਹੀ VIX ਤਰੀਕਾ GLD options ਉੱਤੇ ਲਾਉਂਦਾ ਹੈ — ਸੋਨੇ ਦੀ 30-ਦਿਨ ਉਮੀਦ ਕੀਤੀ vol। TradingView (<strong>CBOE:GVZ</strong>) ਜਾਂ FRED ਉੱਤੇ ਮੁਫ਼ਤ। ਸੋਨਾ trader ਲਈ ਇਹ ਉਸ ਚੀਜ਼ ਉੱਤੇ sentiment ਪਰਤ ਹੈ ਜੋ ਤੁਸੀਂ ਰੋਜ਼ ਟ੍ਰੇਡ ਕਰਦੇ ਹੋ।</span></p>
+    <div class="card">
+      <div class="signalrow"><div class="ico">📡</div><div><p class="st"><span class="en">Regime radar</span><span class="pa">Regime radar</span></p><p class="sd"><span class="en">Gold vol expands on real-rate shifts, policy shocks &amp; crises — NOT in calm. A GVZ spike says something fundamental is moving.</span><span class="pa">ਸੋਨੇ ਦੀ vol real-rate, policy shocks ਤੇ crises ਉੱਤੇ ਵਧਦੀ ਹੈ — ਸ਼ਾਂਤੀ ਵਿੱਚ ਨਹੀਂ। GVZ spike ਦੱਸਦਾ ਹੈ ਕੁਝ ਬੁਨਿਆਦੀ ਹਿੱਲ ਰਿਹਾ।</span></p></div></div>
+      <div class="signalrow"><div class="ico">↔️</div><div><p class="st"><span class="en">Gold's skew is different</span><span class="pa">ਸੋਨੇ ਦਾ skew ਵੱਖਰਾ</span></p><p class="sd"><span class="en">Unlike equities (crash-down fear), gold can show CALL skew — fear of an upside melt-up on inflation/crisis. The hedged tail flips.</span><span class="pa">Equities ਵਾਂਗ ਨਹੀਂ — ਸੋਨਾ CALL skew ਦਿਖਾ ਸਕਦਾ ਹੈ — inflation/crisis ਉੱਤੇ ਉੱਪਰ ਵੱਲ melt-up ਦਾ ਡਰ।</span></p></div></div>
+      <div class="signalrow"><div class="ico">🎯</div><div><p class="st"><span class="en">Practical use</span><span class="pa">ਅਮਲੀ ਵਰਤੋਂ</span></p><p class="sd"><span class="en">Low GVZ + your breakout setup = cleaner trends. Spiking GVZ = wider stops, smaller size, expect whippy two-way chop.</span><span class="pa">ਘੱਟ GVZ + ਤੁਹਾਡਾ breakout = ਸਾਫ਼ trends। ਵਧਦਾ GVZ = ਚੌੜੇ stops, ਛੋਟਾ size, two-way chop ਦੀ ਉਮੀਦ।</span></p></div></div>
+    </div>
+
+    <h3><span class="en">Putting it to work</span><span class="pa">ਅਮਲ ਵਿੱਚ ਲਿਆਉਣਾ</span></h3>
+    <div class="takeaways">
+      <div class="ta"><span class="tk">1</span><p style="margin:0"><span class="en"><strong>Watch GVZ daily.</strong> Note the level &amp; trend before each session — it frames the kind of day to expect.</span><span class="pa"><strong>ਰੋਜ਼ GVZ ਦੇਖੋ।</strong> ਹਰ session ਤੋਂ ਪਹਿਲਾਂ level ਤੇ trend ਨੋਟ ਕਰੋ।</span></p></div>
+      <div class="ta"><span class="tk">2</span><p style="margin:0"><span class="en"><strong>Size to volatility.</strong> High IV → smaller positions, wider stops. Low IV → normal. Let the vol environment set risk, not a fixed rule.</span><span class="pa"><strong>Vol ਅਨੁਸਾਰ size ਕਰੋ।</strong> ਉੱਚੀ IV → ਛੋਟੀ position, ਚੌੜੇ stops। ਘੱਟ IV → ਆਮ।</span></p></div>
+      <div class="ta"><span class="tk">3</span><p style="margin:0"><span class="en"><strong>Read the term structure.</strong> A flip into backwardation = acute stress. Tighten up, don't fade with size.</span><span class="pa"><strong>Term structure ਪੜ੍ਹੋ।</strong> Backwardation = ਤਿੱਖਾ stress। ਸੰਭਲੋ, size ਨਾਲ fade ਨਾ ਕਰੋ।</span></p></div>
+      <div class="ta"><span class="tk">4</span><p style="margin:0"><span class="en"><strong>Respect the VRP lesson.</strong> If you ever sell premium, never go naked or oversized. The tail is real — pennies vs steamroller.</span><span class="pa"><strong>VRP ਯਾਦ ਰੱਖੋ।</strong> ਜੇ premium ਵੇਚੋ, ਕਦੇ naked ਜਾਂ oversized ਨਾ ਜਾਓ। Tail ਅਸਲੀ ਹੈ।</span></p></div>
+      <div class="ta"><span class="tk">5</span><p style="margin:0"><span class="en"><strong>Use vol as confluence.</strong> Calm vol + clean structure + your setup = highest-quality trades. Vol is a filter, not a standalone signal.</span><span class="pa"><strong>Vol ਨੂੰ confluence ਵਜੋਂ ਵਰਤੋ।</strong> ਸ਼ਾਂਤ vol + ਸਾਫ਼ structure + ਤੁਹਾਡਾ setup = ਵਧੀਆ trades। Vol filter ਹੈ, ਇਕੱਲਾ ਸੰਕੇਤ ਨਹੀਂ।</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">07</span>
+    <h2><span class="en">Check your understanding</span><span class="pa">ਆਪਣੀ ਸਮਝ ਜਾਂਚੋ</span></h2>
+    <p class="muted"><span class="en">Five questions. 4/5 to pass and complete G5.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਤੇ G5 ਪੂਰਾ ਕਰਨ ਲਈ 4/5।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR · ਟ੍ਰੇਡਿੰਗ ਵਿੱਚ ਜੋਖਮ ਹੈ</span></p>
+  </div>
+</footer>
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','reframe','vix','term','skew','vrp','gvz','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+function calcVol(){
+  const lvl=+document.getElementById('vol').value;
+  document.getElementById('lv').textContent=lvl;
+  const daily=lvl/Math.sqrt(252);
+  const vd=document.getElementById('v-daily');
+  vd.textContent='±'+daily.toFixed(1)+'%';
+  const vr=document.getElementById('v-regime');
+  let col,txt;
+  if(lvl<15){col='var(--green)';txt=L('Calm — complacency zone','ਸ਼ਾਂਤ — ਬੇਫ਼ਿਕਰੀ');}
+  else if(lvl<20){col='var(--green)';txt=L('Normal — healthy market','ਆਮ — ਸਿਹਤਮੰਦ ਬਾਜ਼ਾਰ');}
+  else if(lvl<30){col='var(--amber)';txt=L('Elevated — stress building','ਉੱਚਾ — stress ਵਧ ਰਿਹਾ');}
+  else if(lvl<50){col='var(--red)';txt=L('Fear — crisis pricing','ਡਰ — crisis pricing');}
+  else{col='var(--red)';txt=L('Panic — 2008 / 2020 territory','ਘਬਰਾਹਟ — 2008 / 2020');}
+  vd.style.color=col;vr.style.color=col;vr.textContent=txt;
+}
+
+const QUIZ=[
+ {q:["What is the key difference between implied and realized volatility?","Implied ਤੇ realized volatility ਵਿੱਚ ਮੁੱਖ ਫਰਕ ਕੀ ਹੈ?"],
+  o:[["There is none — same thing","ਕੋਈ ਨਹੀਂ — ਇੱਕੋ ਚੀਜ਼"],["RV is what happened; IV is what the market expects","RV ਜੋ ਹੋਇਆ; IV ਜੋ ਬਾਜ਼ਾਰ ਉਮੀਦ ਕਰਦਾ ਹੈ"],["IV is always lower than RV","IV ਹਮੇਸ਼ਾ RV ਤੋਂ ਘੱਟ"],["RV comes from option prices","RV option ਕੀਮਤਾਂ ਤੋਂ"]],
+  a:1,f:["Realized vol is backward-looking (what price actually did); implied vol is forward-looking, extracted from option prices.","Realized ਪਿੱਛੇ ਵੱਲ; implied ਅੱਗੇ ਵੱਲ, option ਕੀਮਤਾਂ ਤੋਂ।"]},
+ {q:["VIX around 16 implies roughly what daily S&P move?","VIX ਲਗਭਗ 16 ਦਾ ਮਤਲਬ ਰੋਜ਼ਾਨਾ ਕਿੰਨਾ move?"],
+  o:[["~0.1%","~0.1%"],["~1%","~1%"],["~5%","~5%"],["~16%","~16%"]],
+  a:1,f:["Daily move ≈ level ÷ √252 ≈ 16 ÷ 16 ≈ 1%. The 16 is the annualised number.","ਰੋਜ਼ਾਨਾ ≈ level ÷ √252 ≈ 16 ÷ 16 ≈ 1%।"]},
+ {q:["A vol term structure flipping into backwardation signals…","Vol term structure backwardation ਵੱਲ ਮੁੜਨਾ ਦੱਸਦਾ ਹੈ…"],
+  o:[["Calm, complacent markets","ਸ਼ਾਂਤ, ਬੇਫ਼ਿਕਰ ਬਾਜ਼ਾਰ"],["Acute near-term fear / stress right now","ਹੁਣੇ ਤਿੱਖਾ ਡਰ / stress"],["Lower volatility ahead guaranteed","ਅੱਗੇ ਪੱਕੀ ਘੱਟ volatility"],["A data error","Data ਗਲਤੀ"]],
+  a:1,f:["Front-month IV spiking above far months means fear is NOW — often more honest than price, which may not have cracked yet.","Front-month IV ਦਾ ਚੜ੍ਹਨਾ = ਹੁਣੇ ਡਰ — ਅਕਸਰ ਕੀਮਤ ਤੋਂ ਜ਼ਿਆਦਾ ਇਮਾਨਦਾਰ।"]},
+ {q:["The Variance Risk Premium is the edge behind selling options. Its danger is…","VRP option ਵੇਚਣ ਦਾ edge ਹੈ। ਇਸਦਾ ਖ਼ਤਰਾ ਹੈ…"],
+  o:[["It never pays out","ਇਹ ਕਦੇ ਨਹੀਂ ਮਿਲਦਾ"],["Rare but catastrophic tail events (Volmageddon, COVID)","ਘੱਟ ਪਰ ਤਬਾਹਕੁਨ tail events"],["It's illegal for retail","Retail ਲਈ ਗ਼ੈਰ-ਕਾਨੂੰਨੀ"],["It only works in crashes","ਸਿਰਫ਼ crashes ਵਿੱਚ ਚੱਲਦਾ"]],
+  a:1,f:["Selling vol works most of the time but blows up in tail events — Feb 2018 and Mar 2020 erased years of carry. Pennies vs steamroller.","Vol ਵੇਚਣਾ ਜ਼ਿਆਦਾਤਰ ਚੱਲਦਾ ਪਰ tail events ਵਿੱਚ ਤਬਾਹ — Feb 2018, Mar 2020।"]},
+ {q:["For a gold trader, the most directly useful tool here is…","ਸੋਨਾ trader ਲਈ ਸਭ ਤੋਂ ਸਿੱਧਾ ਲਾਭਦਾਇਕ tool ਹੈ…"],
+  o:[["The VIX only","ਸਿਰਫ਼ VIX"],["GVZ — gold's 30-day implied vol (CBOE:GVZ)","GVZ — ਸੋਨੇ ਦੀ 30-ਦਿਨ implied vol"],["The S&P put skew","S&P put skew"],["Bond yields","Bond yields"]],
+  a:1,f:["GVZ is the VIX method applied to gold options — free, daily, and directly on the instrument you trade. Use it to size and sense regime.","GVZ ਸੋਨੇ ਉੱਤੇ VIX ਤਰੀਕਾ ਹੈ — ਮੁਫ਼ਤ, ਰੋਜ਼ਾਨਾ। Size ਤੇ regime ਲਈ ਵਰਤੋ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ G5 complete','★ G5 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You now see a layer most traders can't — implied vs realized, the term structure and skew, the variance premium, and GVZ as gold's fear gauge. Add CBOE:GVZ to your watchlist and use it to size every session.","ਹੁਣ ਤੁਸੀਂ ਉਹ ਪਰਤ ਦੇਖਦੇ ਹੋ ਜੋ ਜ਼ਿਆਦਾਤਰ ਨਹੀਂ — IV vs RV, term structure, skew, VRP, ਤੇ GVZ। CBOE:GVZ watchlist ਵਿੱਚ ਜੋੜੋ।")
+      : L("Close. Re-read the VIX and GVZ sections, replay the vol slider, then try again. Aim for 4/5.","ਲਗਭਗ। VIX ਤੇ GVZ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, slider ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Add CBOE:GVZ to your daily watchlist','CBOE:GVZ ਰੋਜ਼ਾਨਾ watchlist ਵਿੱਚ ਜੋੜੋ')}</li>
+        <li>→ ${L('Note GVZ level &amp; trend before each session','ਹਰ session ਤੋਂ ਪਹਿਲਾਂ GVZ level ਤੇ trend ਨੋਟ ਕਰੋ')}</li>
+        <li>→ ${L('You have completed the Gold Tier — Microstructure next','ਤੁਸੀਂ Gold Tier ਪੂਰਾ ਕੀਤਾ — ਅਗਲਾ Microstructure')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+calcVol();renderQuiz();
+</script>
+</body>
+</html>

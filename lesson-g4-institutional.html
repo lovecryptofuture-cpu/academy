@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Institutional Gold Signals — Gold G4</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e0a23c;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1a1c22 0%,var(--ink) 55%);color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}body.lang-pa .en{display:none}body.lang-pa .pa{display:initial}body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(30px,6.4vw,50px);line-height:1.05;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:22px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8}.muted{color:var(--muted)}strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .num{display:inline-flex;width:30px;height:30px;border-radius:8px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px}
+  .plain{background:rgba(212,175,55,.05);border:1px solid var(--gold-dim);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .plain .pl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:4px}
+  .ladder{margin-top:10px}
+  .rung{display:flex;gap:12px;align-items:flex-start;padding:11px 13px;border-radius:9px;border:1px solid var(--line);background:var(--panel);margin-bottom:7px}
+  .rung .lt{flex:0 0 auto;font-weight:750;font-size:13px;padding:3px 9px;border-radius:6px}
+  .rung.g .lt{color:var(--green);background:rgba(70,201,138,.12)}
+  .rung.a .lt{color:var(--amber);background:rgba(224,162,60,.12)}
+  .rung.r .lt{color:var(--red);background:rgba(224,98,94,.12)}
+  .rung .ld{font-size:13.5px;color:var(--muted)}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .tsub{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .sigrow{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);margin-bottom:9px;cursor:pointer;transition:.12s}
+  .sigrow:hover{border-color:var(--gold-dim)}
+  .sigrow.on{border-color:var(--green);background:rgba(70,201,138,.08)}
+  .sigrow .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--green)}
+  .sigrow.on .box{background:var(--green);color:#06281a;border-color:var(--green)}
+  .sigrow .sx .st{font-weight:650;font-size:14.5px}
+  .sigrow .sx .sd{font-size:12.5px;color:var(--muted)}
+  .conv{margin-top:12px;padding:18px;border-radius:10px;background:#0e1014;border:1px dashed var(--gold-dim);text-align:center}
+  .conv .cbig{font-size:40px;font-weight:800;line-height:1;color:var(--red)}
+  .conv .cv{font-weight:700;margin-top:8px;font-size:15px;color:var(--red)}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}.feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}.nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}.disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row">
+  <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+  <div class="links">
+    <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+    <a href="#lease">1 · <span class="en">Lease Rates</span><span class="pa">ਉਧਾਰ ਦਰਾਂ</span></a>
+    <a href="#basel">2 · <span class="en">Basel III</span><span class="pa">Basel III</span></a>
+    <a href="#cot">3 · <span class="en">COT Edge</span><span class="pa">COT</span></a>
+    <a href="#vol">4 · <span class="en">Vol Surface</span><span class="pa">Vol Surface</span></a>
+    <a href="#tool">5 · <span class="en">Framework</span><span class="pa">ਫਰੇਮਵਰਕ</span></a>
+    <a href="#quiz">6 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+  </div>
+  <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+</div></nav>
+
+<header class="hero" id="start"><div class="wrap">
+  <div class="eyebrow"><span class="en">Gold Tier · G4 · Institutional Playbook</span><span class="pa">ਸੋਨਾ ਟੀਅਰ · G4 · ਸੰਸਥਾਗਤ Playbook</span></div>
+  <h1><span class="en">Institutional Gold Signals</span><span class="pa">ਸੰਸਥਾਗਤ ਸੋਨਾ ਸੰਕੇਤ</span></h1>
+  <p class="lede"><span class="en">The four signals big traders watch — lease rates, the Basel III trap, the real COT read, and the volatility surface — and the master framework that ties them together.</span><span class="pa">ਚਾਰ ਸੰਕੇਤ ਜੋ ਵੱਡੇ traders ਦੇਖਦੇ ਹਨ — ਉਧਾਰ ਦਰਾਂ, Basel III, ਅਸਲੀ COT, ਤੇ volatility surface — ਅਤੇ ਉਹ master framework ਜੋ ਇਨ੍ਹਾਂ ਨੂੰ ਜੋੜਦਾ ਹੈ।</span></p>
+  <div class="meta">
+    <span><b>~16 min</b></span>
+    <span><b>1 <span class="en">framework tool</span><span class="pa">framework ਟੂਲ</span></b></span>
+    <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲ ਟੈਸਟ</span></span>
+  </div>
+</div></header>
+
+<section id="lease"><div class="wrap">
+  <span class="knum">01</span>
+  <h2><span class="en">Lease rates &amp; GOFO</span><span class="pa">ਉਧਾਰ ਦਰਾਂ ਤੇ GOFO</span></h2>
+  <div class="plain"><div class="pl"><span class="en">In plain English</span><span class="pa">ਸੌਖੀ ਭਾਸ਼ਾ ਵਿੱਚ</span></div><span class="en">Banks lend real gold bars to jewellers, miners, and other banks. The lease rate is the rental charge. GOFO asks: is it dearer to borrow dollars, or gold? When gold becomes harder to borrow than cash — that's a huge warning.</span><span class="pa">ਬੈਂਕ ਅਸਲੀ ਸੋਨੇ ਦੀਆਂ ਇੱਟਾਂ ਸੁਨਿਆਰਿਆਂ ਤੇ ਬੈਂਕਾਂ ਨੂੰ ਉਧਾਰ ਦਿੰਦੇ ਹਨ। Lease rate ਕਿਰਾਇਆ ਹੈ। GOFO ਪੁੱਛਦਾ ਹੈ: ਡਾਲਰ ਉਧਾਰ ਮਹਿੰਗਾ ਜਾਂ ਸੋਨਾ? ਜਦੋਂ ਸੋਨਾ ਉਧਾਰ ਲੈਣਾ ਔਖਾ ਹੋਵੇ — ਵੱਡੀ ਚੇਤਾਵਨੀ।</span></div>
+  <div class="ladder">
+    <div class="rung g"><span class="lt"><span class="en">GOFO +</span><span class="pa">GOFO +</span></span><span class="ld"><span class="en">Normal. Dollars cost more to borrow than gold.</span><span class="pa">ਆਮ। ਡਾਲਰ ਉਧਾਰ ਸੋਨੇ ਤੋਂ ਮਹਿੰਗਾ।</span></span></div>
+    <div class="rung a"><span class="lt"><span class="en">GOFO ≈ 0</span><span class="pa">GOFO ≈ 0</span></span><span class="ld"><span class="en">Warning zone. Watch lease rates closely.</span><span class="pa">ਸਾਵਧਾਨੀ ਜ਼ੋਨ। Lease rates ਧਿਆਨ ਨਾਲ ਦੇਖੋ।</span></span></div>
+    <div class="rung r"><span class="lt"><span class="en">GOFO − (backwardation)</span><span class="pa">GOFO − (backwardation)</span></span><span class="ld"><span class="en">Gold harder to borrow than cash. Major signal — price floor or rally incoming.</span><span class="pa">ਸੋਨਾ ਉਧਾਰ cash ਤੋਂ ਔਖਾ। ਵੱਡਾ ਸੰਕੇਤ — ਫਰਸ਼ ਜਾਂ rally ਆ ਰਹੀ।</span></span></div>
+  </div>
+  <h3><span class="en">The short-vs-long split is the real diagnostic</span><span class="pa">ਛੋਟੀ-ਬਨਾਮ-ਲੰਮੀ ਮਿਆਦ ਅਸਲੀ ਜਾਂਚ</span></h3>
+  <p class="muted" style="font-size:14.5px"><span class="en"><strong>Short-term spikes, long-term calm:</strong> someone needs gold urgently now — acute stress, expect a vol spike over days. <strong>Both short and long spike:</strong> structural shortage — gold can sustain a multi-week or multi-month rally because the scarcity is real.</span><span class="pa"><strong>ਛੋਟੀ ਮਿਆਦ ਵਧੇ, ਲੰਮੀ ਸ਼ਾਂਤ:</strong> ਕਿਸੇ ਨੂੰ ਹੁਣੇ ਸੋਨਾ ਚਾਹੀਦਾ — ਦਿਨਾਂ ਵਿੱਚ vol spike। <strong>ਦੋਵੇਂ ਵਧਣ:</strong> ਢਾਂਚਾਗਤ ਕਮੀ — ਹਫ਼ਤਿਆਂ/ਮਹੀਨਿਆਂ ਦੀ rally।</span></p>
+</div></section>
+
+<section id="basel"><div class="wrap">
+  <span class="knum">02</span>
+  <h2><span class="en">The Basel III NSFR trap</span><span class="pa">Basel III NSFR ਜਾਲ</span></h2>
+  <div class="plain"><div class="pl"><span class="en">In plain English</span><span class="pa">ਸੌਖੀ ਭਾਸ਼ਾ ਵਿੱਚ</span></div><span class="en">In 2021 a new banking rule made it expensive for big banks to hold "paper gold". Banks pulled back. The result: when paper and physical prices drift apart, banks no longer rush to arb it. So dislocations now last longer.</span><span class="pa">2021 ਵਿੱਚ ਨਵੇਂ ਕਾਨੂੰਨ ਨੇ ਬੈਂਕਾਂ ਲਈ ਕਾਗਜ਼ੀ ਸੋਨਾ ਮਹਿੰਗਾ ਕੀਤਾ। ਬੈਂਕ ਪਿੱਛੇ ਹਟੇ। ਨਤੀਜਾ: ਕੀਮਤੀ ਫ਼ਰਕ ਹੁਣ ਜ਼ਿਆਦਾ ਦੇਰ ਰਹਿੰਦੇ ਹਨ।</span></div>
+  <div class="card"><p style="margin:0"><strong><span class="en">Trading implication:</span><span class="pa">Trading ਮਤਲਬ:</span></strong> <span class="en">don't expect fast mean-reversion on gold spreads anymore. Before 2021 banks arbed dislocations away quickly; after 2021 arbitrage is too expensive, so spreads persist.</span><span class="pa">ਸੋਨੇ ਦੇ spreads ਉੱਤੇ ਜਲਦੀ mean-reversion ਦੀ ਉਮੀਦ ਨਾ ਰੱਖੋ। 2021 ਤੋਂ ਪਹਿਲਾਂ ਬੈਂਕ ਜਲਦੀ arb ਕਰਦੇ ਸਨ; ਹੁਣ ਮਹਿੰਗਾ, ਇਸ ਲਈ spreads ਰਹਿੰਦੇ ਹਨ।</span></p></div>
+</div></section>
+
+<section id="cot"><div class="wrap">
+  <span class="knum">03</span>
+  <h2><span class="en">COT edge — read the right line</span><span class="pa">COT edge — ਸਹੀ ਲਾਈਨ ਪੜ੍ਹੋ</span></h2>
+  <p><span class="en">Most traders watch "Managed Money". The real signal is the <strong>Producer/Swap Dealer</strong> net position — and it's counterintuitive.</span><span class="pa">ਜ਼ਿਆਦਾਤਰ traders "Managed Money" ਦੇਖਦੇ ਹਨ। ਅਸਲੀ ਸੰਕੇਤ <strong>Producer/Swap Dealer</strong> net position ਹੈ — ਤੇ ਇਹ ਉਲਟ ਹੈ।</span></p>
+  <div class="card"><span class="num">A</span><h3 style="margin:0 0 4px"><span class="en">Managed Money very long</span><span class="pa">Managed Money ਬਹੁਤ long</span></h3><p class="muted" style="margin:0;font-size:14.5px"><span class="en">Hedge funds and specs. People read it as bullish — but it means the easy money is already made. The rally may be near its end.</span><span class="pa">Hedge funds ਤੇ specs। ਲੋਕ bullish ਪੜ੍ਹਦੇ ਹਨ — ਪਰ ਆਸਾਨ ਪੈਸਾ ਕਮਾਇਆ ਜਾ ਚੁੱਕਾ। Rally ਖ਼ਤਮ ਹੋਣ ਵਾਲੀ।</span></p></div>
+  <div class="card"><span class="num">B</span><h3 style="margin:0 0 4px"><span class="en">Producer/Swap deep net short</span><span class="pa">Producer/Swap ਡੂੰਘਾ net short</span></h3><p class="muted" style="margin:0;font-size:14.5px"><span class="en">Bullion banks hedging real client demand. Deep net short does NOT mean price falls — it means massive client LONG demand is being hedged. Historically aligns with price BOTTOMS.</span><span class="pa">Bullion banks ਅਸਲੀ ਗਾਹਕ ਮੰਗ hedge ਕਰ ਰਹੇ। ਡੂੰਘਾ short ਡਿੱਗਣਾ ਨਹੀਂ — ਗਾਹਕਾਂ ਦੀ ਵੱਡੀ long ਮੰਗ। ਇਤਿਹਾਸ ਵਿੱਚ ਤਲ ਨਾਲ ਮੇਲ।</span></p></div>
+  <div class="card"><span class="num">C</span><h3 style="margin:0 0 4px"><span class="en">Open-interest combo</span><span class="pa">Open-interest ਸੁਮੇਲ</span></h3><p class="muted" style="margin:0;font-size:14.5px"><span class="en">Rising price + falling OI + producers covering = squeeze incoming. Rising price + rising OI + managed money piling in = late-cycle froth. Use both together.</span><span class="pa">ਕੀਮਤ ਵਧੇ + OI ਘਟੇ + producers ਢੱਕਣ = squeeze। ਕੀਮਤ ਵਧੇ + OI ਵਧੇ + specs ਆਉਣ = ਦੇਰ ਨਾਲ froth।</span></p></div>
+</div></section>
+
+<section id="vol"><div class="wrap">
+  <span class="knum">04</span>
+  <h2><span class="en">The volatility surface</span><span class="pa">Volatility surface</span></h2>
+  <div class="plain"><div class="pl"><span class="en">In plain English</span><span class="pa">ਸੌਖੀ ਭਾਸ਼ਾ ਵਿੱਚ</span></div><span class="en">When big money wants protection it buys options, and their price rises. Which costs more — calls (upside) or puts (downside) — tells you where the big money is positioning before the chart shows it.</span><span class="pa">ਜਦੋਂ ਵੱਡਾ ਪੈਸਾ ਬਚਾਅ ਚਾਹੁੰਦਾ ਹੈ, options ਖਰੀਦਦਾ ਹੈ ਤੇ ਕੀਮਤ ਵਧਦੀ ਹੈ। calls (ਉੱਪਰ) ਜਾਂ puts (ਹੇਠਾਂ) ਮਹਿੰਗੇ — ਇਹ chart ਤੋਂ ਪਹਿਲਾਂ ਦੱਸਦਾ ਹੈ ਵੱਡਾ ਪੈਸਾ ਕਿੱਥੇ।</span></div>
+  <h3><span class="en">Two key reads</span><span class="pa">ਦੋ ਮੁੱਖ ਸੰਕੇਤ</span></h3>
+  <p class="muted" style="font-size:14.5px"><span class="en"><strong>Risk reversals:</strong> calls dearer than puts = institutions hedging the need to buy gold (leading indicator). Puts dearer = retail panic hedging, often near a local bottom. <strong>Inverted vol curve:</strong> when 1-month implied vol exceeds 6-month, the market is pricing an urgent near-term event — this preceded every major 2020, 2022 and 2024 move.</span><span class="pa"><strong>Risk reversals:</strong> calls puts ਤੋਂ ਮਹਿੰਗੇ = ਵੱਡੇ ਖਿਡਾਰੀ ਉੱਪਰ ਦੀ ਤਿਆਰੀ। puts ਮਹਿੰਗੇ = retail ਡਰ, ਅਕਸਰ ਤਲ ਨੇੜੇ। <strong>ਉਲਟੀ vol curve:</strong> 1-ਮਹੀਨੇ vol > 6-ਮਹੀਨੇ = ਵੱਡੀ ਘਟਨਾ ਨੇੜੇ — 2020, 2022, 2024 ਤੋਂ ਪਹਿਲਾਂ ਇਹੀ ਹੋਇਆ।</span></p>
+  <div class="card"><p style="margin:0"><strong><span class="en">Gold/SPX vol ratio:</span><span class="pa">Gold/SPX vol ratio:</span></strong> <span class="en">when gold vol rises faster than VIX, gold is in safe-haven mode (structural rallies — don't fade). When VIX rises faster, gold is just a commodity sold for cash (weak rallies). Stable = macro-driven; normal analysis applies.</span><span class="pa">ਜਦੋਂ ਸੋਨੇ ਦੀ vol VIX ਤੋਂ ਤੇਜ਼ ਵਧੇ — safe-haven (ਮਜ਼ਬੂਤ rally, short ਨਾ ਕਰੋ)। VIX ਤੇਜ਼ — ਸੋਨਾ ਸਿਰਫ਼ ਵਸਤੂ (ਕਮਜ਼ੋਰ rally)। ਸਥਿਰ = macro-driven।</span></p></div>
+</div></section>
+
+<section id="tool"><div class="wrap">
+  <span class="knum">05</span>
+  <h2><span class="en">The master framework</span><span class="pa">ਮਾਸਟਰ ਫਰੇਮਵਰਕ</span></h2>
+  <p><span class="en">The four signals stack in order: vol surface flags stress first, COT confirms who's positioned, the physical market (lease/EFP/SGE) confirms or contradicts, and Basel III tells you how long any dislocation lasts. Tick the ones that are firing — when all four align, it's a high-conviction trade.</span><span class="pa">ਚਾਰ ਸੰਕੇਤ ਕ੍ਰਮ ਵਿੱਚ: vol surface ਪਹਿਲਾਂ ਤਣਾਅ, COT ਦੱਸਦਾ ਕੌਣ ਖੜ੍ਹਾ, ਭੌਤਿਕ ਬਾਜ਼ਾਰ ਪੁਸ਼ਟੀ, ਤੇ Basel III ਦੱਸਦਾ ਕਿੰਨੀ ਦੇਰ। ਜੋ ਚੱਲ ਰਹੇ ਹਨ ਟਿੱਕ ਕਰੋ — ਚਾਰੇ ਮਿਲਣ = ਉੱਚ-ਵਿਸ਼ਵਾਸ trade।</span></p>
+  <div class="tool">
+    <span class="tag"><span class="en">Interactive · master framework checker</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · master framework</span></span>
+    <div class="tsub"><span class="en">Tick each institutional signal that's currently confirming a bullish/scarcity setup.</span><span class="pa">ਹਰ ਸੰਸਥਾਗਤ ਸੰਕੇਤ ਟਿੱਕ ਕਰੋ ਜੋ ਹੁਣ bullish/ਕਮੀ setup ਦੀ ਪੁਸ਼ਟੀ ਕਰਦਾ।</span></div>
+    <div class="sigrow" onclick="sig(this)"><div class="box">✓</div><div class="sx"><div class="st"><span class="en">GOFO backwardation</span><span class="pa">GOFO backwardation</span></div><div class="sd"><span class="en">Gold harder to borrow than cash — floor/rally signal</span><span class="pa">ਸੋਨਾ cash ਤੋਂ ਔਖਾ — ਫਰਸ਼/rally</span></div></div></div>
+    <div class="sigrow" onclick="sig(this)"><div class="box">✓</div><div class="sx"><div class="st"><span class="en">Producer/Swap deep net short</span><span class="pa">Producer/Swap ਡੂੰਘਾ short</span></div><div class="sd"><span class="en">Client long demand being hedged — aligns with bottoms</span><span class="pa">ਗਾਹਕ long ਮੰਗ hedge — ਤਲ ਨਾਲ</span></div></div></div>
+    <div class="sigrow" onclick="sig(this)"><div class="box">✓</div><div class="sx"><div class="st"><span class="en">Rising call-side risk reversals</span><span class="pa">ਵਧਦੇ call-side risk reversals</span></div><div class="sd"><span class="en">Institutions hedging the need to buy — leading</span><span class="pa">ਵੱਡੇ ਖਿਡਾਰੀ ਖਰੀਦ ਦੀ ਤਿਆਰੀ</span></div></div></div>
+    <div class="sigrow" onclick="sig(this)"><div class="box">✓</div><div class="sx"><div class="st"><span class="en">Inverted vol curve</span><span class="pa">ਉਲਟੀ vol curve</span></div><div class="sd"><span class="en">1-month vol &gt; 6-month — big move imminent</span><span class="pa">1-ਮਹੀਨਾ vol &gt; 6-ਮਹੀਨਾ — ਵੱਡੀ ਹਰਕਤ ਨੇੜੇ</span></div></div></div>
+    <div class="conv">
+      <div class="cbig" id="conv-n">0/4</div>
+      <div class="cv" id="conv-v"><span class="en">No signals — sit out and wait for clarity</span><span class="pa">ਕੋਈ ਸੰਕੇਤ ਨਹੀਂ — ਬਾਹਰ ਰਹੋ</span></div>
+    </div>
+    <p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">When all four align → high-conviction trade. When they conflict → sit out and wait. Basel III means any dislocation you trade may last longer than it used to.</span><span class="pa">ਚਾਰੇ ਮਿਲਣ → ਉੱਚ-ਵਿਸ਼ਵਾਸ trade। ਟਕਰਾਉਣ → ਬਾਹਰ ਰਹੋ। Basel III: ਟੁੱਟਣਾ ਪਹਿਲਾਂ ਤੋਂ ਜ਼ਿਆਦਾ ਦੇਰ ਰਹਿ ਸਕਦਾ।</span></p>
+  </div>
+</div></section>
+
+<section id="quiz"><div class="wrap">
+  <span class="knum">06</span>
+  <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+  <p class="muted"><span class="en">Five questions to lock in G4.</span><span class="pa">G4 ਪੱਕਾ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+  <div id="quizbox"></div>
+</div></section>
+
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR।</span></p></div></footer>
+
+<script>
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();updateConv();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','lease','basel','cot','vol','tool','quiz'].map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+function sig(el){el.classList.toggle('on');updateConv();}
+function updateConv(){
+  const n=document.querySelectorAll('.sigrow.on').length;
+  const cn=document.getElementById('conv-n'),cv=document.getElementById('conv-v');
+  cn.textContent=n+'/4';
+  if(n===4){cn.style.color='var(--green)';cv.style.color='var(--green)';cv.innerHTML=L('All four align → HIGH-CONVICTION trade','ਚਾਰੇ ਮਿਲੇ → ਉੱਚ-ਵਿਸ਼ਵਾਸ trade');}
+  else if(n>=2){cn.style.color='var(--amber)';cv.style.color='var(--amber)';cv.innerHTML=L('Partial — wait for full alignment','ਅਧੂਰਾ — ਪੂਰੇ ਮੇਲ ਦੀ ਉਡੀਕ');}
+  else{cn.style.color='var(--red)';cv.style.color='var(--red)';cv.innerHTML=L('Not enough — sit out and wait for clarity','ਕਾਫ਼ੀ ਨਹੀਂ — ਬਾਹਰ ਰਹੋ');}
+}
+
+const QUIZ=[
+ {q:["GOFO goes negative (backwardation). What does it signal?","GOFO negative (backwardation)। ਕੀ ਸੰਕੇਤ?"],
+  o:[["Gold is about to crash","ਸੋਨਾ crash ਹੋਣ ਵਾਲਾ"],["Gold is harder to borrow than cash — price floor or rally incoming","ਸੋਨਾ cash ਤੋਂ ਔਖਾ — ਫਰਸ਼ ਜਾਂ rally"],["Nothing — it's noise","ਕੁਝ ਨਹੀਂ"],["Banks are selling gold","ਬੈਂਕ ਸੋਨਾ ਵੇਚ ਰਹੇ"]],
+  a:1,f:["Backwardation means gold is harder to borrow than cash — historically precedes a price floor or major rally.","Backwardation = ਸੋਨਾ cash ਤੋਂ ਔਖਾ — ਇਤਿਹਾਸ ਵਿੱਚ ਫਰਸ਼ ਜਾਂ ਵੱਡੀ rally ਤੋਂ ਪਹਿਲਾਂ।"]},
+ {q:["What did Basel III change for gold traders?","Basel III ਨੇ ਸੋਨਾ traders ਲਈ ਕੀ ਬਦਲਿਆ?"],
+  o:[["Made gold illegal to trade","ਸੋਨਾ trade ਗ਼ੈਰ-ਕਾਨੂੰਨੀ"],["Dislocations now persist longer — slower mean-reversion","ਟੁੱਟਣਾ ਹੁਣ ਜ਼ਿਆਦਾ ਦੇਰ — ਹੌਲੀ mean-reversion"],["Faster arbitrage than ever","ਪਹਿਲਾਂ ਤੋਂ ਤੇਜ਼ arbitrage"],["Lower spreads always","ਹਮੇਸ਼ਾ ਘੱਟ spreads"]],
+  a:1,f:["Paper-gold became expensive for banks, so they arb dislocations slowly. Spreads persist longer than pre-2021.","ਕਾਗਜ਼ੀ ਸੋਨਾ ਮਹਿੰਗਾ ਹੋਇਆ, ਬੈਂਕ ਹੌਲੀ arb ਕਰਦੇ। Spreads ਜ਼ਿਆਦਾ ਦੇਰ ਰਹਿੰਦੇ।"]},
+ {q:["Producer/Swap Dealers are deeply net short. The counterintuitive read is…","Producer/Swap ਡੂੰਘੇ net short। ਉਲਟ ਪੜ੍ਹਾਈ…"],
+  o:[["Bearish — price will fall","Bearish — ਕੀਮਤ ਡਿੱਗੇਗੀ"],["It reflects big client LONG demand — aligns with bottoms","ਵੱਡੀ ਗਾਹਕ long ਮੰਗ — ਤਲ ਨਾਲ"],["The market will go sideways","ਬਾਜ਼ਾਰ sideways"],["Managed money is wrong","Managed money ਗਲਤ"]],
+  a:1,f:["Bullion banks hedge real client demand. Deep net short reflects heavy client buying — historically near bottoms.","Bullion banks ਅਸਲੀ ਮੰਗ hedge ਕਰਦੇ। ਡੂੰਘਾ short = ਭਾਰੀ ਖਰੀਦ — ਤਲ ਨੇੜੇ।"]},
+ {q:["An inverted gold vol curve (1m > 6m) means…","ਉਲਟੀ vol curve (1m > 6m) ਮਤਲਬ…"],
+  o:[["Calm ahead","ਅੱਗੇ ਸ਼ਾਂਤੀ"],["The market is pricing an urgent near-term event","ਬਾਜ਼ਾਰ ਨੇੜਲੀ ਵੱਡੀ ਘਟਨਾ ਦੀ ਕੀਮਤ ਲਾ ਰਿਹਾ"],["Options are mispriced","Options ਗਲਤ ਕੀਮਤ"],["Gold is in safe-haven mode","ਸੋਨਾ safe-haven"]],
+  a:1,f:["1-month vol above 6-month signals an urgent near-term event — it preceded the major 2020, 2022 and 2024 moves.","1-ਮਹੀਨਾ vol > 6-ਮਹੀਨਾ = ਨੇੜਲੀ ਵੱਡੀ ਘਟਨਾ — 2020, 2022, 2024 ਤੋਂ ਪਹਿਲਾਂ।"]},
+ {q:["In the master framework, when all four signals align you should…","ਮਾਸਟਰ framework ਵਿੱਚ, ਚਾਰੇ ਮਿਲਣ ਉੱਤੇ…"],
+  o:[["Sit out","ਬਾਹਰ ਰਹੋ"],["Take a high-conviction trade","ਉੱਚ-ਵਿਸ਼ਵਾਸ trade ਲਓ"],["Halve your usual size","size ਅੱਧਾ ਕਰੋ"],["Wait for a fifth signal","ਪੰਜਵੇਂ ਸੰਕੇਤ ਦੀ ਉਡੀਕ"]],
+  a:1,f:["Alignment of all four = high conviction. When they conflict, sit out and wait for clarity.","ਚਾਰੇ ਮਿਲੇ = ਉੱਚ ਵਿਸ਼ਵਾਸ। ਟਕਰਾਉਣ ਉੱਤੇ ਬਾਹਰ ਰਹੋ।"]}
+];
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+`<div class="badge">${pass?L('★ G4 complete · Gold tier mastered','★ G4 ਪੂਰਾ · ਸੋਨਾ ਟੀਅਰ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼')}</div>`+`<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L("You now read gold like an institution — lease rates, Basel III, the real COT line, and the vol surface, tied together in one framework. That completes the Gold specialisation.","ਹੁਣ ਤੁਸੀਂ ਸੋਨਾ ਸੰਸਥਾ ਵਾਂਗ ਪੜ੍ਹਦੇ ਹੋ — ਉਧਾਰ ਦਰਾਂ, Basel III, ਅਸਲੀ COT, ਤੇ vol surface, ਇੱਕ framework ਵਿੱਚ। ਸੋਨਾ ਵਿਸ਼ੇਸ਼ਤਾ ਪੂਰੀ।"):L("Almost. Replay the framework checker and the lease-rate ladder, then retry — aim for 4/5.","ਲਗਭਗ। framework checker ਤੇ lease-rate ladder ਦੁਬਾਰਾ ਦੇਖੋ, ਫਿਰ ਕੋਸ਼ਿਸ਼ — 4/5।")}</p>`+(pass?`<ul class="nextlist"><li>→ ${L('Bookmark the COT report (CFTC, weekly)','COT report bookmark ਕਰੋ (CFTC, ਹਫ਼ਤਾਵਾਰ)')}</li><li>→ ${L('Add GVZ & the gold/SPX vol ratio to your watchlist','GVZ ਤੇ gold/SPX vol ratio watchlist ਵਿੱਚ')}</li><li>→ ${L('Explore the Quant lesson: Volatility as an Asset Class','Quant ਪਾਠ: Volatility as an Asset Class')}</li></ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+renderQuiz();updateConv();
+</script>
+</body>
+</html>

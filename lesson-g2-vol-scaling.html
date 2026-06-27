@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volatility Scaling — Gold G2</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .grid2{display:grid;gap:14px}
+  @media(min-width:620px){.grid2{grid-template-columns:1fr 1fr}}
+  .vs .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .vs.old .lab{color:var(--muted)} .vs.now .lab{color:var(--gold)}
+  .vs .big{font-size:30px;font-weight:800;margin:4px 0;line-height:1}
+  .vs.old .big{color:var(--muted)} .vs.now .big{color:var(--red)}
+  .vs .sub{font-size:14px;color:var(--muted);margin:0}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .slid{display:flex;align-items:center;gap:10px}
+  input[type=range]{width:100%;accent-color:var(--gold)}
+  .multibadge{font-size:14px;color:var(--gold-soft);font-weight:700;min-width:42px;text-align:right}
+  .out{margin-top:20px;display:grid;gap:12px}
+  @media(min-width:560px){.out{grid-template-columns:repeat(3,1fr)}}
+  .ocard{background:#0e1014;border:1px dashed var(--gold-dim);border-radius:10px;padding:16px;text-align:center}
+  .ocard .ov{font-size:26px;font-weight:800;color:var(--gold-soft);line-height:1}
+  .ocard .ol{font-size:12px;color:var(--muted);margin-top:6px}
+  .sizecard{margin-top:12px;background:linear-gradient(180deg,#1a1810,#0e1014);border:1px solid var(--gold-dim);border-radius:12px;padding:20px;text-align:center}
+  .sizecard .ov{font-size:38px;font-weight:800;color:var(--gold);line-height:1}
+  .sizecard .ol{font-size:13px;color:var(--muted);margin-top:8px}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+  .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px}
+  .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .levels{display:grid;gap:10px;margin-top:8px}
+  .lvl{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .lvl .px{font-weight:800;font-size:18px;color:var(--gold-soft);flex:0 0 78px}
+  .lvl .ld{font-size:14px;color:var(--muted)}
+  .lvl.pivot{border-color:var(--gold-dim);background:rgba(212,175,55,.06)}
+  .lvl.pivot .ld{color:var(--gold-soft)}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc">
+  <div class="row">
+    <a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a>
+    <div class="links">
+      <a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a>
+      <a href="#problem">1 · <span class="en">The Problem</span><span class="pa">ਸਮੱਸਿਆ</span></a>
+      <a href="#atr">2 · <span class="en">ATR Stops</span><span class="pa">ATR Stops</span></a>
+      <a href="#sizer">3 · <span class="en">Position Sizer</span><span class="pa">Sizer</span></a>
+      <a href="#map">4 · <span class="en">Price Map</span><span class="pa">ਨਕਸ਼ਾ</span></a>
+      <a href="#regime">5 · <span class="en">Regime</span><span class="pa">ਦੌਰ</span></a>
+      <a href="#quiz">6 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button>
+  </div>
+</nav>
+
+<header class="hero" id="start">
+  <div class="wrap">
+    <div class="eyebrow"><span class="en">Gold Tier · G2</span><span class="pa">ਸੋਨਾ ਟੀਅਰ · G2</span></div>
+    <h1><span class="en">Volatility Scaling</span><span class="pa">Volatility Scaling</span></h1>
+    <p class="lede"><span class="en">Gold trades above $4,500. The $20 stop that worked at $2,000 is now killing you — it's less than half a percent of price. Stop thinking in dollars. Start sizing in ATR and percentages.</span><span class="pa">ਸੋਨਾ $4,500 ਤੋਂ ਉੱਪਰ ਹੈ। $2,000 ਉੱਤੇ ਕੰਮ ਕਰਨ ਵਾਲਾ $20 stop ਹੁਣ ਨੁਕਸਾਨ ਕਰ ਰਿਹਾ ਹੈ — ਇਹ ਕੀਮਤ ਦੇ ਅੱਧੇ ਪ੍ਰਤੀਸ਼ਤ ਤੋਂ ਵੀ ਘੱਟ ਹੈ। ਡਾਲਰ ਵਿੱਚ ਸੋਚਣਾ ਛੱਡੋ। ATR ਤੇ percentage ਵਿੱਚ size ਕਰੋ।</span></p>
+    <div class="meta">
+      <span><b>~14 min</b> · <span class="en">read &amp; do</span><span class="pa">ਪੜ੍ਹੋ ਤੇ ਕਰੋ</span></span>
+      <span><b>1 <span class="en">live sizer</span><span class="pa">ਲਾਈਵ sizer</span></b></span>
+      <span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <span class="knum">01</span>
+    <h2><span class="en">The same $20 means something different now</span><span class="pa">ਉਹੀ $20 ਹੁਣ ਵੱਖਰਾ ਮਤਲਬ ਰੱਖਦਾ ਹੈ</span></h2>
+    <p><span class="en">A stop is only meaningful as a <em>percentage</em> of price. As gold more than doubled, your fixed-dollar stop quietly shrank to half its old buffer — so normal noise stops you out.</span><span class="pa">ਇੱਕ stop ਸਿਰਫ਼ ਕੀਮਤ ਦੇ <em>ਪ੍ਰਤੀਸ਼ਤ</em> ਵਜੋਂ ਮਾਅਨੇ ਰੱਖਦਾ ਹੈ। ਜਿਵੇਂ ਸੋਨਾ ਦੁੱਗਣੇ ਤੋਂ ਵੱਧ ਹੋਇਆ, ਤੁਹਾਡਾ fixed-dollar stop ਚੁੱਪਚਾਪ ਅੱਧਾ ਰਹਿ ਗਿਆ — ਇਸ ਲਈ ਆਮ ਹਲਚਲ ਹੀ ਤੁਹਾਨੂੰ stop out ਕਰ ਦਿੰਦੀ ਹੈ।</span></p>
+    <div class="grid2">
+      <div class="card vs old">
+        <div class="lab"><span class="en">Gold at $2,000 · the old days</span><span class="pa">ਸੋਨਾ $2,000 · ਪੁਰਾਣਾ ਸਮਾਂ</span></div>
+        <div class="big">1.00%</div>
+        <p class="sub"><span class="en">A $20 stop = a full 1% of price. Reasonable breathing room — noise rarely hit it.</span><span class="pa">$20 stop = ਕੀਮਤ ਦਾ ਪੂਰਾ 1%। ਠੀਕ ਜਗ੍ਹਾ — ਆਮ ਹਲਚਲ ਘੱਟ ਹੀ ਛੂੰਹਦੀ ਸੀ।</span></p>
+      </div>
+      <div class="card vs now">
+        <div class="lab"><span class="en">Gold at $4,500 · now</span><span class="pa">ਸੋਨਾ $4,500 · ਹੁਣ</span></div>
+        <div class="big">0.44%</div>
+        <p class="sub"><span class="en">That same $20 is now under half a percent — on a market making bigger dollar swings. You get stopped by noise.</span><span class="pa">ਉਹੀ $20 ਹੁਣ ਅੱਧੇ ਪ੍ਰਤੀਸ਼ਤ ਤੋਂ ਘੱਟ — ਵੱਡੇ ਡਾਲਰ ਝੂਲਿਆਂ ਵਾਲੇ ਬਾਜ਼ਾਰ ਉੱਤੇ। ਹਲਚਲ ਨਾਲ stop out ਹੋ ਜਾਂਦੇ ਹੋ।</span></p>
+      </div>
+    </div>
+    <p class="muted" style="font-size:14.5px"><span class="en">It's <strong>not</strong> the market hunting your stops. Your stops simply never scaled with price. The fix is mechanical.</span><span class="pa">ਇਹ ਬਾਜ਼ਾਰ ਤੁਹਾਡੇ stops ਨਹੀਂ ਲੱਭ ਰਿਹਾ। ਤੁਹਾਡੇ stops ਕੀਮਤ ਨਾਲ ਨਹੀਂ ਵਧੇ। ਹੱਲ mechanical ਹੈ।</span></p>
+  </div>
+</section>
+
+<section id="atr">
+  <div class="wrap">
+    <span class="knum">02</span>
+    <h2><span class="en">Let volatility set your stop</span><span class="pa">Volatility ਤੈਅ ਕਰੇ ਤੁਹਾਡਾ stop</span></h2>
+    <p><span class="en"><strong>ATR (Average True Range)</strong> measures how far gold moves in an average period — usually 14 periods. It's a one-click indicator on TradingView and MT5. Because it grows when the market is wild and shrinks when it's quiet, an ATR-based stop adapts on its own. You never guess a stop again.</span><span class="pa"><strong>ATR (Average True Range)</strong> ਮਾਪਦਾ ਹੈ ਕਿ ਸੋਨਾ ਔਸਤ ਸਮੇਂ ਵਿੱਚ ਕਿੰਨਾ ਹਿੱਲਦਾ ਹੈ — ਆਮ ਤੌਰ ਤੇ 14 periods। TradingView ਤੇ MT5 ਉੱਤੇ ਇੱਕ click। ਕਿਉਂਕਿ ਇਹ ਤੇਜ਼ੀ ਵੇਲੇ ਵਧਦਾ ਤੇ ਸ਼ਾਂਤੀ ਵੇਲੇ ਘਟਦਾ ਹੈ, ATR-ਆਧਾਰਿਤ stop ਆਪਣੇ ਆਪ ਢਲਦਾ ਹੈ।</span></p>
+    <div class="card">
+      <h3 style="margin-top:0"><span class="en">The rule</span><span class="pa">ਨਿਯਮ</span></h3>
+      <p style="font-size:20px;color:var(--gold-soft);font-weight:750;margin:0 0 8px">Stop = 1.5 × daily ATR</p>
+      <p class="muted" style="margin:0;font-size:14.5px"><span class="en">If daily ATR = $120, your stop sits $180 away. That distance grows when volatility rises and shrinks when it calms — designed to sit <em>outside</em> abnormal moves.</span><span class="pa">ਜੇ ਰੋਜ਼ਾਨਾ ATR = $120, ਤੁਹਾਡਾ stop $180 ਦੂਰ। ਇਹ ਦੂਰੀ volatility ਨਾਲ ਵਧਦੀ-ਘਟਦੀ ਹੈ — ਅਸਧਾਰਨ ਚਾਲਾਂ ਤੋਂ <em>ਬਾਹਰ</em> ਰਹਿਣ ਲਈ।</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="sizer">
+  <div class="wrap">
+    <span class="knum">03</span>
+    <h2><span class="en">The formula that saves accounts</span><span class="pa">ਜੋ account ਬਚਾਉਂਦਾ ਹੈ</span></h2>
+    <p><span class="en">Four steps, every single trade. Enter your numbers — the sizer does the maths and shows how your position must shrink as volatility rises.</span><span class="pa">ਚਾਰ ਕਦਮ, ਹਰ trade ਉੱਤੇ। ਆਪਣੇ ਨੰਬਰ ਪਾਓ — sizer ਗਣਿਤ ਕਰਦਾ ਹੈ ਤੇ ਦਿਖਾਉਂਦਾ ਹੈ ਕਿ volatility ਵਧਣ ਨਾਲ position ਕਿਵੇਂ ਘਟਣੀ ਚਾਹੀਦੀ।</span></p>
+
+    <div class="tool">
+      <span class="tag"><span class="en">Interactive · ATR position sizer</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · ATR position sizer</span></span>
+      <div class="fields">
+        <div class="field">
+          <label><span class="en">Account size ($)</span><span class="pa">Account ਆਕਾਰ ($)</span></label>
+          <input id="acct" type="number" value="10000" min="0" step="100" oninput="calcSize()">
+        </div>
+        <div class="field">
+          <label><span class="en">Risk per trade (%)</span><span class="pa">ਹਰ trade ਜੋਖਮ (%)</span></label>
+          <input id="risk" type="number" value="1" min="0.1" max="5" step="0.1" oninput="calcSize()">
+        </div>
+        <div class="field">
+          <label><span class="en">Daily ATR ($)</span><span class="pa">ਰੋਜ਼ਾਨਾ ATR ($)</span></label>
+          <input id="atrv" type="number" value="120" min="1" step="1" oninput="calcSize()">
+        </div>
+        <div class="field">
+          <label><span class="en">ATR multiplier</span><span class="pa">ATR multiplier</span> — <span class="multibadge" id="multbadge">1.5×</span></label>
+          <div class="slid"><input id="mult" type="range" min="1" max="3" step="0.25" value="1.5" oninput="calcSize()"></div>
+        </div>
+      </div>
+      <div class="out">
+        <div class="ocard"><div class="ov" id="o-risk">$100</div><div class="ol"><span class="en">$ at risk</span><span class="pa">ਜੋਖਮ $</span></div></div>
+        <div class="ocard"><div class="ov" id="o-stop">$180</div><div class="ol"><span class="en">stop distance</span><span class="pa">stop ਦੂਰੀ</span></div></div>
+        <div class="ocard"><div class="ov" id="o-pct">4.0%</div><div class="ol"><span class="en">of $4,500 price</span><span class="pa">$4,500 ਦਾ</span></div></div>
+      </div>
+      <div class="sizecard">
+        <div class="ov" id="o-size">0.56</div>
+        <div class="ol"><span class="en">units / lots to trade — this keeps your risk at exactly your chosen %</span><span class="pa">units / lots — ਇਹ ਤੁਹਾਡਾ ਜੋਖਮ ਠੀਕ ਤੁਹਾਡੇ ਚੁਣੇ % ਉੱਤੇ ਰੱਖਦਾ ਹੈ</span></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Try it: raise the ATR from 120 to 240 (volatility doubles) and watch your position size halve. Same risk, smaller size — automatically.</span><span class="pa">ਅਜ਼ਮਾਓ: ATR ਨੂੰ 120 ਤੋਂ 240 ਕਰੋ (volatility ਦੁੱਗਣੀ) ਤੇ ਦੇਖੋ position size ਅੱਧੀ ਹੋ ਜਾਂਦੀ ਹੈ। ਉਹੀ ਜੋਖਮ, ਛੋਟਾ size — ਆਪਣੇ ਆਪ।</span></p>
+    </div>
+
+    <div class="card">
+      <div class="steprow"><div class="stepn">1</div><div><p class="st"><span class="en">Risk in percent, never dollars</span><span class="pa">Percent ਵਿੱਚ ਜੋਖਮ, ਡਾਲਰ ਨਹੀਂ</span></p><p class="sd"><span class="en">Max 1% of account per trade. On $10,000 that's $100.</span><span class="pa">ਹਰ trade account ਦਾ ਵੱਧ 1%। $10,000 ਉੱਤੇ = $100।</span></p></div></div>
+      <div class="steprow"><div class="stepn">2</div><div><p class="st"><span class="en">Measure ATR</span><span class="pa">ATR ਮਾਪੋ</span></p><p class="sd"><span class="en">One click on the chart. Say daily ATR = $120.</span><span class="pa">Chart ਉੱਤੇ ਇੱਕ click। ਮੰਨੋ ATR = $120।</span></p></div></div>
+      <div class="steprow"><div class="stepn">3</div><div><p class="st"><span class="en">Stop = 1.5 × ATR</span><span class="pa">Stop = 1.5 × ATR</span></p><p class="sd"><span class="en">$120 × 1.5 = $180 stop distance.</span><span class="pa">$120 × 1.5 = $180 stop ਦੂਰੀ।</span></p></div></div>
+      <div class="steprow"><div class="stepn">4</div><div><p class="st"><span class="en">Size = risk ÷ stop distance</span><span class="pa">Size = ਜੋਖਮ ÷ stop ਦੂਰੀ</span></p><p class="sd"><span class="en">$100 ÷ $180 = 0.56 units. That's your size.</span><span class="pa">$100 ÷ $180 = 0.56 units। ਇਹੀ size।</span></p></div></div>
+    </div>
+    <p class="muted" style="font-size:14px"><span class="en">The same lot size you used at $2,000 gold is more than <strong>double</strong> the real risk today. As price and volatility rise, size must shrink to keep risk constant.</span><span class="pa">$2,000 ਵਾਲਾ ਉਹੀ lot size ਅੱਜ <strong>ਦੁੱਗਣੇ</strong> ਤੋਂ ਵੱਧ ਜੋਖਮ ਹੈ। ਕੀਮਤ ਤੇ volatility ਵਧਣ ਨਾਲ size ਘਟਣੀ ਚਾਹੀਦੀ।</span></p>
+  </div>
+</section>
+
+<section id="map">
+  <div class="wrap">
+    <span class="knum">04</span>
+    <h2><span class="en">The new price map</span><span class="pa">ਨਵਾਂ ਕੀਮਤ ਨਕਸ਼ਾ</span></h2>
+    <p><span class="en">Forget $1,900. At these prices the magnets are $500 apart, not $50. Intraday, watch the round $100 levels.</span><span class="pa">$1,900 ਭੁੱਲ ਜਾਓ। ਇਨ੍ਹਾਂ ਕੀਮਤਾਂ ਉੱਤੇ ਚੁੰਬਕ $50 ਨਹੀਂ, $500 ਦੂਰ ਹਨ। Intraday, ਗੋਲ $100 levels ਦੇਖੋ।</span></p>
+    <div class="levels">
+      <div class="lvl"><div class="px">$5,600</div><div class="ld"><span class="en">All-time-high zone — ultimate resistance</span><span class="pa">ਸਭ ਤੋਂ ਉੱਚਾ — ਆਖਰੀ ਰੁਕਾਵਟ</span></div></div>
+      <div class="lvl"><div class="px">$5,000</div><div class="ld"><span class="en">Big psychological ceiling — major resistance</span><span class="pa">ਵੱਡੀ ਮਨੋਵਿਗਿਆਨਕ ਛੱਤ</span></div></div>
+      <div class="lvl pivot"><div class="px">$4,500</div><div class="ld"><span class="en">Current pivot — price wrestling here now</span><span class="pa">ਮੌਜੂਦਾ pivot — ਹੁਣ ਇੱਥੇ ਲੜਾਈ</span></div></div>
+      <div class="lvl"><div class="px">$4,000</div><div class="ld"><span class="en">Major psychological floor — bulls defend here</span><span class="pa">ਵੱਡਾ ਫਰਸ਼ — bulls ਇੱਥੇ ਬਚਾਅ ਕਰਦੇ ਹਨ</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="regime">
+  <div class="wrap">
+    <span class="knum">05</span>
+    <h2><span class="en">A two-sided market is back</span><span class="pa">ਦੋ-ਪਾਸੀ ਬਾਜ਼ਾਰ ਵਾਪਸ ਹੈ</span></h2>
+    <p><span class="en">For two years, "buy the dip" worked on autopilot. That era has paused — ETF outflows, lower highs and lows, and a break of the 200-day average mean shorts and mean-reversion can work again. <strong>Don't predict direction — trade the levels.</strong></span><span class="pa">ਦੋ ਸਾਲ "dip ਤੇ ਖਰੀਦੋ" ਆਪਣੇ ਆਪ ਚੱਲਿਆ। ਉਹ ਦੌਰ ਰੁਕ ਗਿਆ — ETF outflows, ਨੀਵੀਆਂ highs/lows, ਤੇ 200-day average ਟੁੱਟਣ ਦਾ ਮਤਲਬ shorts ਤੇ mean-reversion ਫਿਰ ਕੰਮ ਕਰ ਸਕਦੇ ਹਨ। <strong>ਦਿਸ਼ਾ ਦੀ ਭਵਿੱਖਬਾਣੀ ਨਾ ਕਰੋ — levels trade ਕਰੋ।</strong></span></p>
+    <div class="card">
+      <p style="margin:0" class="muted"><span class="en">Forecasters are split — some still see $5,400–$6,000 ahead, others project near-term ranges of $4,380–$5,100. Nobody knows. That's exactly the point: trade what the chart and your sizing tell you, not the prediction.</span><span class="pa">ਅਨੁਮਾਨ ਲਾਉਣ ਵਾਲੇ ਵੰਡੇ ਹੋਏ ਹਨ — ਕੁਝ $5,400–$6,000 ਦੇਖਦੇ ਹਨ, ਕੁਝ $4,380–$5,100। ਕਿਸੇ ਨੂੰ ਪਤਾ ਨਹੀਂ। ਇਹੀ ਨੁਕਤਾ ਹੈ: chart ਤੇ ਆਪਣੀ sizing trade ਕਰੋ, ਭਵਿੱਖਬਾਣੀ ਨਹੀਂ।</span></p>
+    </div>
+    <h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3>
+    <div class="takeaways">
+      <div class="ta"><div class="tk">›</div><div><span class="en">Trade percentages, not dollar memories. At $4,500 a $20 stop is only 0.44%.</span><span class="pa">ਡਾਲਰ ਯਾਦਾਂ ਨਹੀਂ — percentage trade ਕਰੋ। $4,500 ਉੱਤੇ $20 stop ਸਿਰਫ਼ 0.44%।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">Use 1.5 × ATR for stops. It adapts automatically — no more guessing.</span><span class="pa">Stop ਲਈ 1.5 × ATR ਵਰਤੋ। ਆਪਣੇ ਆਪ ਢਲਦਾ ਹੈ।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">Size = (1% risk) ÷ (stop distance). Higher volatility = smaller size.</span><span class="pa">Size = (1% ਜੋਖਮ) ÷ (stop ਦੂਰੀ)। ਵੱਧ volatility = ਛੋਟਾ size।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">New map: $4,000 / $4,500 / $5,000 / $5,600. The $1,900 era is over.</span><span class="pa">ਨਵਾਂ ਨਕਸ਼ਾ: $4,000 / $4,500 / $5,000 / $5,600।</span></div></div>
+      <div class="ta"><div class="tk">›</div><div><span class="en">Two-sided market is back. Buy-the-dip autopilot has paused — respect the levels.</span><span class="pa">ਦੋ-ਪਾਸੀ ਬਾਜ਼ਾਰ ਵਾਪਸ। levels ਦਾ ਆਦਰ ਕਰੋ।</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <span class="knum">06</span>
+    <h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2>
+    <p class="muted"><span class="en">Five questions to lock in volatility scaling.</span><span class="pa">Volatility scaling ਪੱਕਾ ਕਰਨ ਲਈ ਪੰਜ ਸਵਾਲ।</span></p>
+    <div id="quizbox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><span class="en">Educational only · Not financial advice · DYOR. Trading involves substantial risk of loss.</span><span class="pa">ਸਿਰਫ਼ ਵਿਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR।</span></p>
+  </div>
+</footer>
+
+<script>
+function toggleLang(){
+  document.body.classList.toggle('lang-pa');
+  const pa=document.body.classList.contains('lang-pa');
+  document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';
+  document.documentElement.lang=pa?'pa':'en';
+  renderQuiz();
+}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','problem','atr','sizer','map','regime','quiz'].map(id=>document.getElementById(id));
+function onScroll(){
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});
+  navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));
+}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+function calcSize(){
+  const acct=+document.getElementById('acct').value||0;
+  const risk=+document.getElementById('risk').value||0;
+  const atr=+document.getElementById('atrv').value||0;
+  const mult=+document.getElementById('mult').value||1.5;
+  document.getElementById('multbadge').textContent=mult+'×';
+  const riskDollar=acct*risk/100;
+  const stop=atr*mult;
+  const size=stop>0?riskDollar/stop:0;
+  const pct=stop>0?(stop/4500*100):0;
+  document.getElementById('o-risk').textContent='$'+riskDollar.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('o-stop').textContent='$'+stop.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('o-pct').textContent=pct.toFixed(2)+'%';
+  document.getElementById('o-size').textContent=size.toFixed(2);
+}
+
+const QUIZ=[
+ {q:["Why is a fixed $20 stop dangerous now that gold is ~$4,500?","ਸੋਨਾ ~$4,500 ਹੋਣ ਉੱਤੇ fixed $20 stop ਕਿਉਂ ਖ਼ਤਰਨਾਕ ਹੈ?"],
+  o:[["It's too wide now","ਹੁਣ ਇਹ ਬਹੁਤ ਚੌੜਾ ਹੈ"],["It's only ~0.44% of price — noise stops you out","ਇਹ ਕੀਮਤ ਦਾ ਸਿਰਫ਼ ~0.44% — ਹਲਚਲ stop out ਕਰ ਦਿੰਦੀ ਹੈ"],["Brokers ban small stops","Brokers ਛੋਟੇ stops ਬੈਨ ਕਰਦੇ ਹਨ"],["It only works on crypto","ਸਿਰਫ਼ crypto ਉੱਤੇ ਕੰਮ ਕਰਦਾ"]],
+  a:1,f:["At $4,500, $20 is under half a percent — far inside normal noise. Stops must scale with price.","$4,500 ਉੱਤੇ $20 ਅੱਧੇ ਪ੍ਰਤੀਸ਼ਤ ਤੋਂ ਘੱਟ — ਆਮ ਹਲਚਲ ਦੇ ਅੰਦਰ। Stops ਕੀਮਤ ਨਾਲ ਵਧਣੇ ਚਾਹੀਦੇ।"]},
+ {q:["What does ATR measure?","ATR ਕੀ ਮਾਪਦਾ ਹੈ?"],
+  o:[["The trend direction","Trend ਦੀ ਦਿਸ਼ਾ"],["How far price moves in an average period","ਔਸਤ ਸਮੇਂ ਵਿੱਚ ਕੀਮਤ ਕਿੰਨੀ ਹਿੱਲਦੀ ਹੈ"],["The RSI value","RSI ਮੁੱਲ"],["Volume traded","Traded volume"]],
+  a:1,f:["ATR = Average True Range, the average move per period. It grows in wild markets, shrinks in calm ones.","ATR = ਔਸਤ ਚਾਲ ਪ੍ਰਤੀ period। ਤੇਜ਼ੀ ਵਿੱਚ ਵਧਦਾ, ਸ਼ਾਂਤੀ ਵਿੱਚ ਘਟਦਾ।"]},
+ {q:["Daily ATR is $120 and you use 1.5×. Your stop distance is…","ਰੋਜ਼ਾਨਾ ATR $120, 1.5× ਵਰਤਦੇ ਹੋ। Stop ਦੂਰੀ…"],
+  o:[["$80","$80"],["$120","$120"],["$180","$180"],["$240","$240"]],
+  a:2,f:["$120 × 1.5 = $180. The stop sits outside abnormal moves.","$120 × 1.5 = $180।"]},
+ {q:["Account $10,000, risk 1%, stop distance $180. Position size?","Account $10,000, ਜੋਖਮ 1%, stop ਦੂਰੀ $180। Position size?"],
+  o:[["0.56 units (=$100 ÷ $180)","0.56 units (=$100 ÷ $180)"],["1.8 units","1.8 units"],["5.6 units","5.6 units"],["100 units","100 units"]],
+  a:0,f:["Risk $ = 1% of 10,000 = $100. Size = 100 ÷ 180 = 0.56 units.","ਜੋਖਮ $ = $100। Size = 100 ÷ 180 = 0.56।"]},
+ {q:["Volatility doubles (ATR $120 → $240). What happens to your size?","Volatility ਦੁੱਗਣੀ (ATR $120 → $240)। Size ਨੂੰ ਕੀ ਹੁੰਦਾ?"],
+  o:[["It doubles","ਦੁੱਗਣੀ ਹੋ ਜਾਂਦੀ"],["It stays the same","ਉਹੀ ਰਹਿੰਦੀ"],["It halves — to keep risk constant","ਅੱਧੀ ਹੋ ਜਾਂਦੀ — ਜੋਖਮ ਬਰਾਬਰ ਰੱਖਣ ਲਈ"],["It goes to zero","ਜ਼ੀਰੋ ਹੋ ਜਾਂਦੀ"]],
+  a:2,f:["Bigger stop distance means smaller size for the same dollar risk. Higher volatility → smaller size.","ਵੱਡੀ stop ਦੂਰੀ = ਛੋਟਾ size, ਉਹੀ ਜੋਖਮ ਲਈ।"]}
+];
+const qb=document.getElementById('quizbox');
+let answered=0,correct=0;
+function renderQuiz(){
+  qb.innerHTML='';answered=0;correct=0;
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;answered++;
+        const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);
+        if(oi===item.a){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.a].classList.add('correct');}
+        d.querySelector('.feedback').classList.add('show');
+        if(answered===QUIZ.length)showDone();
+      };
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);
+    d.appendChild(fb);qb.appendChild(d);
+  });
+}
+function showDone(){
+  const pass=correct>=4;
+  const card=document.createElement('div');card.className='done-card';
+  card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div>`+
+    `<div class="badge">${pass?L('★ G2 complete','★ G2 ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div>`+
+    `<p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass
+      ? L("You now size to volatility, not habit. Your stops scale with price and your position shrinks when the market gets wild. Next — reading the physical gold market.","ਹੁਣ ਤੁਸੀਂ ਆਦਤ ਨਹੀਂ, volatility ਨਾਲ size ਕਰਦੇ ਹੋ। Stops ਕੀਮਤ ਨਾਲ ਢਲਦੇ ਹਨ। ਅਗਲਾ — ਅਸਲੀ ਸੋਨੇ ਦਾ ਬਾਜ਼ਾਰ ਪੜ੍ਹਨਾ।")
+      : L("Close. Re-run the sizer — change the ATR and watch size move — then try the check again. Aim for 4/5.","ਲਗਭਗ। Sizer ਦੁਬਾਰਾ ਚਲਾਓ ਤੇ ਟੈਸਟ ਕਰੋ। 4/5 ਦਾ ਟੀਚਾ।")}</p>`+
+    (pass?`<ul class="nextlist">
+        <li>→ ${L('Add ATR(14) to your gold chart now','ਹੁਣੇ ਆਪਣੇ gold chart ਉੱਤੇ ATR(14) ਲਾਓ')}</li>
+        <li>→ ${L('Recompute your real position size before your next trade','ਅਗਲੇ trade ਤੋਂ ਪਹਿਲਾਂ ਆਪਣਾ size ਮੁੜ ਕੱਢੋ')}</li>
+        <li>→ ${L('Next: G3 — The Gold Trading Edge','ਅਗਲਾ: G3 — ਸੋਨੇ ਦਾ Trading Edge')}</li>
+      </ul>`:'');
+  qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+calcSize();renderQuiz();
+</script>
+</body>
+</html>
