@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liquidity Providers & Your Broker — M2</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links"><a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#liq">1 · <span class="en">Liquidity</span><span class="pa">Liquidity</span></a><a href="#chain">2 · <span class="en">Supply Chain</span><span class="pa">Supply Chain</span></a><a href="#books">3 · <span class="en">A vs B Book</span><span class="pa">A vs B Book</span></a><a href="#tells">4 · <span class="en">Tell Detector</span><span class="pa">Tell Detector</span></a><a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a></div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Microstructure Tier · M2 · Follow the Money</span><span class="pa">Microstructure ਟੀਅਰ · M2</span></div>
+<h1><span class="en">Liquidity Providers & Your Broker</span><span class="pa">Liquidity Providers ਤੇ ਤੁਹਾਡਾ Broker</span></h1>
+<p class="lede"><span class="en">Who is actually on the other side of your trade — the LP food chain, A-book vs B-book, why winners get switched, and how to tell which side your broker is on.</span><span class="pa">ਤੁਹਾਡੇ trade ਦੇ ਦੂਜੇ ਪਾਸੇ ਕੌਣ — LP ਲੜੀ, A-book ਬਨਾਮ B-book, ਜਿੱਤਣ ਵਾਲੇ ਕਿਉਂ ਬਦਲੇ ਜਾਂਦੇ, ਤੇ ਤੁਹਾਡਾ broker ਕਿਸ ਪਾਸੇ ਹੈ।</span></p>
+<div class="meta"><span><b>~13 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span><span><b>1 <span class="en">tell detector</span><span class="pa">tell detector</span></b></span><span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span></div>
+</div></header>
+<section id="liq"><div class="wrap"><span class="knum">01</span><h2><span class="en">Liquidity: trading without moving the market</span><span class="pa">Liquidity: ਬਾਜ਼ਾਰ ਹਿਲਾਏ ਬਿਨਾਂ trade</span></h2><div class="twocol"><div class="rcard bull"><p class="rh"><span class="en">High liquidity</span><span class="pa">ਉੱਚੀ liquidity</span></p><p><span class="en">Many buyers and sellers. Tight spreads, fast fills, minimal slippage. EUR/USD, BTC, AAPL, SPY.</span><span class="pa">ਬਹੁਤ ਖਰੀਦਦਾਰ ਤੇ ਵਿਕਰੇਤਾ। ਤੰਗ spreads, ਤੇਜ਼ fills।</span></p></div><div class="rcard frag"><p class="rh"><span class="en">Low liquidity</span><span class="pa">ਘੱਟ liquidity</span></p><p><span class="en">Few participants, wide spreads, partial fills, violent moves. Exotic forex, micro-caps, penny stocks.</span><span class="pa">ਘੱਟ ਭਾਗੀਦਾਰ, ਚੌੜੇ spreads, ਅਧੂਰੀਆਂ fills।</span></p></div></div><p class="muted"><span class="en">Think rare car vs Honda Civic: one sells in minutes, the other may take months at any price. Liquidity is what makes execution possible on demand.</span><span class="pa">ਦੁਰਲੱਭ ਕਾਰ ਬਨਾਮ Honda Civic: ਇੱਕ ਮਿੰਟਾਂ ਵਿੱਚ ਵਿਕਦੀ, ਦੂਜੀ ਮਹੀਨੇ ਲੈਂਦੀ।</span></p></div></section><section id="chain"><div class="wrap"><span class="knum">02</span><h2><span class="en">Your trade's supply chain</span><span class="pa">ਤੁਹਾਡੇ trade ਦੀ supply chain</span></h2><div class="card"><div class="steprow"><div class="stepn">👤</div><div><p class="st"><span class="en">You — retail trader</span><span class="pa">ਤੁਸੀਂ — retail trader</span></p><p class="sd"><span class="en">Place the trade on MT5 / TradingView.</span><span class="pa">MT5 / TradingView ਉੱਤੇ trade।</span></p></div></div><div class="steprow"><div class="stepn">🏢</div><div><p class="st"><span class="en">Broker — the middleman</span><span class="pa">Broker — ਵਿਚੋਲਾ</span></p><p class="sd"><span class="en">Platform, leverage, support. Takes a margin on the spread.</span><span class="pa">Platform, leverage। Spread ਉੱਤੇ margin।</span></p></div></div><div class="steprow"><div class="stepn">🏦</div><div><p class="st"><span class="en">Liquidity provider</span><span class="pa">Liquidity provider</span></p><p class="sd"><span class="en">Tier-1 banks (JPM, UBS, Citi), Prime-of-Prime bridges (LMAX, oneZero), crypto LPs (Wintermute, Jane Street). Quote bid and ask.</span><span class="pa">Tier-1 banks, Prime-of-Prime, crypto LPs। Bid ਤੇ ask।</span></p></div></div><div class="steprow"><div class="stepn">🌐</div><div><p class="st"><span class="en">Interbank</span><span class="pa">Interbank</span></p><p class="sd"><span class="en">Top-tier banks and central banks trading together. Needs $50M+ to connect directly.</span><span class="pa">ਵੱਡੇ ਬੈਂਕ ਤੇ ਕੇਂਦਰੀ ਬੈਂਕ। ਸਿੱਧਾ ਜੁੜਨ ਲਈ $50M+।</span></p></div></div></div><p class=""><span class="en">LPs do not predict direction. They capture a fraction of a cent on millions of trades via the spread. Volume is everything.</span><span class="pa">LPs ਦਿਸ਼ਾ ਨਹੀਂ ਭਵਿੱਖਬਾਣੀ ਕਰਦੇ। ਲੱਖਾਂ trades ਉੱਤੇ spread ਦਾ ਹਿੱਸਾ।</span></p></div></section><section id="books"><div class="wrap"><span class="knum">03</span><h2><span class="en">A-book vs B-book — if you lose, who wins?</span><span class="pa">A-book ਬਨਾਮ B-book — ਤੁਸੀਂ ਹਾਰੋ ਤਾਂ ਕੌਣ ਜਿੱਤਦਾ?</span></h2><p class=""><span class="en">74–89% of retail CFD accounts lose money (ESMA disclosures). If ~8 in 10 lose and the broker is the counterparty, losing clients are the revenue. That business model has a name.</span><span class="pa">74–89% retail CFD accounts ਹਾਰਦੇ ਹਨ। ਜੇ broker counterparty ਹੈ, ਹਾਰਨ ਵਾਲੇ ਗਾਹਕ ਆਮਦਨ ਹਨ।</span></p><div class="twocol"><div class="rcard bull"><p class="rh"><span class="en">A-book (STP / ECN)</span><span class="pa">A-book (STP / ECN)</span></p><p><span class="en">Broker passes your trade to the real market. Earns spread + commission. Does NOT want you to lose. Interests aligned.</span><span class="pa">Broker trade ਅਸਲੀ ਬਾਜ਼ਾਰ ਨੂੰ ਭੇਜਦਾ। Spread + commission। ਤੁਹਾਡਾ ਹਾਰਨਾ ਨਹੀਂ ਚਾਹੁੰਦਾ।</span></p></div><div class="rcard frag"><p class="rh"><span class="en">B-book (market maker)</span><span class="pa">B-book (market maker)</span></p><p><span class="en">Broker IS your counterparty. Your loss = their profit. No real market order placed. Most "zero commission" brokers.</span><span class="pa">Broker ਤੁਹਾਡਾ counterparty। ਤੁਹਾਡਾ ਨੁਕਸਾਨ = ਉਨ੍ਹਾਂ ਦਾ ਮੁਨਾਫ਼ਾ।</span></p></div></div><div class="cavbox"><span class="en">B-book is not automatically a scam. Internalising is legal and often efficient — small uncorrelated flow nets against itself. Most brokers run a HYBRID: profitable, large or scalping accounts get routed to A-book; the rest stay in-house. If your strategy is genuinely profitable you are probably being A-booked — and your fills are real.</span><span class="pa">B-book ਆਪਣੇ ਆਪ scam ਨਹੀਂ। ਜ਼ਿਆਦਾਤਰ brokers HYBRID ਚਲਾਉਂਦੇ: ਮੁਨਾਫ਼ੇ ਵਾਲੇ ਖਾਤੇ A-book, ਬਾਕੀ ਅੰਦਰ। ਜੇ ਤੁਸੀਂ ਸੱਚਮੁੱਚ profitable ਹੋ, ਤੁਸੀਂ A-booked ਹੋ।</span></div></div></section><section id="tells"><div class="wrap"><span class="knum">04</span><h2><span class="en">Is your broker trading against you?</span><span class="pa">ਕੀ ਤੁਹਾਡਾ broker ਤੁਹਾਡੇ ਖ਼ਿਲਾਫ਼ ਹੈ?</span></h2><p class=""><span class="en">Tick what you have actually observed over many trades. Evidence, not feelings.</span><span class="pa">ਜੋ ਤੁਸੀਂ ਕਈ trades ਵਿੱਚ ਅਸਲ ਵਿੱਚ ਦੇਖਿਆ, ਟਿਕ ਕਰੋ।</span></p><div class="tool"><span class="tag"><span class="en">Interactive · broker tell detector</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · broker tell detector</span></span><div class="sgrid"><div class="sig" data-v="2" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Asymmetric slippage</span><span class="pa">ਇੱਕ-ਪਾਸੀ slippage</span></p><p class="ss"><span class="en">Fills always worse on entries AND exits</span><span class="pa">Fills ਹਮੇਸ਼ਾ entries ਤੇ exits ਉੱਤੇ ਮਾੜੇ</span></p></div></div><div class="sig" data-v="3" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Phantom wick stop-outs</span><span class="pa">ਭੂਤ wick stop-outs</span></p><p class="ss"><span class="en">Spike that barely shows on TradingView / other feeds</span><span class="pa">TradingView ਉੱਤੇ ਮੁਸ਼ਕਿਲ ਦਿਖਦੀ spike</span></p></div></div><div class="sig" data-v="2" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Delays / requotes on wins</span><span class="pa">ਜਿੱਤ ਉੱਤੇ ਦੇਰੀ / requotes</span></p><p class="ss"><span class="en">Instant entries, lag when banking profit</span><span class="pa">Entry ਤੁਰੰਤ, ਮੁਨਾਫ਼ਾ ਲੈਣ ਤੇ ਦੇਰੀ</span></p></div></div><div class="sig" data-v="1" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Spread blowouts on you</span><span class="pa">ਤੁਹਾਡੇ ਉੱਤੇ spread blowout</span></p><p class="ss"><span class="en">Wider than the broader market around news</span><span class="pa">ਖ਼ਬਰ ਵੇਲੇ ਬਾਜ਼ਾਰ ਤੋਂ ਵੱਧ ਚੌੜਾ</span></p></div></div><div class="sig" data-v="2" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Offshore-only licence</span><span class="pa">ਸਿਰਫ਼ offshore licence</span></p><p class="ss"><span class="en">No ASIC / FCA / ESMA-tier regulator</span><span class="pa">ASIC / FCA / ESMA ਨਹੀਂ</span></p></div></div><div class="sig" data-v="3" onclick="sigToggle(this)"><div class="box"></div><div><p class="sl"><span class="en">Withdrawal friction</span><span class="pa">ਪੈਸਾ ਕੱਢਣ ਵਿੱਚ ਰੁਕਾਵਟ</span></p><p class="ss"><span class="en">Delays, excuses, bonus lock-ins</span><span class="pa">ਦੇਰੀ, ਬਹਾਨੇ, bonus ਜਾਲ</span></p></div></div></div><div class="gateout"><div class="gn" id="g-n">0</div><div class="gv" id="g-v"></div><div class="gd" id="g-d"></div></div><p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Regulated loss rates: ESMA 71.6%, FCA 70.8%, offshore 81.8% — a ~14% jump. Higher leverage = faster blow-ups = more B-book profit.</span><span class="pa">Regulated ਨੁਕਸਾਨ ਦਰ: ESMA 71.6%, FCA 70.8%, offshore 81.8%। ਵੱਧ leverage = ਤੇਜ਼ blow-ups।</span></p></div><h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3><div class="takeaways"><div class="ta"><div class="tk">›</div><div><span class="en">Check the regulator — verify the licence number on the regulator's own site.</span><span class="pa">Regulator ਜਾਂਚੋ — licence number ਉਨ੍ਹਾਂ ਦੀ site ਉੱਤੇ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Compare your stop-outs against a neutral feed. Phantom wicks are a red flag.</span><span class="pa">Stop-outs ਨਿਰਪੱਖ feed ਨਾਲ ਮਿਲਾਓ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Read the published loss disclosure — the most honest number they will show you.</span><span class="pa">ਛਪੀ ਨੁਕਸਾਨ disclosure ਪੜ੍ਹੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Test withdrawals early. Log slippage direction over many trades. Let data make the case.</span><span class="pa">ਜਲਦੀ withdrawal ਟੈਸਟ ਕਰੋ। Slippage log ਕਰੋ। Data ਨੂੰ ਬੋਲਣ ਦਿਓ।</span></div></div></div></div></section>
+<section id="quiz"><div class="wrap"><span class="knum">05</span><h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2><p class="muted"><span class="en">Five questions. 4/5 to pass.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਲਈ 4/5।</span></p><div id="quizbox"></div></div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const CODE="M2";const SECS=["start", "liq", "chain", "books", "tells", "quiz"];
+const QUIZ=[{"q": ["How do liquidity providers make money?", "Liquidity providers ਪੈਸਾ ਕਿਵੇਂ ਕਮਾਉਂਦੇ ਹਨ?"], "o": [["Predicting direction", "ਦਿਸ਼ਾ ਭਵਿੱਖਬਾਣੀ"], ["Capturing a fraction of the spread on millions of trades", "ਲੱਖਾਂ trades ਉੱਤੇ spread ਦਾ ਹਿੱਸਾ"], ["Charging monthly fees", "ਮਹੀਨਾਵਾਰ ਫ਼ੀਸ"], ["Taking retail losses", "Retail ਨੁਕਸਾਨ ਲੈ ਕੇ"]], "a": 1, "f": ["They quote both bid and ask constantly. Volume, not direction, is the business.", "ਉਹ ਹਮੇਸ਼ਾ bid ਤੇ ask ਦਿੰਦੇ। Volume ਹੀ ਕਾਰੋਬਾਰ।"]}, {"q": ["In a B-book, your loss is…", "B-book ਵਿੱਚ ਤੁਹਾਡਾ ਨੁਕਸਾਨ…"], "o": [["Passed to the interbank market", "Interbank ਨੂੰ ਜਾਂਦਾ"], ["The broker's direct profit", "Broker ਦਾ ਸਿੱਧਾ ਮੁਨਾਫ਼ਾ"], ["Refunded by the LP", "LP ਵਾਪਸ ਕਰਦਾ"], ["Split with other traders", "ਹੋਰ traders ਨਾਲ ਵੰਡਿਆ"]], "a": 1, "f": ["The broker is your counterparty; no real market order is placed.", "Broker counterparty ਹੈ; ਕੋਈ ਅਸਲੀ order ਨਹੀਂ।"]}, {"q": ["Which trader is most likely to be moved to A-book?", "ਕਿਹੜਾ trader A-book ਉੱਤੇ ਜਾਣ ਦੀ ਸੰਭਾਵਨਾ?"], "o": [["A consistently losing beginner", "ਲਗਾਤਾਰ ਹਾਰਨ ਵਾਲਾ"], ["A consistently profitable scalper or EA", "ਲਗਾਤਾਰ profitable scalper ਜਾਂ EA"], ["Someone who never trades news", "ਜੋ ਖ਼ਬਰ ਨਹੀਂ trade ਕਰਦਾ"], ["Small accounts only", "ਸਿਰਫ਼ ਛੋਟੇ ਖਾਤੇ"]], "a": 1, "f": ["Taking the other side of a winner means losing — cheaper to offload them and collect spread. Profitability earns cleaner fills.", "ਜਿੱਤਣ ਵਾਲੇ ਦੇ ਉਲਟ ਜਾਣਾ ਹਾਰ ਹੈ — ਉਸਨੂੰ ਬਾਹਰ ਭੇਜਣਾ ਸਸਤਾ।"]}, {"q": ["Which is a measurable tell of a broker trading against you?", "ਕਿਹੜਾ broker ਦੇ ਖ਼ਿਲਾਫ਼ ਹੋਣ ਦਾ ਮਾਪਣ ਯੋਗ tell ਹੈ?"], "o": [["Slippage that goes both ways", "ਦੋਵੇਂ ਪਾਸੇ slippage"], ["Consistently one-sided slippage on entries and exits", "ਲਗਾਤਾਰ ਇੱਕ-ਪਾਸੀ slippage"], ["Spreads widening market-wide at news", "ਖ਼ਬਰ ਵੇਲੇ ਪੂਰੇ ਬਾਜ਼ਾਰ ਵਿੱਚ spreads"], ["Fast withdrawals", "ਤੇਜ਼ withdrawals"]], "a": 1, "f": ["Real markets slip both ways. Log direction over many trades — one-sided is a tell, not a feeling.", "ਅਸਲੀ ਬਾਜ਼ਾਰ ਦੋਵੇਂ ਪਾਸੇ ਖਿਸਕਦਾ। ਇੱਕ-ਪਾਸੀ = tell।"]}, {"q": ["Average client loss rate: ESMA ~71.6%, FCA ~70.8%, offshore…", "ਔਸਤ ਨੁਕਸਾਨ ਦਰ: ESMA ~71.6%, FCA ~70.8%, offshore…"], "o": [["~50%", "~50%"], ["~65%", "~65%"], ["~81.8%", "~81.8%"], ["~95%", "~95%"]], "a": 2, "f": ["A ~14% jump — higher leverage, looser oversight, bonus traps.", "~14% ਵੱਧ — ਵੱਧ leverage, ਘੱਟ ਨਿਗਰਾਨੀ।"]}];
+const DONE=["The broker is not your enemy or your friend — it is a business. You now understand its incentives, so you stop being the easy mark. Next: how big players engineer price into your stop.", "Broker ਦੁਸ਼ਮਣ ਜਾਂ ਦੋਸਤ ਨਹੀਂ — ਕਾਰੋਬਾਰ ਹੈ। ਅਗਲਾ: ਵੱਡੇ ਖਿਡਾਰੀ ਤੁਹਾਡੇ stop ਵੱਲ ਕੀਮਤ ਕਿਵੇਂ ਲਿਆਉਂਦੇ।"];const NEXT=[["Look up your broker's published loss disclosure tonight", "ਅੱਜ ਆਪਣੇ broker ਦੀ loss disclosure ਦੇਖੋ"], ["Start a slippage log: direction and size, every trade", "Slippage log ਸ਼ੁਰੂ ਕਰੋ"], ["Next: M3 — Stop Hunts & Liquidity Engineering", "ਅਗਲਾ: M3 — Stop Hunts"]];
+
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();if(window.refresh)refresh();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=SECS.map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div><div class="badge">${pass?L('★ '+CODE+' complete','★ '+CODE+' ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div><p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L(DONE[0],DONE[1]):L('Close. Re-read the key section, replay the tool, then try again. Aim for 4/5.','ਲਗਭਗ। ਮੁੱਖ ਹਿੱਸਾ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, tool ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।')}</p>`+(pass?`<ul class="nextlist">${NEXT.map(n=>`<li>→ ${L(n[0],n[1])}</li>`).join('')}</ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+
+
+function sigToggle(el){el.classList.toggle('on');refresh();}
+function refresh(){let n=0;document.querySelectorAll('.sig.on').forEach(e=>n+=+e.dataset.v);const gn=document.getElementById('g-n'),gv=document.getElementById('g-v'),gd=document.getElementById('g-d');gn.textContent=n;
+ if(n===0){gn.style.color='var(--green)';gv.style.color='var(--green)';gv.textContent=L('No tells — likely A-book or honest hybrid','ਕੋਈ tell ਨਹੀਂ — A-book ਜਾਂ ਇਮਾਨਦਾਰ hybrid');gd.textContent=L('Keep logging. Evidence builds over hundreds of trades.','Log ਕਰਦੇ ਰਹੋ।');}
+ else if(n<=3){gn.style.color='var(--amber)';gv.style.color='var(--amber)';gv.textContent=L('Watch closely — hybrid conflict present','ਧਿਆਨ ਨਾਲ — hybrid ਟਕਰਾਅ');gd.textContent=L('Could be normal internalisation. Cross-check fills against a neutral feed for a month.','ਆਮ internalisation ਹੋ ਸਕਦਾ। ਇੱਕ ਮਹੀਨਾ ਨਿਰਪੱਖ feed ਨਾਲ ਮਿਲਾਓ।');}
+ else{gn.style.color='var(--red)';gv.style.color='var(--red)';gv.textContent=L('Predatory B-book risk — move your capital','Predatory B-book ਖ਼ਤਰਾ — ਪੈਸਾ ਹਟਾਓ');gd.textContent=L('Multiple independent tells. Withdraw, document, and switch to an ASIC/FCA-regulated A-book broker.','ਕਈ ਸੁਤੰਤਰ tells। ਪੈਸਾ ਕੱਢੋ ਤੇ regulated A-book broker ਉੱਤੇ ਜਾਓ।');}}
+renderQuiz();if(window.refresh)refresh();
+</script></body></html>

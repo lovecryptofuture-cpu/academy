@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why a Rainstorm Changes Your Fill — M1</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links"><a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#race">1 · <span class="en">The Race</span><span class="pa">ਦੌੜ</span></a><a href="#physics">2 · <span class="en">Physics</span><span class="pa">Physics</span></a><a href="#ghost">3 · <span class="en">Ghost Orders</span><span class="pa">Ghost Orders</span></a><a href="#scale">4 · <span class="en">Micro vs Macro</span><span class="pa">Micro vs Macro</span></a><a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a></div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Microstructure Tier · M1 · HFT Physics</span><span class="pa">Microstructure ਟੀਅਰ · M1</span></div>
+<h1><span class="en">Why a Rainstorm Changes Your Fill</span><span class="pa">ਮੀਂਹ ਤੁਹਾਡੀ Fill ਕਿਉਂ ਬਦਲਦਾ ਹੈ</span></h1>
+<p class="lede"><span class="en">HFT microwave physics, rain fade, latency hedging and ghost orders — and why that "fake breakout" is not a fake-out at all.</span><span class="pa">HFT microwave physics, rain fade, latency hedging ਤੇ ghost orders — ਤੇ ਉਹ "fake breakout" ਅਸਲ ਵਿੱਚ fake-out ਕਿਉਂ ਨਹੀਂ।</span></p>
+<div class="meta"><span><b>~14 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span><span><b>1 <span class="en">live race tool</span><span class="pa">ਲਾਈਵ race tool</span></b></span><span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span></div>
+</div></header>
+<section id="race"><div class="wrap"><span class="knum">01</span><h2><span class="en">Two cities, one arbitrage</span><span class="pa">ਦੋ ਸ਼ਹਿਰ, ਇੱਕ arbitrage</span></h2><p class=""><span class="en">ES futures price in Aurora, Illinois (CME). SPY follows in New Jersey ~700 miles away, milliseconds later. The first firm whose signal crosses those 700 miles locks in a risk-free profit. That race decides your fill.</span><span class="pa">ES futures ਦੀ ਕੀਮਤ Aurora, Illinois (CME) ਵਿੱਚ ਬਣਦੀ ਹੈ। SPY ~700 ਮੀਲ ਦੂਰ New Jersey ਵਿੱਚ milliseconds ਬਾਅਦ ਪਿੱਛੇ ਆਉਂਦਾ ਹੈ। ਜਿਸ firm ਦਾ signal ਪਹਿਲਾਂ ਪਹੁੰਚੇ, ਉਹ risk-free ਮੁਨਾਫ਼ਾ ਲੈਂਦੀ ਹੈ। ਉਹ ਦੌੜ ਤੁਹਾਡੀ fill ਤੈਅ ਕਰਦੀ ਹੈ।</span></p><div class="card"><div class="signalrow"><div class="ico" style="font-size:16px">🏙️</div><div><p class="st"><span class="en">Aurora, Illinois — CME</span><span class="pa">Aurora, Illinois — CME</span></p><p class="sd"><span class="en">ES futures. The source of price discovery.</span><span class="pa">ES futures। ਕੀਮਤ ਇੱਥੇ ਬਣਦੀ ਹੈ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">⚡</div><div><p class="st"><span class="en">~700 miles</span><span class="pa">~700 ਮੀਲ</span></p><p class="sd"><span class="en">Microwave towers vs fiber cable. v = c ÷ n.</span><span class="pa">Microwave towers ਬਨਾਮ fiber। v = c ÷ n।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">🏢</div><div><p class="st"><span class="en">Secaucus / Carteret, NJ</span><span class="pa">Secaucus / Carteret, NJ</span></p><p class="sd"><span class="en">SPY and the equity exchanges. Follows futures with a lag.</span><span class="pa">SPY ਤੇ equity exchanges। Futures ਤੋਂ ਪਿੱਛੇ।</span></p></div></div></div></div></section><section id="physics"><div class="wrap"><span class="knum">02</span><h2><span class="en">Fiber optics is the slow lane</span><span class="pa">Fiber optics ਹੌਲੀ ਰਸਤਾ ਹੈ</span></h2><p class=""><span class="en">Light slows down in glass. Microwave through air runs at ~99.7% of light speed in a straight line; fiber runs at ~67% and snakes around terrain. HFT firms use microwave, with fiber as backup. Change the medium and the weather below and watch who wins.</span><span class="pa">ਰੌਸ਼ਨੀ ਸ਼ੀਸ਼ੇ ਵਿੱਚ ਹੌਲੀ ਹੁੰਦੀ ਹੈ। Microwave ਹਵਾ ਰਾਹੀਂ ~99.7% ਰਫ਼ਤਾਰ, ਸਿੱਧੀ ਲਾਈਨ; fiber ~67% ਤੇ ਟੇਢਾ ਰਸਤਾ। HFT microwave ਵਰਤਦੇ ਹਨ, fiber backup। ਹੇਠਾਂ medium ਤੇ ਮੌਸਮ ਬਦਲੋ।</span></p><div class="tool"><span class="tag"><span class="en">Interactive · signal race calculator</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · signal race calculator</span></span><div class="row2"><div class="field"><label><span class="en">Your link</span><span class="pa">ਤੁਹਾਡਾ link</span></label><div class="seg" id="med"><button class="on" data-n="1.003" data-k="mw" onclick="segPick(this)">Microwave</button><button data-n="1.5" data-k="fb" onclick="segPick(this)">Fiber</button></div></div>
+   <div class="field"><label><span class="en">Weather on the corridor</span><span class="pa">Corridor ਉੱਤੇ ਮੌਸਮ</span></label><div class="seg" id="wx"><button class="on" data-k="clear" onclick="segPick(this)">☀️ Clear</button><button data-k="rain" onclick="segPick(this)">🌧️ Storm</button></div></div></div>
+   <div class="bigstat"><div class="bs"><div class="n" id="r-lat">—</div><div class="l"><span class="en">one-way latency</span><span class="pa">one-way latency</span></div></div><div class="bs"><div class="n" id="r-rival">—</div><div class="l"><span class="en">rival on fiber</span><span class="pa">fiber ਉੱਤੇ ਵਿਰੋਧੀ</span></div></div><div class="bs"><div class="n" id="r-win">—</div><div class="l"><span class="en">who wins the race</span><span class="pa">ਦੌੜ ਕੌਣ ਜਿੱਤਦਾ</span></div></div></div>
+   <div class="gateout"><div class="gv" id="r-msg"></div><div class="gd" id="r-sub"></div></div><p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Rain fade: water absorbs millimetre-wave signals. The microwave network drops packets, algos fail over to fiber in microseconds, adding 1–3 ms — and the edge evaporates. Spreads widen for everyone.</span><span class="pa">Rain fade: ਪਾਣੀ millimetre-wave signal ਸੋਖਦਾ ਹੈ। Microwave packets ਡਿੱਗਦੇ ਹਨ, algos fiber ਉੱਤੇ ਜਾਂਦੇ ਹਨ, 1–3 ms ਵਧਦੇ — edge ਖ਼ਤਮ। Spreads ਸਭ ਲਈ ਚੌੜੇ।</span></p></div><div class="states"><div class="state good"><div class="lvl"><span class="en">Latency</span><span class="pa">Latency</span></div><p class="dd"><span class="en">Clear: ~3.8 ms microwave vs ~5.6 ms fiber. Storm: microwave falls back to fiber, +1–3 ms.</span><span class="pa">ਸਾਫ਼: ~3.8 ms microwave ਬਨਾਮ ~5.6 ms fiber। ਤੂਫ਼ਾਨ: microwave fiber ਉੱਤੇ, +1–3 ms।</span></p></div><div class="state warn"><div class="lvl"><span class="en">Spreads</span><span class="pa">Spreads</span></div><p class="dd"><span class="en">Market makers widen to protect against slower, riskier data. Cost of trading spikes.</span><span class="pa">MMs ਹੌਲੀ data ਤੋਂ ਬਚਣ ਲਈ ਚੌੜੇ ਕਰਦੇ ਹਨ।</span></p></div><div class="state bad"><div class="lvl"><span class="en">ES/SPY lock</span><span class="pa">ES/SPY lock</span></div><p class="dd"><span class="en">The tight correlation temporarily decouples. "Unexplained" divergences are just physics.</span><span class="pa">ਸਬੰਧ ਅਸਥਾਈ ਟੁੱਟਦਾ। "ਅਣਸਮਝੇ" ਫਰਕ ਸਿਰਫ਼ physics।</span></p></div></div></div></section><section id="ghost"><div class="wrap"><span class="knum">03</span><h2><span class="en">Ghost orders & the "fake breakout"</span><span class="pa">Ghost orders ਤੇ "fake breakout"</span></h2><p class=""><span class="en">What retail calls a fake-out is a market maker running self-preservation. Here is the sequence, in order.</span><span class="pa">ਜਿਸਨੂੰ retail fake-out ਕਹਿੰਦਾ ਹੈ ਉਹ market maker ਦੀ ਆਪਣੀ ਬਚਾਅ ਕਾਰਵਾਈ ਹੈ। ਕ੍ਰਮ ਇਹ ਹੈ।</span></p><div class="card"><div class="steprow"><div class="stepn">1</div><div><p class="st"><span class="en">MM posts limit orders everywhere</span><span class="pa">MM ਹਰ ਪਾਸੇ limit orders ਲਾਉਂਦਾ</span></p><p class="sd"><span class="en">Providing liquidity on both sides — that is their job.</span><span class="pa">ਦੋਵੇਂ ਪਾਸੇ liquidity ਦੇਣਾ — ਇਹੀ ਕੰਮ।</span></p></div></div><div class="steprow"><div class="stepn">2</div><div><p class="st"><span class="en">Direct feed detects a whale</span><span class="pa">Direct feed ਨੂੰ whale ਦਿਖਦਾ</span></p><p class="sd"><span class="en">Via a private feed (not the SIP retail sees) the MM spots a massive institutional order incoming.</span><span class="pa">Private feed (SIP ਨਹੀਂ) ਰਾਹੀਂ MM ਨੂੰ ਵੱਡਾ order ਆਉਂਦਾ ਦਿਖਦਾ।</span></p></div></div><div class="steprow"><div class="stepn">3</div><div><p class="st"><span class="en">All orders cancelled in microseconds</span><span class="pa">ਸਾਰੇ orders microseconds ਵਿੱਚ ਰੱਦ</span></p><p class="sd"><span class="en">The book becomes a vacuum. What looked like support disappears.</span><span class="pa">Book ਖਾਲੀ। ਜੋ support ਲੱਗਦਾ ਸੀ ਗਾਇਬ।</span></p></div></div><div class="steprow"><div class="stepn">4</div><div><p class="st"><span class="en">Price wicks — your stop is hit</span><span class="pa">ਕੀਮਤ wick — ਤੁਹਾਡਾ stop ਹਿੱਟ</span></p><p class="sd"><span class="en">No orders to absorb buying → price spikes. Retail calls it a liquidity grab.</span><span class="pa">ਸੋਖਣ ਲਈ orders ਨਹੀਂ → spike। Retail ਇਸਨੂੰ liquidity grab ਕਹਿੰਦਾ।</span></p></div></div><div class="steprow"><div class="stepn">5</div><div><p class="st"><span class="en">Hedged, then book restored</span><span class="pa">Hedge ਤੋਂ ਬਾਅਦ book ਵਾਪਸ</span></p><p class="sd"><span class="en">Fully hedged in futures/options, the MM replaces orders. Price snaps back. "Fake-out."</span><span class="pa">Futures/options ਵਿੱਚ hedge ਕਰ ਕੇ MM orders ਵਾਪਸ ਲਾਉਂਦਾ। ਕੀਮਤ ਵਾਪਸ। "Fake-out।"</span></p></div></div></div><div class="cavbox"><span class="en">SIP feed (retail) is a consolidated tape calculated centrally — milliseconds late. Direct feeds (HFT) plug straight into exchange servers. By the time you see it, the move is over.</span><span class="pa">SIP feed (retail) ਕੇਂਦਰੀ ਤੌਰ ਤੇ ਗਿਣਿਆ — milliseconds ਲੇਟ। Direct feeds exchange servers ਨਾਲ ਸਿੱਧੇ ਜੁੜੇ। ਤੁਹਾਡੇ ਦੇਖਣ ਤੱਕ ਚਾਲ ਖ਼ਤਮ।</span></div></div></section><section id="scale"><div class="wrap"><span class="knum">04</span><h2><span class="en">Micro vs macro — where you actually live</span><span class="pa">Micro ਬਨਾਮ macro — ਤੁਸੀਂ ਕਿੱਥੇ ਰਹਿੰਦੇ ਹੋ</span></h2><div class="twocol"><div class="rcard frag"><p class="rh"><span class="en">Micro · sub-1-minute</span><span class="pa">Micro · 1 ਮਿੰਟ ਤੋਂ ਘੱਟ</span></p><p><span class="en">Algos pinging each other, delta hedging, derivative arbitrage. "Price action" here is largely a myth. You are the liquidity being hunted.</span><span class="pa">Algos ਆਪਸ ਵਿੱਚ, delta hedging, arbitrage। ਇੱਥੇ "price action" ਲਗਭਗ ਮਿੱਥ ਹੈ। ਤੁਸੀਂ ਸ਼ਿਕਾਰ ਹੋ।</span></p></div><div class="rcard bull"><p class="rh"><span class="en">Macro · 15-min to daily</span><span class="pa">Macro · 15-min ਤੋਂ daily</span></p><p><span class="en">Institutional accumulation, dealer GEX/vanna flows, macro liquidity cycles. HFTs do not hold overnight. Ride the wake — do not fight it.</span><span class="pa">ਸੰਸਥਾਗਤ accumulation, dealer flows, macro cycles। HFT overnight ਨਹੀਂ ਰੱਖਦੇ। ਲਹਿਰ ਨਾਲ ਚੱਲੋ।</span></p></div></div><h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3><div class="takeaways"><div class="ta"><div class="tk">›</div><div><span class="en">Weather-aware sessions: big news + bad Midwest weather = wide spreads. Reduce size or sit out.</span><span class="pa">ਮੌਸਮ ਦਾ ਧਿਆਨ: ਵੱਡੀ ਖ਼ਬਰ + ਖ਼ਰਾਬ ਮੌਸਮ = ਚੌੜੇ spreads। Size ਘਟਾਓ ਜਾਂ ਬਾਹਰ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Relabel "fake breakouts" as order-book vacuums. It changes how you react.</span><span class="pa">"Fake breakouts" ਨੂੰ book vacuum ਕਹੋ। ਪ੍ਰਤੀਕਿਰਿਆ ਬਦਲਦੀ ਹੈ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">1-min charts are the danger zone. Higher timeframes ride macro flows, not noise.</span><span class="pa">1-min charts ਖ਼ਤਰੇ ਦਾ ਜ਼ੋਨ। ਉੱਚੇ timeframes macro flows ਉੱਤੇ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Physics over indicators — the same equations as radio astronomy dictate your fill.</span><span class="pa">Indicators ਤੋਂ ਵੱਧ physics — ਉਹੀ ਸਮੀਕਰਨ ਤੁਹਾਡੀ fill ਤੈਅ ਕਰਦੇ ਹਨ।</span></div></div></div></div></section>
+<section id="quiz"><div class="wrap"><span class="knum">05</span><h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2><p class="muted"><span class="en">Five questions. 4/5 to pass.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਲਈ 4/5।</span></p><div id="quizbox"></div></div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const CODE="M1";const SECS=["start", "race", "physics", "ghost", "scale", "quiz"];
+const QUIZ=[{"q": ["Why do HFT firms use microwave towers instead of fiber?", "HFT firms fiber ਦੀ ਥਾਂ microwave ਕਿਉਂ ਵਰਤਦੀਆਂ ਹਨ?"], "o": [["Fiber is more expensive", "Fiber ਮਹਿੰਗਾ ਹੈ"], ["Microwave through air runs ~99.7% of light speed in a straight line; fiber ~67% and a longer path", "Microwave ~99.7% ਰਫ਼ਤਾਰ ਸਿੱਧੀ ਲਾਈਨ; fiber ~67% ਤੇ ਲੰਮਾ ਰਸਤਾ"], ["Fiber is illegal for trading", "Fiber trading ਲਈ ਗ਼ੈਰ-ਕਾਨੂੰਨੀ"], ["Microwave carries more data", "Microwave ਜ਼ਿਆਦਾ data ਲੈ ਜਾਂਦਾ"]], "a": 1, "f": ["v = c ÷ n. Air n≈1.003, glass n≈1.5 — and towers go straight while cables snake around terrain.", "v = c ÷ n। ਹਵਾ n≈1.003, ਸ਼ੀਸ਼ਾ n≈1.5।"]}, {"q": ["A storm hits the Ohio/Pennsylvania corridor. What happens to HFT microwave networks?", "Ohio/Pennsylvania ਉੱਤੇ ਤੂਫ਼ਾਨ। HFT microwave ਨੂੰ ਕੀ ਹੁੰਦਾ?"], "o": [["Nothing — they are shielded", "ਕੁਝ ਨਹੀਂ"], ["Water absorbs the signal (rain fade); algos fail over to fiber, adding 1–3 ms", "ਪਾਣੀ signal ਸੋਖਦਾ (rain fade); fiber ਉੱਤੇ, +1–3 ms"], ["They speed up", "ਤੇਜ਼ ਹੋ ਜਾਂਦੇ"], ["Exchanges close", "Exchanges ਬੰਦ"]], "a": 1, "f": ["Millimetre-wave signals are absorbed by water droplets. The speed edge evaporates and spreads widen.", "Millimetre-wave ਪਾਣੀ ਦੀਆਂ ਬੂੰਦਾਂ ਸੋਖਦੀਆਂ। Edge ਖ਼ਤਮ, spreads ਚੌੜੇ।"]}, {"q": ["A 'fake breakout' wick through support is most accurately described as…", "Support ਰਾਹੀਂ 'fake breakout' wick ਅਸਲ ਵਿੱਚ…"], "o": [["Broker manipulation", "Broker ਦੀ ਹੇਰਾਫੇਰੀ"], ["A market maker cancelling all limit orders to avoid toxic flow — an order-book vacuum", "MM ਵੱਲੋਂ toxic flow ਤੋਂ ਬਚਣ ਲਈ ਸਾਰੇ orders ਰੱਦ — book vacuum"], ["Random noise", "ਬੇਤਰਤੀਬ ਰੌਲਾ"], ["Retail panic selling", "Retail ਘਬਰਾਹਟ"]], "a": 1, "f": ["The MM detects a whale on its direct feed, pulls everything, hedges, then restores the book. Self-preservation, not manipulation.", "MM direct feed ਉੱਤੇ whale ਦੇਖਦਾ, ਸਭ ਹਟਾਉਂਦਾ, hedge ਕਰਦਾ, ਫਿਰ book ਵਾਪਸ।"]}, {"q": ["Why is retail 'blind' compared to HFT?", "Retail HFT ਮੁਕਾਬਲੇ 'ਅੰਨ੍ਹਾ' ਕਿਉਂ?"], "o": [["Retail uses the SIP consolidated feed, calculated centrally and milliseconds late; HFT uses direct exchange feeds", "Retail SIP feed ਵਰਤਦਾ, milliseconds ਲੇਟ; HFT direct feeds"], ["Retail charts are low resolution", "Retail charts ਘੱਟ resolution"], ["Retail has no indicators", "Retail ਕੋਲ indicators ਨਹੀਂ"], ["HFT pays for news early", "HFT ਖ਼ਬਰ ਪਹਿਲਾਂ ਖਰੀਦਦਾ"]], "a": 0, "f": ["By the time the SIP shows you the NBBO, the direct-feed firms have already acted.", "SIP ਦਿਖਾਉਣ ਤੱਕ direct-feed firms ਕਾਰਵਾਈ ਕਰ ਚੁੱਕੀਆਂ।"]}, {"q": ["On which timeframe is 'price action' mostly microstructure noise?", "ਕਿਹੜੇ timeframe ਉੱਤੇ 'price action' ਜ਼ਿਆਦਾਤਰ ਰੌਲਾ ਹੈ?"], "o": [["Daily", "Daily"], ["4-hour", "4-hour"], ["Sub-1-minute", "1 ਮਿੰਟ ਤੋਂ ਘੱਟ"], ["Weekly", "Weekly"]], "a": 2, "f": ["Sub-minute charts are algos pinging each other. Higher timeframes ride institutional and macro flows.", "1-min ਤੋਂ ਘੱਟ charts algos ਆਪਸ ਵਿੱਚ। ਉੱਚੇ timeframes macro flows।"]}];
+const DONE=["You now know the physical layer under every fill — and why a wick through your stop is physics and self-preservation, not a conspiracy. Next: who is actually on the other side of your trade.", "ਹੁਣ ਤੁਸੀਂ ਹਰ fill ਹੇਠਾਂ physical ਪਰਤ ਜਾਣਦੇ ਹੋ। ਅਗਲਾ: ਤੁਹਾਡੇ trade ਦੇ ਦੂਜੇ ਪਾਸੇ ਕੌਣ ਹੈ।"];const NEXT=[["Move your execution timeframe to 5-min or higher", "Execution timeframe 5-min ਜਾਂ ਉੱਪਰ ਕਰੋ"], ["Next: M2 — Liquidity Providers & Your Broker", "ਅਗਲਾ: M2 — Liquidity Providers ਤੇ ਤੁਹਾਡਾ Broker"]];
+
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();if(window.refresh)refresh();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=SECS.map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div><div class="badge">${pass?L('★ '+CODE+' complete','★ '+CODE+' ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div><p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L(DONE[0],DONE[1]):L('Close. Re-read the key section, replay the tool, then try again. Aim for 4/5.','ਲਗਭਗ। ਮੁੱਖ ਹਿੱਸਾ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, tool ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।')}</p>`+(pass?`<ul class="nextlist">${NEXT.map(n=>`<li>→ ${L(n[0],n[1])}</li>`).join('')}</ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+
+
+const DIST=1126; // km, ~700 miles
+let med='mw',wx='clear';
+function segPick(b){const g=b.parentElement;[...g.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');if(g.id==='med')med=b.dataset.k;else wx=b.dataset.k;refresh();}
+function refresh(){
+  const c=299792.458; // km/s
+  const mwPath=DIST, fbPath=DIST*1.25;
+  let lat, label;
+  const fiber=fbPath/(c/1.5)*1000;
+  if(med==='mw'){ lat=mwPath/(c/1.003)*1000; if(wx==='rain'){lat=fiber+2.0;} }
+  else { lat=fiber; }
+  document.getElementById('r-lat').textContent=lat.toFixed(1)+' ms';
+  document.getElementById('r-rival').textContent=fiber.toFixed(1)+' ms';
+  const win=lat<fiber-0.05;
+  const w=document.getElementById('r-win');
+  w.textContent=win?L('You','ਤੁਸੀਂ'):(Math.abs(lat-fiber)<0.05?L('Tie','ਬਰਾਬਰ'):L('Rival','ਵਿਰੋਧੀ'));
+  w.style.color=win?'var(--green)':'var(--red)';
+  const m=document.getElementById('r-msg'),s=document.getElementById('r-sub');
+  if(med==='mw'&&wx==='clear'){m.style.color='var(--green)';m.textContent=L('Microwave wins by ~'+(fiber-lat).toFixed(1)+' ms','Microwave ~'+(fiber-lat).toFixed(1)+' ms ਨਾਲ ਜਿੱਤਦਾ');s.textContent=L('Tight spreads, ES/SPY locked. Normal conditions.','ਤੰਗ spreads, ES/SPY ਜੁੜੇ। ਆਮ ਹਾਲਤ।');}
+  else if(med==='mw'&&wx==='rain'){m.style.color='var(--red)';m.textContent=L('Rain fade — failover to fiber, +1–3 ms','Rain fade — fiber ਉੱਤੇ, +1–3 ms');s.textContent=L('Edge gone. Spreads widen, ES/SPY decouple, microwave algos go blind.','Edge ਖ਼ਤਮ। Spreads ਚੌੜੇ, ES/SPY ਟੁੱਟਦੇ।');}
+  else if(med==='fb'&&wx==='rain'){m.style.color='var(--amber)';m.textContent=L('Fiber is immune to weather','Fiber ਮੌਸਮ ਤੋਂ ਸੁਰੱਖਿਅਤ');s.textContent=L('Fiber algos temporarily gain market share while microwave is down.','Microwave ਬੰਦ ਹੋਣ ਤੇ fiber algos ਅੱਗੇ।');}
+  else {m.style.color='var(--amber)';m.textContent=L('Fiber: the slow lane','Fiber: ਹੌਲੀ ਰਸਤਾ');s.textContent=L('~67% of light speed and a longer path. You lose the race every clear day.','~67% ਰਫ਼ਤਾਰ ਤੇ ਲੰਮਾ ਰਸਤਾ। ਹਰ ਸਾਫ਼ ਦਿਨ ਹਾਰ।');}
+}
+renderQuiz();if(window.refresh)refresh();
+</script></body></html>

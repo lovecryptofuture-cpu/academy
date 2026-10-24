@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Pools, GEX & Order Flow — M4</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links"><a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#dark">1 · <span class="en">Dark Pools</span><span class="pa">Dark Pools</span></a><a href="#gex">2 · <span class="en">GEX</span><span class="pa">GEX</span></a><a href="#vpin">3 · <span class="en">Toxicity</span><span class="pa">Toxicity</span></a><a href="#stack">4 · <span class="en">Full Stack</span><span class="pa">ਪੂਰਾ Stack</span></a><a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a></div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Microstructure Tier · M4 · Hidden Flows</span><span class="pa">Microstructure ਟੀਅਰ · M4</span></div>
+<h1><span class="en">Dark Pools, GEX & Order Flow</span><span class="pa">Dark Pools, GEX ਤੇ Order Flow</span></h1>
+<p class="lede"><span class="en">The 40% of volume you never see, the dealer hedging that bends every chart, and the toxicity metric that warned of the Flash Crash hours early — tied into one regime dashboard.</span><span class="pa">40% volume ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਦੇਖਦੇ, dealer hedging ਜੋ chart ਮੋੜਦਾ, ਤੇ toxicity ਜੋ Flash Crash ਦੀ ਪਹਿਲਾਂ ਚੇਤਾਵਨੀ ਦਿੰਦੀ — ਇੱਕ regime dashboard ਵਿੱਚ।</span></p>
+<div class="meta"><span><b>~17 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span><span><b>1 <span class="en">regime dashboard</span><span class="pa">regime dashboard</span></b></span><span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span></div>
+</div></header>
+<section id="dark"><div class="wrap"><span class="knum">01</span><h2><span class="en">Dark pools — 40% of volume you never see</span><span class="pa">Dark pools — 40% volume ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਦੇਖਦੇ</span></h2><div class="bigstat"><div class="bs"><div class="n">~40%</div><div class="l"><span class="en">US equity volume off-exchange</span><span class="pa">US equity volume exchange ਤੋਂ ਬਾਹਰ</span></div></div><div class="bs"><div class="n">60+</div><div class="l"><span class="en">registered ATS venues</span><span class="pa">registered ATS venues</span></div></div><div class="bs"><div class="n">~35%</div><div class="l"><span class="en">of retail trades filled by one wholesaler</span><span class="pa">ਇੱਕ wholesaler ਵੱਲੋਂ retail trades</span></div></div></div><p class=""><span class="en">A dark pool is just an exchange where the order book is hidden pre-trade. The trade happens, the print appears after — but nobody knew the liquidity was there. Institutions use them to buy 10M shares without HFTs front-running them 2%.</span><span class="pa">Dark pool ਉਹ exchange ਹੈ ਜਿੱਥੇ order book ਪਹਿਲਾਂ ਲੁਕੀ ਹੈ। Trade ਹੁੰਦਾ, print ਬਾਅਦ ਆਉਂਦਾ। ਸੰਸਥਾਵਾਂ HFT ਤੋਂ ਬਚਣ ਲਈ ਵਰਤਦੀਆਂ।</span></p><div class="twocol"><div class="rcard frag"><p class="rh"><span class="en">Retail flow</span><span class="pa">Retail flow</span></p><p><span class="en">App → broker → wholesaler (PFOF). Filled internally, never touches an exchange. "Non-toxic" — wholesaler happily takes the other side and keeps the spread.</span><span class="pa">App → broker → wholesaler। ਅੰਦਰ ਭਰਿਆ, exchange ਨਹੀਂ। "Non-toxic"।</span></p></div><div class="rcard bull"><p class="rh"><span class="en">Institutional flow</span><span class="pa">ਸੰਸਥਾਗਤ flow</span></p><p><span class="en">Algo splits across dark pools, lit venues and ATS. "Toxic" — wholesalers avoid it. Real price discovery happens here.</span><span class="pa">Algo dark pools, lit ਤੇ ATS ਵਿੱਚ ਵੰਡਦਾ। "Toxic"। ਅਸਲੀ price discovery।</span></p></div></div><div class="cavbox"><span class="en">Footprints: price moves on low lit volume; 500k-share block prints at the midpoint; multi-week grinds with sustained dark prints. A 1M+ block at $540 is real money — that level matters more than any retail-drawn line. Most retail volume indicators miss 40% of the picture.</span><span class="pa">ਨਿਸ਼ਾਨ: ਘੱਟ lit volume ਉੱਤੇ ਚਾਲ; ਵੱਡੇ block prints; ਲੰਮੇ grind। 1M+ block ਅਸਲੀ ਪੈਸਾ ਹੈ। Retail volume indicators 40% ਖੁੰਝਦੇ।</span></div></div></section><section id="gex"><div class="wrap"><span class="knum">02</span><h2><span class="en">GEX — dealer hedging bends the chart</span><span class="pa">GEX — dealer hedging chart ਮੋੜਦਾ</span></h2><p class=""><span class="en">The options market is 10–20× the notional of equities. The tail wags the dog. When you buy a call, the dealer sells it and must buy shares to hedge; as price rises they buy more, as it falls they sell. Mechanical, direction-blind, and it amplifies or dampens every move.</span><span class="pa">Options ਬਾਜ਼ਾਰ equities ਤੋਂ 10–20× ਵੱਡਾ। ਜਦੋਂ ਤੁਸੀਂ call ਖਰੀਦੋ, dealer hedge ਲਈ shares ਖਰੀਦਦਾ; ਵਧਣ ਤੇ ਹੋਰ, ਡਿੱਗਣ ਤੇ ਵੇਚਦਾ। Mechanical।</span></p><div class="twocol"><div class="rcard bull"><p class="rh"><span class="en">Positive GEX · stabiliser</span><span class="pa">Positive GEX · ਸਥਿਰ</span></p><p><span class="en">Calls dominate. Dealers buy dips, sell rips. Price mean-reverts toward big call strikes. Low-VIX regime.</span><span class="pa">Calls ਜ਼ਿਆਦਾ। Dealers dips ਖਰੀਦਦੇ, rips ਵੇਚਦੇ। Mean-reversion।</span></p></div><div class="rcard frag"><p class="rh"><span class="en">Negative GEX · amplifier</span><span class="pa">Negative GEX · ਵਧਾਉਣ ਵਾਲਾ</span></p><p><span class="en">Puts dominate. Dealers sell as it falls, buy as it rises. Violent trending conditions. 2020 and 2022 both deeply negative.</span><span class="pa">Puts ਜ਼ਿਆਦਾ। Dealers ਡਿੱਗਣ ਤੇ ਵੇਚਦੇ। ਤਿੱਖੇ trends। 2020, 2022।</span></p></div></div><div class="states"><div class="state warn"><div class="lvl"><span class="en">Gamma wall</span><span class="pa">Gamma wall</span></div><p class="dd"><span class="en">A strike with massive OI becomes a price gravity zone. Break through it and dealers flip from stabilising to amplifying.</span><span class="pa">ਵੱਡੀ OI ਵਾਲਾ strike ਖਿੱਚ ਦਾ ਜ਼ੋਨ। ਟੁੱਟੇ ਤਾਂ dealers ਵਧਾਉਣ ਲੱਗਦੇ।</span></p></div><div class="state warn"><div class="lvl"><span class="en">Vanna / charm</span><span class="pa">Vanna / charm</span></div><p class="dd"><span class="en">IV crush after events forces dealer buying ("nothing-burger" rallies). Weekend charm decay = Monday-morning selling bias.</span><span class="pa">ਘਟਨਾ ਬਾਅਦ IV crush dealer ਖਰੀਦ ਮਜਬੂਰ ਕਰਦਾ। Weekend charm = ਸੋਮਵਾਰ ਵਿਕਰੀ।</span></p></div><div class="state bad"><div class="lvl"><span class="en">0DTE</span><span class="pa">0DTE</span></div><p class="dd"><span class="en">~50% of SPX option volume. Gamma resets daily; intraday snap-backs on 1–5 min charts. Pre-2022 backtests face a different market.</span><span class="pa">SPX volume ਦਾ ~50%। Gamma ਰੋਜ਼ reset। 2022 ਤੋਂ ਪਹਿਲਾਂ ਦੇ backtests ਵੱਖਰਾ ਬਾਜ਼ਾਰ।</span></p></div></div></div></section><section id="vpin"><div class="wrap"><span class="knum">03</span><h2><span class="en">Order-flow toxicity — the early warning</span><span class="pa">Order-flow toxicity — ਅਗਾਊਂ ਚੇਤਾਵਨੀ</span></h2><p class=""><span class="en">When a market maker fills your order it hopes you are random. If you are a fund with information, it just bought something about to drop — that is toxic flow. VPIN (López de Prado, Easley, O'Hara) measures the buy/sell imbalance in volume buckets: |buy − sell| ÷ total, from 0 to 1. It spiked for HOURS before the 2010 Flash Crash.</span><span class="pa">MM ਤੁਹਾਡਾ order ਭਰਦਾ ਤੇ ਉਮੀਦ ਕਰਦਾ ਤੁਸੀਂ random ਹੋ। ਜੇ ਜਾਣਕਾਰੀ ਵਾਲਾ fund ਹੋ — toxic flow। VPIN volume buckets ਵਿੱਚ |buy − sell| ÷ total ਮਾਪਦਾ, 0 ਤੋਂ 1। 2010 Flash Crash ਤੋਂ ਘੰਟੇ ਪਹਿਲਾਂ ਵਧਿਆ।</span></p><div class="tool"><span class="tag"><span class="en">Interactive · regime dashboard — toxicity × gamma → how to trade</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · regime dashboard</span></span><div class="slabel"><label style="margin:0"><span class="en">Toxicity (VPIN or your delta-imbalance read)</span><span class="pa">Toxicity (VPIN ਜਾਂ delta imbalance)</span></label><span class="lv" id="t-lv">0.25</span></div>
+   <input type="range" id="tox" min="0" max="90" value="25" step="1" oninput="refresh()"><div class="scale"><span>0</span><span>0.2</span><span>0.4</span><span>0.6</span><span>0.9</span></div>
+   <div class="row2" style="margin-top:14px"><div class="field"><label><span class="en">Gamma regime</span><span class="pa">Gamma regime</span></label><div class="seg" id="gexseg"><button class="on" data-k="pos" onclick="gexPick(this)">+ GEX</button><button data-k="neg" onclick="gexPick(this)">− GEX</button></div></div></div>
+   <div class="bigstat"><div class="bs"><div class="n" id="d-size">—</div><div class="l"><span class="en">position size</span><span class="pa">position size</span></div></div><div class="bs"><div class="n" id="d-style">—</div><div class="l"><span class="en">strategy bias</span><span class="pa">strategy bias</span></div></div><div class="bs"><div class="n" id="d-risk">—</div><div class="l"><span class="en">hunt / crash risk</span><span class="pa">hunt / crash ਖ਼ਤਰਾ</span></div></div></div>
+   <div class="gateout"><div class="gv" id="d-v"></div><div class="gd" id="d-d"></div></div><p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Pros size by regime, not conviction. Calm + positive GEX = full size, fade extremes. Toxic + negative GEX = the conditions of every major crash. Free proxies: cumulative delta, footprint charts, sudden spread widening, VIX creeping up with no news.</span><span class="pa">ਪੇਸ਼ੇਵਰ conviction ਨਹੀਂ, regime ਨਾਲ size ਕਰਦੇ। Toxic + negative GEX = ਹਰ ਵੱਡੇ crash ਦੀ ਹਾਲਤ। ਮੁਫ਼ਤ ਬਦਲ: cumulative delta, footprint, spread ਚੌੜਾ ਹੋਣਾ।</span></p></div><div class="states"><div class="state good"><div class="lvl"><span class="en">VPIN < 0.20</span><span class="pa">VPIN < 0.20</span></div><p class="dd"><span class="en">Calm, balanced two-way flow. Spreads tight. Mean-reversion works.</span><span class="pa">ਸ਼ਾਂਤ, ਸੰਤੁਲਿਤ। Mean-reversion ਕੰਮ ਕਰਦਾ।</span></p></div><div class="state warn"><div class="lvl"><span class="en">0.20–0.40</span><span class="pa">0.20–0.40</span></div><p class="dd"><span class="en">Some informed activity. Spreads widen. Trend-following starts to beat reversals.</span><span class="pa">ਕੁਝ informed। Trend-following ਅੱਗੇ।</span></p></div><div class="state bad"><div class="lvl"><span class="en">0.40–0.60</span><span class="pa">0.40–0.60</span></div><p class="dd"><span class="en">Heavy one-sided flow. Liquidity thin. Stop hunts likely. Shrink size.</span><span class="pa">ਭਾਰੀ ਇੱਕ-ਪਾਸੀ। Stop hunts ਸੰਭਵ। Size ਘਟਾਓ।</span></p></div><div class="state bad"><div class="lvl"><span class="en">> 0.60</span><span class="pa">> 0.60</span></div><p class="dd"><span class="en">Crisis-level. MMs may pull liquidity. Flash-crash territory. Sit out or hedge.</span><span class="pa">Crisis। Liquidity ਗਾਇਬ। ਬਾਹਰ ਰਹੋ।</span></p></div></div></div></section><section id="stack"><div class="wrap"><span class="knum">04</span><h2><span class="en">The full stack</span><span class="pa">ਪੂਰਾ stack</span></h2><p class=""><span class="en">Every tick is the output of interacting systems: microwave physics, LP routing, latency hedging, dealer gamma, off-exchange flow, toxicity, stop hunts. None are on your chart. All of them shape it.</span><span class="pa">ਹਰ tick ਕਈ ਆਪਸ ਵਿੱਚ ਜੁੜੇ systems ਦਾ ਨਤੀਜਾ। ਕੋਈ ਵੀ chart ਉੱਤੇ ਨਹੀਂ। ਸਾਰੇ ਉਸਨੂੰ ਬਣਾਉਂਦੇ।</span></p><h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3><div class="takeaways"><div class="ta"><div class="tk">›</div><div><span class="en">Track the gamma flip level daily (SpotGamma etc). Above = dealers stabilise. Below = amplify.</span><span class="pa">ਰੋਜ਼ gamma flip level ਦੇਖੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Respect major strike levels as real S/R — billions in mechanical hedging sit there.</span><span class="pa">ਵੱਡੇ strikes ਨੂੰ ਅਸਲੀ S/R ਮੰਨੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Spread widening with no news = toxicity rising. Step back. You do not need VPIN itself.</span><span class="pa">ਬਿਨਾਂ ਖ਼ਬਰ spread ਚੌੜਾ = toxicity। ਪਿੱਛੇ ਹਟੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">High toxicity + negative GEX + heavy dark selling = the signals stack. Size halved or out.</span><span class="pa">ਸੰਕੇਤ ਇਕੱਠੇ ਹੋਣ ਤੇ size ਅੱਧਾ ਜਾਂ ਬਾਹਰ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">You are not fighting "the market". You are navigating a physics simulation run by hedging math.</span><span class="pa">ਤੁਸੀਂ "ਬਾਜ਼ਾਰ" ਨਾਲ ਨਹੀਂ ਲੜ ਰਹੇ। Hedging ਗਣਿਤ ਵਿੱਚ ਚੱਲ ਰਹੇ ਹੋ।</span></div></div></div></div></section>
+<section id="quiz"><div class="wrap"><span class="knum">05</span><h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2><p class="muted"><span class="en">Five questions. 4/5 to pass.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਲਈ 4/5।</span></p><div id="quizbox"></div></div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const CODE="M4";const SECS=["start", "dark", "gex", "vpin", "stack", "quiz"];
+const QUIZ=[{"q": ["Roughly what share of US equity volume executes off-exchange?", "US equity volume ਦਾ ਕਿੰਨਾ ਹਿੱਸਾ exchange ਤੋਂ ਬਾਹਰ?"], "o": [["~5%", "~5%"], ["~15%", "~15%"], ["~40%", "~40%"], ["~80%", "~80%"]], "a": 2, "f": ["Dark pools and internalisers handle ~40%. Most retail volume indicators never see it.", "Dark pools ਤੇ internalisers ~40%।"]}, {"q": ["In a NEGATIVE GEX regime, dealers…", "NEGATIVE GEX regime ਵਿੱਚ dealers…"], "o": [["Buy dips and sell rips — dampening moves", "Dips ਖਰੀਦਦੇ — ਸ਼ਾਂਤ"], ["Sell as price falls and buy as it rises — amplifying moves", "ਡਿੱਗਣ ਤੇ ਵੇਚਦੇ, ਵਧਣ ਤੇ ਖਰੀਦਦੇ — ਵਧਾਉਂਦੇ"], ["Stop hedging", "Hedge ਬੰਦ"], ["Only trade at close", "ਸਿਰਫ਼ close ਤੇ"]], "a": 1, "f": ["Puts dominate; hedging accelerates the move. 2020 and 2022 were both deeply negative.", "Puts ਜ਼ਿਆਦਾ; hedging ਚਾਲ ਵਧਾਉਂਦਾ।"]}, {"q": ["VPIN measures…", "VPIN ਮਾਪਦਾ ਹੈ…"], "o": [["Price momentum", "Price momentum"], ["The buy/sell volume imbalance — how 'informed' current flow is", "Buy/sell volume ਦਾ ਅਸੰਤੁਲਨ — flow ਕਿੰਨਾ 'informed'"], ["Open interest", "Open interest"], ["Spread in pips", "Spread pips ਵਿੱਚ"]], "a": 1, "f": ["|buy − sell| ÷ total volume, averaged over volume buckets. 0 = balanced, 1 = fully one-sided.", "|buy − sell| ÷ total। 0 ਸੰਤੁਲਿਤ, 1 ਇੱਕ-ਪਾਸੀ।"]}, {"q": ["Before the May 2010 Flash Crash, VPIN…", "May 2010 Flash Crash ਤੋਂ ਪਹਿਲਾਂ VPIN…"], "o": [["Was flat", "ਸਿੱਧਾ ਸੀ"], ["Had been elevated for hours — a warning that was ignored", "ਘੰਟਿਆਂ ਤੋਂ ਉੱਚਾ ਸੀ — ਅਣਸੁਣੀ ਚੇਤਾਵਨੀ"], ["Dropped to zero", "ਜ਼ੀਰੋ ਹੋ ਗਿਆ"], ["Did not exist yet", "ਹਾਲੇ ਨਹੀਂ ਸੀ"]], "a": 1, "f": ["Elevated from 8 AM, multi-year high by 11 AM, crash at 2:45 PM. The CFTC report cited it.", "8 AM ਤੋਂ ਉੱਚਾ, 11 AM ਤੱਕ ਰਿਕਾਰਡ, 2:45 PM crash।"]}, {"q": ["High toxicity + negative GEX + heavy dark-pool selling together are…", "ਉੱਚੀ toxicity + negative GEX + ਭਾਰੀ dark selling ਇਕੱਠੇ…"], "o": [["A buy signal", "ਖਰੀਦ ਸੰਕੇਤ"], ["The conditions of every major crash — size down or sit out", "ਹਰ ਵੱਡੇ crash ਦੀ ਹਾਲਤ — size ਘਟਾਓ ਜਾਂ ਬਾਹਰ"], ["Normal Friday behaviour", "ਆਮ ਸ਼ੁੱਕਰਵਾਰ"], ["A reason to add leverage", "Leverage ਵਧਾਉਣ ਦਾ ਕਾਰਨ"]], "a": 1, "f": ["Pros size by regime, not conviction. When the signals stack, capital preservation wins.", "ਪੇਸ਼ੇਵਰ regime ਨਾਲ size ਕਰਦੇ। ਸੰਕੇਤ ਇਕੱਠੇ = ਪੂੰਜੀ ਬਚਾਓ।"]}];
+const DONE=["You now see the invisible layer: hidden volume, mechanical hedging, and informed flow. Size by regime, not by conviction. One lesson left: separating real edge from everything you were taught.", "ਹੁਣ ਤੁਸੀਂ ਅਣਦਿਸਦੀ ਪਰਤ ਦੇਖਦੇ ਹੋ। Conviction ਨਹੀਂ, regime ਨਾਲ size। ਇੱਕ ਪਾਠ ਬਾਕੀ।"];const NEXT=[["Add a cumulative-delta or footprint view to your gold chart", "Gold chart ਉੱਤੇ cumulative delta ਜੋੜੋ"], ["Note the gamma regime before each session alongside GVZ (G5)", "ਹਰ session ਤੋਂ ਪਹਿਲਾਂ gamma regime ਨੋਟ ਕਰੋ"], ["Next: M5 — Why 90% of What You Were Taught Is Noise", "ਅਗਲਾ: M5 — 90% ਰੌਲਾ ਕਿਉਂ"]];
+
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();if(window.refresh)refresh();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=SECS.map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div><div class="badge">${pass?L('★ '+CODE+' complete','★ '+CODE+' ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div><p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L(DONE[0],DONE[1]):L('Close. Re-read the key section, replay the tool, then try again. Aim for 4/5.','ਲਗਭਗ। ਮੁੱਖ ਹਿੱਸਾ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, tool ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।')}</p>`+(pass?`<ul class="nextlist">${NEXT.map(n=>`<li>→ ${L(n[0],n[1])}</li>`).join('')}</ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+
+
+let gex='pos';
+function gexPick(b){[...b.parentElement.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');gex=b.dataset.k;refresh();}
+function refresh(){const t=(+document.getElementById('tox').value)/100;document.getElementById('t-lv').textContent=t.toFixed(2);
+ let size,style,risk,col,msg,sub;
+ if(t<0.2){size=gex==='pos'?'100%':'75%';style=gex==='pos'?L('Mean-revert','Mean-revert'):L('Trend, careful','Trend, ਸੰਭਲ ਕੇ');risk=L('Low','ਘੱਟ');col='var(--green)';msg=L('Calm regime','ਸ਼ਾਂਤ regime');sub=gex==='pos'?L('Balanced flow and dealers dampening. Best conditions for retail: full size, tight targets, fade the extremes.','ਸੰਤੁਲਿਤ flow, dealers ਸ਼ਾਂਤ ਕਰਦੇ। Retail ਲਈ ਵਧੀਆ।'):L('Flow is calm but dealers will amplify any move. Keep size moderate.','Flow ਸ਼ਾਂਤ ਪਰ dealers ਵਧਾਉਣਗੇ।');}
+ else if(t<0.4){size=gex==='pos'?'75%':'50%';style=L('Trend-follow','Trend-follow');risk=L('Moderate','ਦਰਮਿਆਨਾ');col='var(--amber)';msg=L('Informed flow present','Informed flow ਮੌਜੂਦ');sub=L('Spreads widening. Reversals start losing to trends. Do not fade one-sided delta.','Spreads ਚੌੜੇ। ਇੱਕ-ਪਾਸੀ delta ਨਾ fade ਕਰੋ।');}
+ else if(t<0.6){size=gex==='pos'?'50%':'25%';style=L('Trend only','ਸਿਰਫ਼ trend');risk=L('High — hunts','ਉੱਚਾ — hunts');col='var(--red)';msg=L('High toxicity','ਉੱਚੀ toxicity');sub=gex==='neg'?L('Toxic flow + dealers amplifying. Stop hunts and violent moves likely. Quarter size or wait.','Toxic + dealers ਵਧਾਉਂਦੇ। Stop hunts ਸੰਭਵ। ਚੌਥਾਈ size।'):L('Liquidity thinning, MMs widening aggressively. Shrink size, widen stops (ATR).','Liquidity ਪਤਲੀ। Size ਘਟਾਓ, stops ਚੌੜੇ।');}
+ else{size=gex==='pos'?'25%':L('OUT','ਬਾਹਰ');style=L('Sit out / hedge','ਬਾਹਰ / hedge');risk=L('Extreme','ਅਤਿ');col='var(--red)';msg=L('Crisis-level — flash-crash conditions','Crisis — flash-crash ਹਾਲਤ');sub=L('This is what May 2010, Mar 2020 looked like before the drop. MMs may pull liquidity entirely. Protect capital.','ਇਹ May 2010, Mar 2020 ਵਰਗਾ। Liquidity ਗਾਇਬ। ਪੂੰਜੀ ਬਚਾਓ।');}
+ for(const [id,v] of [['d-size',size],['d-style',style],['d-risk',risk]]){const e=document.getElementById(id);e.textContent=v;e.style.color=col;}
+ const m=document.getElementById('d-v'),s=document.getElementById('d-d');m.style.color=col;m.textContent=msg+(gex==='neg'?' · −GEX':' · +GEX');s.textContent=sub;}
+renderQuiz();if(window.refresh)refresh();
+</script></body></html>

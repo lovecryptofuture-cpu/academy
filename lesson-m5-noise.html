@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why 90% of What You Were Taught Is Noise — M5</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links"><a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#ritual">1 · <span class="en">The Ritual</span><span class="pa">ਰਸਮ</span></a><a href="#mining">2 · <span class="en">Data-Mining</span><span class="pa">Data-Mining</span></a><a href="#bias">3 · <span class="en">Survivorship</span><span class="pa">Survivorship</span></a><a href="#works">4 · <span class="en">What Works</span><span class="pa">ਕੀ ਕੰਮ ਕਰਦਾ</span></a><a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a></div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Microstructure Tier · M5 · Sacred Cows</span><span class="pa">Microstructure ਟੀਅਰ · M5</span></div>
+<h1><span class="en">Why 90% of What You Were Taught Is Noise</span><span class="pa">ਤੁਹਾਨੂੰ ਸਿਖਾਇਆ 90% ਰੌਲਾ ਕਿਉਂ ਹੈ</span></h1>
+<p class="lede"><span class="en">Separating the handful of things with real edge from the indicators, patterns and guru lore that just feel like analysis — with an audit tool for any strategy claim.</span><span class="pa">ਅਸਲੀ edge ਵਾਲੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਨੂੰ indicators, patterns ਤੇ guru ਗੱਲਾਂ ਤੋਂ ਵੱਖ ਕਰਨਾ — ਕਿਸੇ ਵੀ strategy ਦਾਅਵੇ ਲਈ audit tool ਨਾਲ।</span></p>
+<div class="meta"><span><b>~14 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span><span><b>1 <span class="en">edge audit tool</span><span class="pa">edge audit tool</span></b></span><span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span></div>
+</div></header>
+<section id="ritual"><div class="wrap"><span class="knum">01</span><h2><span class="en">Most "analysis" is just comfort</span><span class="pa">ਜ਼ਿਆਦਾਤਰ "analysis" ਸਿਰਫ਼ ਤਸੱਲੀ ਹੈ</span></h2><p class=""><span class="en">Most retail traders are not doing analysis — they are performing a ritual that feels like control. Six indicators, trendlines drawn until one works, guru quotes. Feeling certain and having an edge are completely different things.</span><span class="pa">ਜ਼ਿਆਦਾਤਰ retail traders analysis ਨਹੀਂ ਕਰਦੇ — ਇੱਕ ਰਸਮ ਕਰਦੇ ਹਨ ਜੋ ਕਾਬੂ ਵਰਗੀ ਲੱਗਦੀ। ਪੱਕਾ ਮਹਿਸੂਸ ਕਰਨਾ ਤੇ edge ਹੋਣਾ ਬਿਲਕੁਲ ਵੱਖ।</span></p><div class="card"><div class="signalrow"><div class="ico" style="font-size:16px">🔁</div><div><p class="st"><span class="en">Indicators are the same input</span><span class="pa">Indicators ਇੱਕੋ input</span></p><p class="sd"><span class="en">RSI, MACD, Stochastics, Bollinger — re-arrangements of past price. Five of them is not five confirmations; it is one signal in five costumes.</span><span class="pa">RSI, MACD, Stochastics — ਪਿਛਲੀ ਕੀਮਤ ਦੇ ਰੂਪ। ਪੰਜ = ਇੱਕ ਸੰਕੇਤ ਪੰਜ ਭੇਸਾਂ ਵਿੱਚ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">📉</div><div><p class="st"><span class="en">They lag by construction</span><span class="pa">ਬਣਤਰ ਤੋਂ ਹੀ ਲੇਟ</span></p><p class="sd"><span class="en">Built from moving averages — they describe the past. A lagging tool cannot lead price.</span><span class="pa">Moving averages ਤੋਂ ਬਣੇ — ਪਿਛਲਾ ਦੱਸਦੇ। ਲੇਟ tool ਅੱਗੇ ਨਹੀਂ ਜਾ ਸਕਦਾ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">🔬</div><div><p class="st"><span class="en">What research finds</span><span class="pa">ਖੋਜ ਕੀ ਲੱਭਦੀ</span></p><p class="sd"><span class="en">ML studies: directional accuracy ~80% in training collapses to ~50% out-of-sample. That gap is overfitting — the model learned noise.</span><span class="pa">ML ਅਧਿਐਨ: ~80% training, ~50% ਬਾਹਰ। ਉਹ ਫਰਕ overfitting।</span></p></div></div></div></div></section><section id="mining"><div class="wrap"><span class="knum">02</span><h2><span class="en">How a "91% win rate" is born</span><span class="pa">"91% win rate" ਕਿਵੇਂ ਬਣਦਾ</span></h2><p class=""><span class="en">Test 1,000 random strategies and ~50 will look significant at the 5% level by pure chance. Vendors find those, screenshot them, sell them, hide the 950 that failed. Live, it reverts to random. Your money funds the lesson.</span><span class="pa">1,000 ਬੇਤਰਤੀਬ strategies test ਕਰੋ, ~50 ਸੰਜੋਗ ਨਾਲ ਵਧੀਆ ਲੱਗਣਗੀਆਂ। Vendors ਉਹ ਲੱਭਦੇ, screenshot, ਵੇਚਦੇ, 950 ਲੁਕਾਉਂਦੇ।</span></p><div class="tool"><span class="tag"><span class="en">Interactive · edge audit — can you trust this claim?</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · edge audit</span></span><div class="fields"><div class="field"><label><span class="en">Claimed win rate (%)</span><span class="pa">ਦਾਅਵਾ win rate (%)</span></label><input id="a-wr" type="number" value="91" min="1" max="100" oninput="refresh()"></div>
+   <div class="field"><label><span class="en">Trades in the backtest</span><span class="pa">Backtest ਵਿੱਚ trades</span></label><input id="a-n" type="number" value="40" min="1" oninput="refresh()"></div>
+   <div class="field"><label><span class="en">Strategies / settings tried before this one</span><span class="pa">ਇਸ ਤੋਂ ਪਹਿਲਾਂ ਅਜ਼ਮਾਈਆਂ strategies</span></label><input id="a-k" type="number" value="200" min="1" oninput="refresh()"></div></div>
+   <div class="row2" style="margin-top:14px"><div class="field"><label><span class="en">Out-of-sample / forward test shown?</span><span class="pa">Out-of-sample / forward test ਦਿਖਾਇਆ?</span></label><div class="seg" id="oos"><button class="on" data-k="no" onclick="oosPick(this)"><span class="en">No</span><span class="pa">ਨਹੀਂ</span></button><button data-k="yes" onclick="oosPick(this)"><span class="en">Yes</span><span class="pa">ਹਾਂ</span></button></div></div>
+   <div class="field"><label><span class="en">Does the seller profit if you believe it?</span><span class="pa">ਕੀ ਵੇਚਣ ਵਾਲਾ ਤੁਹਾਡੇ ਵਿਸ਼ਵਾਸ ਤੋਂ ਕਮਾਉਂਦਾ?</span></label><div class="seg" id="inc"><button class="on" data-k="yes" onclick="incPick(this)"><span class="en">Yes</span><span class="pa">ਹਾਂ</span></button><button data-k="no" onclick="incPick(this)"><span class="en">No</span><span class="pa">ਨਹੀਂ</span></button></div></div></div>
+   <div class="bigstat"><div class="bs"><div class="n" id="a-ci">—</div><div class="l"><span class="en">true win rate could be as low as</span><span class="pa">ਅਸਲੀ win rate ਇੰਨਾ ਘੱਟ ਹੋ ਸਕਦਾ</span></div></div><div class="bs"><div class="n" id="a-lucky">—</div><div class="l"><span class="en">lucky-looking strategies expected by chance</span><span class="pa">ਸੰਜੋਗ ਨਾਲ ਵਧੀਆ ਲੱਗਣ ਵਾਲੀਆਂ</span></div></div><div class="bs"><div class="n" id="a-score">—</div><div class="l"><span class="en">trust score</span><span class="pa">trust score</span></div></div></div>
+   <div class="gateout"><div class="gv" id="a-v"></div><div class="gd" id="a-d"></div></div><p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">The four sceptic questions: Where is the out-of-sample test? What is the base rate? Who profits from me believing this? Is it falsifiable — can it ever be wrong, or is failure always "you read it wrong"?</span><span class="pa">ਚਾਰ ਸ਼ੱਕੀ ਸਵਾਲ: Out-of-sample test ਕਿੱਥੇ? Base rate ਕੀ? ਮੇਰੇ ਵਿਸ਼ਵਾਸ ਤੋਂ ਕੌਣ ਕਮਾਉਂਦਾ? ਕੀ ਇਹ ਕਦੇ ਗਲਤ ਹੋ ਸਕਦਾ?</span></p></div></div></section><section id="bias"><div class="wrap"><span class="knum">03</span><h2><span class="en">Survivorship & the pattern illusion</span><span class="pa">Survivorship ਤੇ pattern ਦਾ ਭੁਲੇਖਾ</span></h2><div class="twocol"><div class="rcard frag"><p class="rh"><span class="en">What you are shown</span><span class="pa">ਜੋ ਦਿਖਾਇਆ ਜਾਂਦਾ</span></p><p><span class="en">The rented Lambo. Five-figure winning days. "$1k to $100k" threads. Testimonials. The strategy that never loses.</span><span class="pa">ਕਿਰਾਏ ਦੀ Lambo। ਵੱਡੇ ਜਿੱਤ ਦੇ ਦਿਨ। "$1k ਤੋਂ $100k"। Testimonials।</span></p></div><div class="rcard bull"><p class="rh"><span class="en">What is hidden</span><span class="pa">ਜੋ ਲੁਕਿਆ</span></p><p><span class="en">Thousands who blew accounts silently. Losing days deleted. "Winners" funded by selling courses. Base rate: 74–89% lose.</span><span class="pa">ਹਜ਼ਾਰਾਂ ਜਿਨ੍ਹਾਂ ਨੇ ਚੁੱਪਚਾਪ ਖਾਤੇ ਉਡਾਏ। Base rate: 74–89% ਹਾਰਦੇ।</span></p></div></div><div class="card"><div class="signalrow"><div class="ico" style="font-size:16px">📐</div><div><p class="st"><span class="en">Chart patterns</span><span class="pa">Chart patterns</span></p><p class="sd"><span class="en">Drawn after the fact they look predictive. Tested forward with costs, most perform near random.</span><span class="pa">ਬਾਅਦ ਵਿੱਚ ਖਿੱਚੇ predictive ਲੱਗਦੇ। ਅੱਗੇ test ਕਰੋ — random।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">✏️</div><div><p class="st"><span class="en">Trendlines & fibs</span><span class="pa">Trendlines ਤੇ fibs</span></p><p class="sd"><span class="en">Draw enough and some are always "respected". The misses get forgotten.</span><span class="pa">ਕਾਫ਼ੀ ਖਿੱਚੋ, ਕੁਝ ਹਮੇਸ਼ਾ "ਟਿਕਦੇ"। Misses ਭੁੱਲ ਜਾਂਦੇ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">🔮</div><div><p class="st"><span class="en">Guru "smart money" lore</span><span class="pa">Guru "smart money"</span></p><p class="sd"><span class="en">Re-branded supply/demand with mystical language. Often unfalsifiable — when it fails, "you read it wrong".</span><span class="pa">ਰਹੱਸਮਈ ਭਾਸ਼ਾ ਵਿੱਚ supply/demand। ਫੇਲ ਹੋਵੇ ਤਾਂ "ਤੁਸੀਂ ਗਲਤ ਪੜ੍ਹਿਆ"।</span></p></div></div></div></div></section><section id="works"><div class="wrap"><span class="knum">04</span><h2><span class="en">The boring stuff that actually has edge</span><span class="pa">ਬੋਰਿੰਗ ਚੀਜ਼ਾਂ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਅਸਲੀ edge</span></h2><div class="states"><div class="state good"><div class="lvl"><span class="en">Risk management</span><span class="pa">Risk management</span></div><p class="dd"><span class="en">Position sizing, capped per-trade risk, avoiding ruin. The biggest separator of survivors from blow-ups — nothing to do with entries. (G2)</span><span class="pa">Sizing, ਜੋਖਮ ਦੀ ਹੱਦ, ਤਬਾਹੀ ਤੋਂ ਬਚਾਅ। Entries ਨਾਲ ਕੋਈ ਲੈਣਾ-ਦੇਣਾ ਨਹੀਂ।</span></p></div><div class="state good"><div class="lvl"><span class="en">Positive expectancy</span><span class="pa">Positive expectancy</span></div><p class="dd"><span class="en">A real, tested edge — (win% × avg win) − (loss% × avg loss) — repeated many times. Boring math beats exciting signals. (F2)</span><span class="pa">ਅਸਲੀ test ਕੀਤਾ edge, ਵਾਰ-ਵਾਰ। ਬੋਰਿੰਗ ਗਣਿਤ ਜਿੱਤਦਾ।</span></p></div><div class="state good"><div class="lvl"><span class="en">Market structure</span><span class="pa">Market structure</span></div><p class="dd"><span class="en">Liquidity, sessions, how orders actually fill — everything in this tier — beats any oscillator. Know the machine.</span><span class="pa">Liquidity, sessions, orders ਕਿਵੇਂ ਭਰਦੇ — ਇਹ ਪੂਰਾ tier — ਕਿਸੇ oscillator ਤੋਂ ਵੱਧ।</span></p></div><div class="state good"><div class="lvl"><span class="en">Psychology & consistency</span><span class="pa">Psychology ਤੇ consistency</span></div><p class="dd"><span class="en">One tested process without tinkering, revenge trading or over-leverage. An edge is useless if you cannot execute it. (F4)</span><span class="pa">ਇੱਕ test ਕੀਤਾ process, ਬਿਨਾਂ ਛੇੜਛਾੜ। Edge ਬੇਕਾਰ ਜੇ execute ਨਾ ਕਰ ਸਕੋ।</span></p></div></div><h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3><div class="takeaways"><div class="ta"><div class="tk">›</div><div><span class="en">Indicators describe, rarely predict. Stacking them adds clutter, not edge.</span><span class="pa">Indicators ਦੱਸਦੇ, ਭਵਿੱਖਬਾਣੀ ਘੱਟ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Amazing backtests are usually luck — data-mining and survivorship manufacture them.</span><span class="pa">ਸ਼ਾਨਦਾਰ backtests ਜ਼ਿਆਦਾਤਰ ਕਿਸਮਤ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">The edge is unglamorous: risk control, expectancy, structure, discipline.</span><span class="pa">Edge ਚਮਕੀਲਾ ਨਹੀਂ: risk, expectancy, structure, ਅਨੁਸ਼ਾਸਨ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Skepticism is your real tool. Doubt is cheaper than tuition by blown account.</span><span class="pa">ਸ਼ੱਕ ਤੁਹਾਡਾ ਅਸਲੀ tool। ਸ਼ੱਕ ਉੱਡੇ ਖਾਤੇ ਤੋਂ ਸਸਤਾ।</span></div></div></div></div></section>
+<section id="quiz"><div class="wrap"><span class="knum">05</span><h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2><p class="muted"><span class="en">Five questions. 4/5 to pass.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਲਈ 4/5।</span></p><div id="quizbox"></div></div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const CODE="M5";const SECS=["start", "ritual", "mining", "bias", "works", "quiz"];
+const QUIZ=[{"q": ["Why is stacking RSI, MACD and Stochastics NOT three confirmations?", "RSI, MACD ਤੇ Stochastics ਇਕੱਠੇ ਤਿੰਨ ਪੁਸ਼ਟੀਆਂ ਕਿਉਂ ਨਹੀਂ?"], "o": [["They conflict", "ਉਹ ਟਕਰਾਉਂਦੇ"], ["They are all re-arrangements of the same input — past price", "ਸਾਰੇ ਇੱਕੋ input — ਪਿਛਲੀ ਕੀਮਤ — ਦੇ ਰੂਪ"], ["They need different timeframes", "ਵੱਖ timeframes ਚਾਹੀਦੇ"], ["They are too slow to load", "ਹੌਲੀ load"]], "a": 1, "f": ["One signal wearing three costumes. They cannot add information that is not already in the chart.", "ਇੱਕ ਸੰਕੇਤ ਤਿੰਨ ਭੇਸਾਂ ਵਿੱਚ।"]}, {"q": ["You test 1,000 random strategies. Roughly how many will look 'significant' by chance at the 5% level?", "1,000 ਬੇਤਰਤੀਬ strategies test ਕਰੋ। ਕਿੰਨੀਆਂ ਸੰਜੋਗ ਨਾਲ 'significant' ਲੱਗਣਗੀਆਂ?"], "o": [["~0", "~0"], ["~5", "~5"], ["~50", "~50"], ["~500", "~500"]], "a": 2, "f": ["5% of 1,000 = 50. Vendors sell those and hide the 950. The edge was never real.", "1,000 ਦਾ 5% = 50। Vendors ਉਹ ਵੇਚਦੇ, 950 ਲੁਕਾਉਂਦੇ।"]}, {"q": ["Survivorship bias means…", "Survivorship bias ਦਾ ਮਤਲਬ…"], "o": [["Only strong traders survive", "ਸਿਰਫ਼ ਮਜ਼ਬੂਤ ਬਚਦੇ"], ["You only hear from those who got lucky; the blown accounts are silent", "ਤੁਸੀਂ ਸਿਰਫ਼ ਕਿਸਮਤ ਵਾਲਿਆਂ ਤੋਂ ਸੁਣਦੇ; ਉੱਡੇ ਖਾਤੇ ਚੁੱਪ"], ["Markets reward patience", "ਬਾਜ਼ਾਰ ਸਬਰ ਦਾ ਫਲ"], ["Older strategies work better", "ਪੁਰਾਣੀਆਂ strategies ਬਿਹਤਰ"]], "a": 1, "f": ["The Lambo screenshots are the visible tip; the 74–89% who lose are the hidden base rate.", "Lambo screenshots ਦਿਸਦਾ ਸਿਰਾ; 74–89% ਹਾਰਨ ਵਾਲੇ ਲੁਕੇ।"]}, {"q": ["Which of these actually has edge?", "ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕਿਸ ਵਿੱਚ ਅਸਲੀ edge?"], "o": [["A secret indicator setting", "ਗੁਪਤ indicator setting"], ["Position sizing and positive expectancy repeated with discipline", "Position sizing ਤੇ positive expectancy, ਅਨੁਸ਼ਾਸਨ ਨਾਲ"], ["Drawing more trendlines", "ਹੋਰ trendlines"], ["Following a guru's calls", "Guru ਦੇ calls"]], "a": 1, "f": ["Risk control, expectancy, structure, psychology. Boring math beats exciting signals.", "Risk, expectancy, structure, psychology।"]}, {"q": ["A method that can never be wrong — failure is always 'you misread it' — is…", "ਜੋ ਤਰੀਕਾ ਕਦੇ ਗਲਤ ਨਹੀਂ — ਫੇਲ 'ਤੁਸੀਂ ਗਲਤ ਪੜ੍ਹਿਆ' — ਉਹ…"], "o": [["A great strategy", "ਵਧੀਆ strategy"], ["Not falsifiable — a belief system, not a strategy", "Falsifiable ਨਹੀਂ — ਵਿਸ਼ਵਾਸ, strategy ਨਹੀਂ"], ["Proof of edge", "Edge ਦਾ ਸਬੂਤ"], ["Fine if it has a good win rate", "ਠੀਕ ਜੇ win rate ਚੰਗਾ"]], "a": 1, "f": ["If it cannot fail, it cannot be tested. Ask: where is the out-of-sample test, what is the base rate, who profits?", "ਜੇ ਫੇਲ ਨਹੀਂ ਹੋ ਸਕਦਾ, test ਨਹੀਂ ਹੋ ਸਕਦਾ।"]}];
+const DONE=["You have completed the Microstructure Tier — and the full course. The goal was never to know more indicators than everyone else. It was to stop being fooled by the ones that never worked.", "ਤੁਸੀਂ Microstructure Tier — ਤੇ ਪੂਰਾ course — ਪੂਰਾ ਕੀਤਾ। ਟੀਚਾ ਵੱਧ indicators ਜਾਣਨਾ ਨਹੀਂ ਸੀ। ਉਨ੍ਹਾਂ ਤੋਂ ਮੂਰਖ ਨਾ ਬਣਨਾ ਸੀ।"];const NEXT=[["Remove every indicator from your gold chart except ATR and volume. Trade structure.", "Gold chart ਤੋਂ ATR ਤੇ volume ਛੱਡ ਸਭ indicators ਹਟਾਓ।"], ["Run the edge audit on the last strategy you paid for", "ਆਖਰੀ ਖਰੀਦੀ strategy ਉੱਤੇ edge audit ਚਲਾਓ"], ["Post your completion in Discord — Trader's Lab opens next", "Discord ਵਿੱਚ ਪੂਰਾ ਹੋਣ ਦੀ ਪੋਸਟ ਕਰੋ"]];
+
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();if(window.refresh)refresh();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=SECS.map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div><div class="badge">${pass?L('★ '+CODE+' complete','★ '+CODE+' ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div><p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L(DONE[0],DONE[1]):L('Close. Re-read the key section, replay the tool, then try again. Aim for 4/5.','ਲਗਭਗ। ਮੁੱਖ ਹਿੱਸਾ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, tool ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।')}</p>`+(pass?`<ul class="nextlist">${NEXT.map(n=>`<li>→ ${L(n[0],n[1])}</li>`).join('')}</ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+
+
+let oos='no',inc='yes';
+function oosPick(b){[...b.parentElement.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');oos=b.dataset.k;refresh();}
+function incPick(b){[...b.parentElement.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');inc=b.dataset.k;refresh();}
+function refresh(){const wr=Math.min(100,Math.max(1,+document.getElementById('a-wr').value||50))/100,n=Math.max(1,+document.getElementById('a-n').value||1),k=Math.max(1,+document.getElementById('a-k').value||1);
+ const se=Math.sqrt(wr*(1-wr)/n);const lo=Math.max(0,wr-1.96*se);document.getElementById('a-ci').textContent=(lo*100).toFixed(0)+'%';
+ const lucky=Math.max(1,Math.round(k*0.05));document.getElementById('a-lucky').textContent='~'+lucky;
+ let score=100; if(n<100)score-=30; else if(n<300)score-=15; if(k>50)score-=25; else if(k>10)score-=10; if(oos==='no')score-=30; if(inc==='yes')score-=15; if(wr>0.8)score-=10; score=Math.max(0,score);
+ const s=document.getElementById('a-score');s.textContent=score+'/100';const col=score>=60?'var(--green)':score>=35?'var(--amber)':'var(--red)';s.style.color=col;
+ const v=document.getElementById('a-v'),d=document.getElementById('a-d');v.style.color=col;
+ if(score>=60){v.textContent=L('Plausible — still forward-test it yourself','ਸੰਭਵ — ਫਿਰ ਵੀ ਖੁਦ forward-test ਕਰੋ');d.textContent=L('Large sample, few trials, out-of-sample shown. Paper trade 100+ trades before risking capital.','ਵੱਡਾ sample, out-of-sample ਦਿਖਾਇਆ। ਪਹਿਲਾਂ 100+ paper trades।');}
+ else if(score>=35){v.textContent=L('Weak evidence — probably curve-fit','ਕਮਜ਼ੋਰ ਸਬੂਤ — ਸ਼ਾਇਦ curve-fit');d.textContent=L('With '+n+' trades the true win rate could be as low as '+(lo*100).toFixed(0)+'%. Demand an out-of-sample test.','ਅਸਲੀ win rate '+(lo*100).toFixed(0)+'% ਤੱਕ ਘੱਟ ਹੋ ਸਕਦਾ। Out-of-sample ਮੰਗੋ।');}
+ else{v.textContent=L('Noise — the survivor of '+k+' coin flips','ਰੌਲਾ — '+k+' ਸਿੱਕਿਆਂ ਦਾ ਬਚਿਆ');d.textContent=L('Small sample, many trials, no forward test, and someone profits from your belief. This is the data-mining trap.','ਛੋਟਾ sample, ਕਈ ਕੋਸ਼ਿਸ਼ਾਂ, forward test ਨਹੀਂ, ਤੇ ਕੋਈ ਤੁਹਾਡੇ ਵਿਸ਼ਵਾਸ ਤੋਂ ਕਮਾਉਂਦਾ। Data-mining ਜਾਲ।');}}
+renderQuiz();if(window.refresh)refresh();
+</script></body></html>

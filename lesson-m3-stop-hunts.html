@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stop Hunts & Liquidity Engineering — M3</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links"><a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#why">1 · <span class="en">Why Stops</span><span class="pa">Stops ਕਿਉਂ</span></a><a href="#anatomy">2 · <span class="en">The Hunt</span><span class="pa">ਸ਼ਿਕਾਰ</span></a><a href="#classify">3 · <span class="en">Classifier</span><span class="pa">Classifier</span></a><a href="#edge">4 · <span class="en">Your Edge</span><span class="pa">ਤੁਹਾਡਾ Edge</span></a><a href="#quiz">5 · <span class="en">Check</span><span class="pa">ਟੈਸਟ</span></a></div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Microstructure Tier · M3 · Microstructure</span><span class="pa">Microstructure ਟੀਅਰ · M3</span></div>
+<h1><span class="en">Stop Hunts & Liquidity Engineering</span><span class="pa">Stop Hunts ਤੇ Liquidity Engineering</span></h1>
+<p class="lede"><span class="en">How large players engineer price into pools of retail stops — where stops cluster, the four-phase hunt, and how to tell a real breakout from a trap.</span><span class="pa">ਵੱਡੇ ਖਿਡਾਰੀ retail stops ਵੱਲ ਕੀਮਤ ਕਿਵੇਂ ਲਿਆਉਂਦੇ — stops ਕਿੱਥੇ, ਚਾਰ-ਪੜਾਅ ਸ਼ਿਕਾਰ, ਤੇ ਅਸਲੀ breakout ਬਨਾਮ ਜਾਲ।</span></p>
+<div class="meta"><span><b>~15 min</b> · <span class="en">advanced</span><span class="pa">ਅਡਵਾਂਸਡ</span></span><span><b>1 <span class="en">classifier tool</span><span class="pa">classifier tool</span></b></span><span><b>5</b>-<span class="en">question check</span><span class="pa">ਸਵਾਲਾਂ ਦਾ ਟੈਸਟ</span></span></div>
+</div></header>
+<section id="why"><div class="wrap"><span class="knum">01</span><h2><span class="en">Why big players need your stop-loss</span><span class="pa">ਵੱਡੇ ਖਿਡਾਰੀਆਂ ਨੂੰ ਤੁਹਾਡਾ stop ਕਿਉਂ ਚਾਹੀਦਾ</span></h2><p class=""><span class="en">A fund wanting to buy 10,000 lots cannot just click buy — there are not enough sellers at one price. It needs a flood of sell orders to absorb. Where do sell orders cluster? At retail stop-losses below support. Trigger them and you get instant liquidity.</span><span class="pa">ਜੋ fund 10,000 lots ਖਰੀਦਣਾ ਚਾਹੇ, ਉਹ ਬੱਸ click ਨਹੀਂ ਕਰ ਸਕਦਾ — ਇੱਕ ਕੀਮਤ ਤੇ ਕਾਫ਼ੀ ਵਿਕਰੇਤਾ ਨਹੀਂ। ਉਸਨੂੰ sell orders ਦਾ ਹੜ੍ਹ ਚਾਹੀਦਾ। ਉਹ ਕਿੱਥੇ? Support ਹੇਠਾਂ retail stops ਉੱਤੇ।</span></p><div class="twocol"><div class="rcard frag"><p class="rh"><span class="en">What retail sees</span><span class="pa">Retail ਕੀ ਦੇਖਦਾ</span></p><p><span class="en">"My stop got hit then it reversed." Stop placed at the obvious level, just below support. Feels personally targeted — it sort of is.</span><span class="pa">"ਮੇਰਾ stop ਹਿੱਟ ਹੋ ਕੇ ਮੁੜ ਗਿਆ।" Stop ਸਾਫ਼ level ਉੱਤੇ। ਨਿਸ਼ਾਨਾ ਲੱਗਦਾ — ਕੁਝ ਹੱਦ ਤੱਕ ਹੈ।</span></p></div><div class="rcard bull"><p class="rh"><span class="en">What institutions do</span><span class="pa">ਸੰਸਥਾਵਾਂ ਕੀ ਕਰਦੀਆਂ</span></p><p><span class="en">Map where stops cluster. Push price into the cluster. Stops fire = free liquidity. Fill the real position in the chaos. Price reverses to true direction.</span><span class="pa">Stops ਕਿੱਥੇ ਹਨ, ਨਕਸ਼ਾ। ਕੀਮਤ ਉੱਥੇ ਧੱਕੋ। Stops = ਮੁਫ਼ਤ liquidity। ਅਸਲੀ position ਭਰੋ। ਕੀਮਤ ਮੁੜਦੀ।</span></p></div></div><h3><span class="en">Where stops cluster</span><span class="pa">Stops ਕਿੱਥੇ ਇਕੱਠੇ</span></h3><div class="card"><div class="signalrow"><div class="ico" style="font-size:16px">⚖️</div><div><p class="st"><span class="en">Equal highs / lows</span><span class="pa">ਬਰਾਬਰ highs / lows</span></p><p class="sd"><span class="en">Price taps the same level twice; stops pile just beyond it. A magnet.</span><span class="pa">ਕੀਮਤ ਇੱਕੋ level ਦੋ ਵਾਰ; stops ਉਸ ਤੋਂ ਅੱਗੇ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">📏</div><div><p class="st"><span class="en">Round numbers</span><span class="pa">ਗੋਲ ਨੰਬਰ</span></p><p class="sd"><span class="en">$4,500 / $4,550 / $4,600 on gold. Humans love round numbers — institutions know it.</span><span class="pa">$4,500 / $4,550 / $4,600। ਸੰਸਥਾਵਾਂ ਜਾਣਦੀਆਂ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">📐</div><div><p class="st"><span class="en">Obvious S/R</span><span class="pa">ਸਾਫ਼ S/R</span></p><p class="sd"><span class="en">The trendline everyone drew. If it is obvious to you, the stops are obvious to them.</span><span class="pa">ਜੋ ਲਾਈਨ ਸਭ ਨੇ ਖਿੱਚੀ। ਜੇ ਤੁਹਾਨੂੰ ਸਾਫ਼ ਹੈ, ਉਨ੍ਹਾਂ ਨੂੰ ਵੀ।</span></p></div></div><div class="signalrow"><div class="ico" style="font-size:16px">🕯️</div><div><p class="st"><span class="en">Session highs / lows</span><span class="pa">Session highs / lows</span></p><p class="sd"><span class="en">Asian range, previous day H/L, London open. Breakout traders park stops just inside.</span><span class="pa">Asian range, ਪਿਛਲਾ ਦਿਨ, London open।</span></p></div></div></div></div></section><section id="anatomy"><div class="wrap"><span class="knum">02</span><h2><span class="en">Anatomy of a hunt</span><span class="pa">ਸ਼ਿਕਾਰ ਦੀ ਬਣਤਰ</span></h2><div class="card"><div class="steprow"><div class="stepn">1</div><div><p class="st"><span class="en">Accumulation</span><span class="pa">Accumulation</span></p><p class="sd"><span class="en">Smart money builds a position near a level without moving price much. Looks boring.</span><span class="pa">ਵੱਡਾ ਪੈਸਾ ਚੁੱਪਚਾਪ position ਬਣਾਉਂਦਾ। ਬੋਰਿੰਗ ਲੱਗਦਾ।</span></p></div></div><div class="steprow"><div class="stepn">2</div><div><p class="st"><span class="en">Inducement</span><span class="pa">Inducement</span></p><p class="sd"><span class="en">An obvious move lures breakout traders in and gets others to place stops. The bait.</span><span class="pa">ਸਾਫ਼ ਚਾਲ breakout traders ਨੂੰ ਖਿੱਚਦੀ। ਚਾਰਾ।</span></p></div></div><div class="steprow"><div class="stepn">3</div><div><p class="st"><span class="en">The sweep</span><span class="pa">The sweep</span></p><p class="sd"><span class="en">Sharp spike through the level. Stops trigger en masse. Often a long wick — the stop-hunt candle.</span><span class="pa">Level ਰਾਹੀਂ ਤਿੱਖੀ spike। Stops ਇਕੱਠੇ। ਲੰਮੀ wick।</span></p></div></div><div class="steprow"><div class="stepn">4</div><div><p class="st"><span class="en">The reversal</span><span class="pa">The reversal</span></p><p class="sd"><span class="en">Stops absorbed, positions filled, price snaps back the other way. The real move begins — without you.</span><span class="pa">Stops ਸੋਖੇ, positions ਭਰੀਆਂ, ਕੀਮਤ ਉਲਟ ਮੁੜਦੀ। ਅਸਲੀ ਚਾਲ — ਤੁਹਾਡੇ ਬਿਨਾਂ।</span></p></div></div></div><h3><span class="en">Highest-probability hunt windows</span><span class="pa">ਸ਼ਿਕਾਰ ਦੇ ਸਮੇਂ</span></h3><div class="states"><div class="state bad"><div class="lvl"><span class="en">Session opens</span><span class="pa">Session opens</span></div><p class="dd"><span class="en">London & NY: first 15–30 min often sweep the Asian range before real direction sets.</span><span class="pa">London ਤੇ NY: ਪਹਿਲੇ 15–30 ਮਿੰਟ Asian range sweep।</span></p></div><div class="state bad"><div class="lvl"><span class="en">Around news</span><span class="pa">ਖ਼ਬਰ ਦੁਆਲੇ</span></div><p class="dd"><span class="en">Pre-news drift builds stops; release spikes through them, then reverses.</span><span class="pa">ਖ਼ਬਰ ਤੋਂ ਪਹਿਲਾਂ stops ਬਣਦੇ; release spike, ਫਿਰ ਉਲਟ।</span></p></div><div class="state warn"><div class="lvl"><span class="en">Pre-breakout coils</span><span class="pa">Coil ਤੋਂ ਪਹਿਲਾਂ</span></div><p class="dd"><span class="en">After a tight consolidation the first move is often fake. The real breakout is the SECOND move.</span><span class="pa">ਤੰਗ consolidation ਬਾਅਦ ਪਹਿਲੀ ਚਾਲ ਅਕਸਰ ਝੂਠੀ। ਅਸਲੀ = ਦੂਜੀ।</span></p></div><div class="state warn"><div class="lvl"><span class="en">Thin hours</span><span class="pa">ਪਤਲੇ ਘੰਟੇ</span></div><p class="dd"><span class="en">Late NY, early Asia: small size moves gold far. Cheap hunting.</span><span class="pa">ਦੇਰ NY, ਸ਼ੁਰੂ Asia: ਛੋਟਾ size ਸੋਨਾ ਦੂਰ ਹਿਲਾਉਂਦਾ।</span></p></div></div></div></section><section id="classify"><div class="wrap"><span class="knum">03</span><h2><span class="en">Stop hunt or real breakout?</span><span class="pa">Stop hunt ਜਾਂ ਅਸਲੀ breakout?</span></h2><p class=""><span class="en">Five features separate them. Score the move you are looking at.</span><span class="pa">ਪੰਜ ਲੱਛਣ ਵੱਖ ਕਰਦੇ ਹਨ। ਜੋ ਚਾਲ ਦੇਖ ਰਹੇ ਹੋ, ਉਸਨੂੰ score ਕਰੋ।</span></p><div class="tool"><span class="tag"><span class="en">Interactive · hunt vs breakout classifier</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · hunt vs breakout classifier</span></span><div id="feat"></div><div class="gateout"><div class="gn" id="c-n">—</div><div class="gv" id="c-v"></div><div class="gd" id="c-d"></div></div><p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Rule: a long wick through a key level on rising-then-fading volume, with delta diverging, is the signature. The wick IS the hunt.</span><span class="pa">ਨਿਯਮ: ਮੁੱਖ level ਰਾਹੀਂ ਲੰਮੀ wick, ਵਧ ਕੇ ਘਟਦਾ volume, delta ਉਲਟ — ਇਹੀ ਨਿਸ਼ਾਨੀ।</span></p></div><table class="cmp"><tr><th><span class="en">Feature</span><span class="pa">ਲੱਛਣ</span></th><th>🎣 <span class="en">Stop hunt</span><span class="pa">Stop hunt</span></th><th>🚀 <span class="en">Real breakout</span><span class="pa">ਅਸਲੀ breakout</span></th></tr><tr><td><span class="en">Candle shape</span><span class="pa">Candle ਸ਼ਕਲ</span></td><td class="h"><span class="en">Long wick, small body</span><span class="pa">ਲੰਮੀ wick, ਛੋਟਾ body</span></td><td class="b"><span class="en">Strong body close beyond level</span><span class="pa">Level ਤੋਂ ਅੱਗੇ ਮਜ਼ਬੂਤ close</span></td></tr><tr><td><span class="en">Volume</span><span class="pa">Volume</span></td><td class="h"><span class="en">Spike then dries up</span><span class="pa">Spike ਫਿਰ ਸੁੱਕਦਾ</span></td><td class="b"><span class="en">Sustained after the break</span><span class="pa">Break ਬਾਅਦ ਲਗਾਤਾਰ</span></td></tr><tr><td><span class="en">Follow-through</span><span class="pa">Follow-through</span></td><td class="h"><span class="en">Snaps back in 1–3 bars</span><span class="pa">1–3 bars ਵਿੱਚ ਵਾਪਸ</span></td><td class="b"><span class="en">Holds and extends</span><span class="pa">ਟਿਕਦਾ ਤੇ ਵਧਦਾ</span></td></tr><tr><td><span class="en">Delta</span><span class="pa">Delta</span></td><td class="h"><span class="en">Diverges from price</span><span class="pa">ਕੀਮਤ ਤੋਂ ਉਲਟ</span></td><td class="b"><span class="en">Confirms direction</span><span class="pa">ਦਿਸ਼ਾ ਪੱਕੀ</span></td></tr><tr><td><span class="en">Retest</span><span class="pa">Retest</span></td><td class="h"><span class="en">Never retests — just reverses</span><span class="pa">Retest ਨਹੀਂ — ਮੁੜਦਾ</span></td><td class="b"><span class="en">Pulls back, holds, continues</span><span class="pa">ਵਾਪਸ, ਟਿਕਦਾ, ਜਾਰੀ</span></td></tr></table></div></section><section id="edge"><div class="wrap"><span class="knum">04</span><h2><span class="en">Turn the hunt into your edge</span><span class="pa">ਸ਼ਿਕਾਰ ਨੂੰ ਆਪਣਾ edge ਬਣਾਓ</span></h2><div class="twocol"><div class="rcard frag"><p class="rh"><span class="en">Stop placement mistakes</span><span class="pa">Stop ਦੀਆਂ ਗਲਤੀਆਂ</span></p><p><span class="en">✗ 1 pip below support ✗ On the round number ✗ Just under equal lows ✗ Where every tutorial says ✗ Too tight into news</span><span class="pa">✗ Support ਤੋਂ 1 pip ਹੇਠਾਂ ✗ ਗੋਲ ਨੰਬਰ ਉੱਤੇ ✗ ਬਰਾਬਰ lows ਹੇਠਾਂ ✗ ਜਿੱਥੇ ਹਰ tutorial ਕਹਿੰਦਾ</span></p></div><div class="rcard bull"><p class="rh"><span class="en">Smarter approaches</span><span class="pa">ਸਮਝਦਾਰ ਤਰੀਕੇ</span></p><p><span class="en">✓ Beyond the sweep zone ✓ ATR distance (G2) ✓ Wait for the sweep, THEN enter ✓ Trade the reversal after stops clear ✓ Size smaller so a wider stop fits</span><span class="pa">✓ Sweep zone ਤੋਂ ਅੱਗੇ ✓ ATR ਦੂਰੀ (G2) ✓ Sweep ਉਡੀਕੋ, ਫਿਰ entry ✓ Stops ਸਾਫ਼ ਹੋਣ ਬਾਅਦ reversal ✓ ਛੋਟਾ size</span></p></div></div><h3><span class="en">Key takeaways</span><span class="pa">ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ</span></h3><div class="takeaways"><div class="ta"><div class="tk">›</div><div><span class="en">Let them hunt first. The best entry is AFTER the stops are cleared — on the reclaim, stop beyond the wick.</span><span class="pa">ਪਹਿਲਾਂ ਸ਼ਿਕਾਰ ਹੋਣ ਦਿਓ। ਸਭ ਤੋਂ ਵਧੀਆ entry stops ਸਾਫ਼ ਹੋਣ ਬਾਅਦ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Pre-mark the liquidity: equal highs/lows, round numbers, session levels. You now know where price is drawn.</span><span class="pa">Liquidity ਪਹਿਲਾਂ mark ਕਰੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Confirm with delta: price spikes up but delta shows selling = distribution into the spike.</span><span class="pa">Delta ਨਾਲ ਪੱਕਾ ਕਰੋ।</span></div></div><div class="ta"><div class="tk">›</div><div><span class="en">Skip the trap hours if you cannot watch them carefully.</span><span class="pa">ਜਾਲ ਵਾਲੇ ਘੰਟੇ ਛੱਡੋ।</span></div></div></div></div></section>
+<section id="quiz"><div class="wrap"><span class="knum">05</span><h2><span class="en">Check yourself</span><span class="pa">ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ</span></h2><p class="muted"><span class="en">Five questions. 4/5 to pass.</span><span class="pa">ਪੰਜ ਸਵਾਲ। ਪਾਸ ਲਈ 4/5।</span></p><div id="quizbox"></div></div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Trading involves risk</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const CODE="M3";const SECS=["start", "why", "anatomy", "classify", "edge", "quiz"];
+const QUIZ=[{"q": ["Why does a fund that wants to BUY 10,000 lots push price DOWN into retail stops first?", "10,000 lots ਖਰੀਦਣ ਵਾਲਾ fund ਪਹਿਲਾਂ ਕੀਮਤ ਹੇਠਾਂ stops ਵੱਲ ਕਿਉਂ ਧੱਕਦਾ?"], "o": [["To scare retail", "Retail ਨੂੰ ਡਰਾਉਣ ਲਈ"], ["Triggered sell-stops provide the flood of sell orders it needs to fill its buy", "Stops ਦੇ sell orders ਉਸਦੀ ਖਰੀਦ ਭਰਦੇ ਹਨ"], ["Because of taxes", "Tax ਕਰਕੇ"], ["It is random", "ਬੇਤਰਤੀਬ"]], "a": 1, "f": ["There are not enough sellers at one price. Stop clusters are liquidity.", "ਇੱਕ ਕੀਮਤ ਤੇ ਕਾਫ਼ੀ ਵਿਕਰੇਤਾ ਨਹੀਂ। Stops = liquidity।"]}, {"q": ["Which is NOT a typical stop-cluster location?", "ਕਿਹੜਾ ਆਮ stop-cluster ਥਾਂ ਨਹੀਂ?"], "o": [["Equal highs/lows", "ਬਰਾਬਰ highs/lows"], ["Round numbers like $4,500", "$4,500 ਵਰਗੇ ਗੋਲ ਨੰਬਰ"], ["Random mid-range prices nobody is watching", "ਬੇਤਰਤੀਬ ਵਿਚਕਾਰਲੀਆਂ ਕੀਮਤਾਂ"], ["Session highs/lows", "Session highs/lows"]], "a": 2, "f": ["Stops cluster at the obvious levels. If it is obvious to you, it is obvious to them.", "Stops ਸਾਫ਼ levels ਉੱਤੇ ਇਕੱਠੇ ਹੁੰਦੇ।"]}, {"q": ["In the four-phase sequence, the long-wick 'stop-hunt candle' is phase…", "ਚਾਰ ਪੜਾਵਾਂ ਵਿੱਚ ਲੰਮੀ-wick candle ਪੜਾਅ…"], "o": [["1 — Accumulation", "1 — Accumulation"], ["2 — Inducement", "2 — Inducement"], ["3 — The sweep", "3 — The sweep"], ["4 — The reversal", "4 — The reversal"]], "a": 2, "f": ["Accumulation → inducement → sweep (wick) → reversal.", "Accumulation → inducement → sweep → reversal।"]}, {"q": ["Price spikes above equal highs but delta shows net selling into the spike. This is…", "Equal highs ਉੱਤੇ spike ਪਰ delta ਵਿੱਚ ਵਿਕਰੀ। ਇਹ…"], "o": [["A genuine breakout — buy", "ਅਸਲੀ breakout — ਖਰੀਦੋ"], ["Distribution into the spike — a liquidity grab, not a breakout", "Spike ਵਿੱਚ distribution — liquidity grab"], ["A data error", "Data ਗਲਤੀ"], ["Irrelevant", "ਬੇਮਤਲਬ"]], "a": 1, "f": ["Delta diverging from price is the signature. Expect a snap-back within 1–3 bars.", "Delta ਕੀਮਤ ਤੋਂ ਉਲਟ = ਨਿਸ਼ਾਨੀ।"]}, {"q": ["The highest-probability entry around a stop hunt is…", "Stop hunt ਦੁਆਲੇ ਸਭ ਤੋਂ ਵਧੀਆ entry…"], "o": [["On the obvious breakout", "ਸਾਫ਼ breakout ਉੱਤੇ"], ["After the sweep, on the reclaim of the level, with stop beyond the wick", "Sweep ਬਾਅਦ, level reclaim ਉੱਤੇ, stop wick ਤੋਂ ਅੱਗੇ"], ["1 pip below support", "Support ਤੋਂ 1 pip ਹੇਠਾਂ"], ["During the news release", "ਖ਼ਬਰ ਦੌਰਾਨ"]], "a": 1, "f": ["Let them hunt first. The real move comes after the stops are cleared.", "ਪਹਿਲਾਂ ਸ਼ਿਕਾਰ ਹੋਣ ਦਿਓ। ਅਸਲੀ ਚਾਲ ਬਾਅਦ।"]}];
+const DONE=["Stop hunts are where every other force meets your order. You now know where you would be trapped — and you do not stand there. Next: the hidden flows that bend the chart.", "Stop hunts ਉੱਥੇ ਹਨ ਜਿੱਥੇ ਹਰ ਤਾਕਤ ਤੁਹਾਡੇ order ਨੂੰ ਮਿਲਦੀ। ਅਗਲਾ: ਲੁਕੀਆਂ flows।"];const NEXT=[["Pre-mark equal highs/lows and round numbers before every session", "ਹਰ session ਤੋਂ ਪਹਿਲਾਂ levels mark ਕਰੋ"], ["Move your stops to ATR distance beyond the sweep zone", "Stops ATR ਦੂਰੀ ਉੱਤੇ ਲਿਜਾਓ"], ["Next: M4 — Dark Pools, GEX & Order Flow", "ਅਗਲਾ: M4 — Dark Pools, GEX ਤੇ Order Flow"]];
+
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';renderQuiz();if(window.refresh)refresh();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');
+const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=SECS.map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+const qb=document.getElementById('quizbox');let answered=0,correct=0;
+function renderQuiz(){qb.innerHTML='';answered=0;correct=0;QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div class="qn">${qi+1}. ${L(item.q[0],item.q[1])}</div>`;item.o.forEach((opt,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=L(opt[0],opt[1]);b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;const btns=[...d.querySelectorAll('.opt')];btns.forEach(x=>x.disabled=true);if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');btns[item.a].classList.add('correct');}d.querySelector('.feedback').classList.add('show');if(answered===QUIZ.length)showDone();};d.appendChild(b);});const fb=document.createElement('div');fb.className='feedback';fb.textContent=L(item.f[0],item.f[1]);d.appendChild(fb);qb.appendChild(d);});}
+function showDone(){const pass=correct>=4;const card=document.createElement('div');card.className='done-card';card.innerHTML=`<div class="scorebig">${correct}/${QUIZ.length}</div><div class="badge">${pass?L('★ '+CODE+' complete','★ '+CODE+' ਪੂਰਾ'):L('Review &amp; retry','ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ')}</div><p style="margin:20px auto 0;max-width:46ch;color:#d3d4d8">${pass?L(DONE[0],DONE[1]):L('Close. Re-read the key section, replay the tool, then try again. Aim for 4/5.','ਲਗਭਗ। ਮੁੱਖ ਹਿੱਸਾ ਦੁਬਾਰਾ ਪੜ੍ਹੋ, tool ਚਲਾਓ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ। 4/5।')}</p>`+(pass?`<ul class="nextlist">${NEXT.map(n=>`<li>→ ${L(n[0],n[1])}</li>`).join('')}</ul>`:'');qb.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'center'});}
+
+
+const FEATS=[
+ [['Candle shape','Candle ਸ਼ਕਲ'],['Long wick, small body','ਲੰਮੀ wick'],['Strong body close','ਮਜ਼ਬੂਤ close']],
+ [['Volume','Volume'],['Spike then fades','Spike ਫਿਰ ਘਟਦਾ'],['Sustained after break','ਲਗਾਤਾਰ']],
+ [['Follow-through','Follow-through'],['Snaps back 1–3 bars','1–3 bars ਵਾਪਸ'],['Holds & extends','ਟਿਕਦਾ ਤੇ ਵਧਦਾ']],
+ [['Delta / order flow','Delta'],['Diverges from price','ਕੀਮਤ ਤੋਂ ਉਲਟ'],['Confirms direction','ਦਿਸ਼ਾ ਪੱਕੀ']],
+ [['Retest','Retest'],['No retest, reverses','Retest ਨਹੀਂ'],['Pulls back & holds','ਵਾਪਸ ਤੇ ਟਿਕਦਾ']]];
+const pick=[null,null,null,null,null];
+function refresh(){const f=document.getElementById('feat');f.innerHTML='';FEATS.forEach((r,i)=>{const d=document.createElement('div');d.className='row2';d.style.margin='0 0 12px';d.innerHTML=`<div class="field" style="flex:0 0 150px"><label style="margin:0;color:var(--text);font-weight:600">${L(r[0][0],r[0][1])}</label></div><div class="field"><div class="seg"><button class="${pick[i]==='h'?'on':''}" onclick="pk(${i},'h')">🎣 ${L(r[1][0],r[1][1])}</button><button class="${pick[i]==='b'?'on':''}" onclick="pk(${i},'b')">🚀 ${L(r[2][0],r[2][1])}</button></div></div>`;f.appendChild(d);});
+ const h=pick.filter(x=>x==='h').length,b=pick.filter(x=>x==='b').length,t=h+b;const n=document.getElementById('c-n'),v=document.getElementById('c-v'),dd=document.getElementById('c-d');
+ if(t<3){n.style.color='var(--muted)';n.textContent=t+'/5';v.style.color='var(--muted)';v.textContent=L('Pick at least 3 features','ਘੱਟੋ-ਘੱਟ 3 ਲੱਛਣ ਚੁਣੋ');dd.textContent='';return;}
+ if(h>=4){n.style.color='var(--red)';n.textContent='🎣 '+h+'/'+t;v.style.color='var(--red)';v.textContent=L('Stop hunt — do not chase it','Stop hunt — ਪਿੱਛੇ ਨਾ ਭੱਜੋ');dd.textContent=L('Wait for the reclaim of the level, then trade the reversal with a stop beyond the wick.','Level reclaim ਉਡੀਕੋ, ਫਿਰ reversal trade ਕਰੋ।');}
+ else if(b>=4){n.style.color='var(--green)';n.textContent='🚀 '+b+'/'+t;v.style.color='var(--green)';v.textContent=L('Genuine breakout — tradeable','ਅਸਲੀ breakout — trade ਯੋਗ');dd.textContent=L('Enter on the retest hold. Size with ATR (G2). Still respect the news clock.','Retest ਉੱਤੇ entry। ATR ਨਾਲ size।');}
+ else{n.style.color='var(--amber)';n.textContent=h+'🎣 / '+b+'🚀';v.style.color='var(--amber)';v.textContent=L('Mixed — wait one more bar','ਮਿਲਿਆ-ਜੁਲਿਆ — ਇੱਕ bar ਹੋਰ');dd.textContent=L('Conflicting signals. Let follow-through or the retest decide before committing size.','ਵਿਰੋਧੀ ਸੰਕੇਤ। Follow-through ਜਾਂ retest ਨੂੰ ਤੈਅ ਕਰਨ ਦਿਓ।');}}
+function pk(i,k){pick[i]=k;refresh();}
+renderQuiz();if(window.refresh)refresh();
+</script></body></html>
