@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Replay — Lab 1</title>
+<style>
+  :root{--ink:#0b0c0f;--panel:#15171c;--panel-2:#1d2026;--line:#2a2e37;
+    --gold:#d4af37;--gold-soft:#e8cf7a;--gold-dim:#8a7430;
+    --text:#e9e8e4;--muted:#9aa0ab;--green:#46c98a;--red:#e0625e;--amber:#e8b54a;
+    --r:14px;--maxw:760px;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #1a1c22 0%, var(--ink) 55%);
+    color:var(--text);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .pa{display:none}
+  body.lang-pa .en{display:none}
+  body.lang-pa .pa{display:initial}
+  body.lang-pa{line-height:1.75}
+  #progressbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-soft));z-index:50;transition:width .15s ease}
+  nav.toc{position:sticky;top:0;z-index:40;background:rgba(11,12,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav.toc .row{display:flex;align-items:center;gap:8px;max-width:var(--maxw);margin:0 auto;padding:9px 22px}
+  nav.toc .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav.toc .links::-webkit-scrollbar{display:none}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,175,55,.07)}
+  .home{flex:0 0 auto;color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;padding:6px 4px}
+  .langbtn{flex:0 0 auto;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px}
+  .langbtn:hover{background:rgba(212,175,55,.1)}
+  header.hero{padding:58px 0 36px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:18px}
+  h1{font-size:clamp(32px,7vw,54px);line-height:1.04;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch;margin:0}
+  .meta{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:600}
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .knum{font-family:Georgia,serif;font-style:italic;color:var(--gold-dim);font-size:15px;display:block;margin-bottom:10px}
+  h2{font-size:clamp(23px,4.5vw,32px);margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+  h3{font-size:18px;margin:26px 0 10px;font-weight:650}
+  p{margin:0 0 16px;color:#d3d4d8} .muted{color:var(--muted)} strong{color:#fff}
+  .card{background:linear-gradient(180deg,var(--panel),#101216);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:16px 0}
+  .signalrow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .signalrow:last-child{border-bottom:none}
+  .signalrow .ico{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--gold)}
+  .signalrow .st{font-weight:700;margin:0 0 3px;font-size:16px}
+  .signalrow .sd{margin:0;color:var(--muted);font-size:14px}
+  .tool{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--r);padding:22px;margin:22px 0;box-shadow:0 0 0 1px rgba(212,175,55,.05),0 18px 40px -24px rgba(212,175,55,.25)}
+  .tool .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+  .tool .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  .fields{display:grid;gap:16px}
+  @media(min-width:560px){.fields{grid-template-columns:1fr 1fr 1fr}}
+  .field input{width:100%;background:#0e1014;border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:16px;padding:11px 13px;border-radius:9px}
+  .field input:focus{outline:none;border-color:var(--gold-dim)}
+  .calcflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--muted)}
+  .calcflow .step{background:#0e1014;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .calcflow .step b{color:var(--gold-soft)}
+  .verdict{margin-top:18px;padding:20px;border-radius:12px;text-align:center;border:1px solid var(--gold-dim);background:#0e1014}
+  .verdict .vbig{font-size:34px;font-weight:800;line-height:1}
+  .verdict .vlbl{font-size:13px;color:var(--muted);margin-top:6px}
+  .verdict .vsig{margin-top:12px;font-weight:700;font-size:15.5px}
+  .twocol{display:grid;gap:14px}
+  @media(min-width:620px){.twocol{grid-template-columns:1fr 1fr}}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .rcard.bull{border-color:rgba(70,201,138,.4)}
+  .rcard.frag{border-color:rgba(224,98,94,.4)}
+  .rcard .rh{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px}
+  .rcard.bull .rh{color:var(--green)} .rcard.frag .rh{color:var(--red)}
+  .rcard p{font-size:14px;color:var(--muted);margin:0}
+  .cavbox{background:rgba(232,181,74,.08);border:1px solid rgba(232,181,74,.35);border-radius:10px;padding:14px 16px;font-size:14px;color:#ecd9a6;margin-top:16px}
+  .takeaways{display:grid;gap:10px;margin-top:8px}
+  .ta{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ta:last-child{border-bottom:none}
+  .ta .tk{flex:0 0 26px;color:var(--gold);font-weight:800}
+  .q{margin:22px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+  .q .qn{font-weight:650;margin-bottom:14px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:13px 15px;border-radius:10px;margin-bottom:9px;font-size:14.5px;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,138,.1);color:#bff0d6}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,94,.1);color:#f4c4c2}
+  .opt:disabled{cursor:default}
+  .feedback{font-size:13.5px;margin-top:6px;color:var(--muted);display:none;padding-left:2px}
+  .feedback.show{display:block}
+  .done-card{text-align:center;padding:42px 24px;background:linear-gradient(180deg,#1a1810,#101216);border:1px solid var(--gold-dim);border-radius:18px;margin:26px 0}
+  .scorebig{font-size:54px;font-weight:800;color:var(--gold);line-height:1}
+  .badge{display:inline-block;margin-top:18px;padding:10px 18px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .nextlist{text-align:left;max-width:440px;margin:24px auto 0}
+  .nextlist li{margin:8px 0;color:var(--muted)}
+  footer{padding:40px 0 70px;text-align:center}
+  .disc{font-size:12px;color:#6b7079;max-width:62ch;margin:0 auto}
+  .slabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .slabel .lv{font-size:30px;font-weight:800;color:var(--gold)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#2e6f50,#5b6b2a,#7a5a23,#7a2f2c);outline:none;margin:8px 0 4px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer;box-shadow:0 0 10px rgba(212,175,55,.6)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid #0b0c0f;cursor:pointer}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+  .ivrv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .ivrv .rcard .rh{color:var(--gold)}
+  .states{display:grid;gap:10px;margin-top:6px}
+  .state{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .state .lvl{flex:0 0 110px;font-weight:750;font-size:13px}
+  .state .dd{font-size:14px;color:var(--muted);margin:0}
+  .state.good .lvl{color:var(--green)} .state.warn .lvl{color:var(--amber)} .state.bad .lvl{color:var(--red)}
+  .sgrid{display:grid;gap:10px}
+  @media(min-width:560px){.sgrid{grid-template-columns:1fr 1fr}}
+  .sig{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px;transition:.15s;user-select:none}
+  .sig:hover{border-color:var(--gold-dim)}
+  .sig.on{border-color:var(--gold);background:rgba(212,175,55,.1)}
+  .sig .box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:14px;color:#241d05}
+  .sig.on .box{background:var(--gold)} .sig .box::after{content:"\2713";opacity:0} .sig.on .box::after{opacity:1}
+  .sig .sl{font-weight:650;font-size:14px;margin:0 0 2px} .sig .ss{font-size:12.5px;color:var(--muted);margin:0}
+  .gateout{margin-top:16px;padding:20px;border-radius:12px;text-align:center;border:1px dashed var(--gold-dim);background:#0e1014}
+  .gateout .gn{font-size:38px;font-weight:800;line-height:1} .gateout .gv{margin-top:10px;font-weight:700;font-size:15.5px}
+  .gateout .gd{margin-top:8px;font-size:13.5px;color:var(--muted)}
+  .steprow{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)} .steprow:last-child{border-bottom:none}
+  .stepn{flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--gold-dim);color:var(--gold);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .steprow .st{font-weight:650;margin:0 0 2px;font-size:15px} .steprow .sd{margin:0;color:var(--muted);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap} .seg button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px} .cmp th,.cmp td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp th{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase} .cmp td.h{color:#f4c4c2} .cmp td.b{color:#bff0d6}
+  .row2{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .row2 .field{flex:1 1 150px}
+  .bigstat{display:grid;gap:12px;margin:14px 0} @media(min-width:560px){.bigstat{grid-template-columns:repeat(3,1fr)}}
+  .bs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .bs .n{font-size:28px;font-weight:800;color:var(--gold-soft);line-height:1} .bs .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .chartwrap{position:relative;background:#0e1014;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0}
+  canvas#ch{display:block;width:100%;height:380px;cursor:crosshair}
+  .modes{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .modes button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 13px;border-radius:999px;font-size:13px}
+  .modes button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold-soft)}
+  .modes button.lvl.on{border-color:#7aa2ff;color:#b7c9ff} .modes button.ent.on{border-color:#fff;color:#fff} .modes button.stp.on{border-color:var(--red);color:#f4a8a5} .modes button.tgt.on{border-color:var(--green);color:#bff0d6}
+  .plan{display:grid;gap:10px;margin:12px 0} @media(min-width:560px){.plan{grid-template-columns:repeat(4,1fr)}}
+  .pv{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center} .pv .n{font-size:18px;font-weight:800;color:var(--gold-soft)} .pv .l{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .primary{font-family:inherit;cursor:pointer;background:var(--gold);color:#0b0c0f;border:none;font-weight:800;padding:12px 20px;border-radius:999px;font-size:14px}
+  .primary:disabled{opacity:.4;cursor:default}
+  .ghost{font-family:inherit;cursor:pointer;background:transparent;color:var(--gold);border:1px solid var(--gold-dim);font-weight:700;padding:12px 18px;border-radius:999px;font-size:14px}
+  .score{display:grid;gap:8px;margin-top:14px}
+  .sc{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-size:14px}
+  .sc .pt{flex:0 0 46px;font-weight:800;text-align:right} .sc.ok .pt{color:var(--green)} .sc.no .pt{color:var(--red)} .sc .why{color:var(--muted);font-size:12.5px}
+  .sesstabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .sesstabs button{font-family:inherit;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:999px;font-size:13px} .sesstabs button.on{border-color:var(--gold);color:var(--gold-soft)}
+  .hint{position:absolute;top:10px;left:12px;font-size:12px;color:var(--muted);background:rgba(11,12,15,.7);padding:4px 8px;border-radius:6px;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+<nav class="toc"><div class="row"><a class="home" href="index.html">◆ <span class="en">Home</span><span class="pa">ਘਰ</span></a><div class="links">
+<a href="#start" class="active"><span class="en">Start</span><span class="pa">ਸ਼ੁਰੂ</span></a><a href="#how">1 · <span class="en">How It Works</span><span class="pa">ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ</span></a><a href="#lab">2 · <span class="en">Replay</span><span class="pa">Replay</span></a><a href="#score">3 · <span class="en">Scorecard</span><span class="pa">Scorecard</span></a>
+</div><button class="langbtn" onclick="toggleLang()" id="langbtn">ਪੰਜਾਬੀ</button></div></nav>
+<header class="hero" id="start"><div class="wrap">
+<div class="eyebrow"><span class="en">Trader's Lab · L1 · Practice</span><span class="pa">Trader's Lab · L1 · ਅਭਿਆਸ</span></div>
+<h1><span class="en">Trade Replay</span><span class="pa">Trade Replay</span></h1>
+<p class="lede"><span class="en">Real XAU/USD 15-minute sessions. The chart stops at a decision point. You mark the level, plan the trade, size it — then press play and watch what the market actually did. You are scored on process, not profit.</span><span class="pa">ਅਸਲੀ XAU/USD 15-ਮਿੰਟ sessions। Chart ਫ਼ੈਸਲੇ ਦੇ ਬਿੰਦੂ ਤੇ ਰੁਕਦਾ। ਤੁਸੀਂ level mark ਕਰੋ, trade plan ਕਰੋ, size ਕਰੋ — ਫਿਰ play ਦਬਾਓ ਤੇ ਦੇਖੋ ਬਾਜ਼ਾਰ ਨੇ ਅਸਲ ਵਿੱਚ ਕੀ ਕੀਤਾ। Score process ਉੱਤੇ, ਮੁਨਾਫ਼ੇ ਉੱਤੇ ਨਹੀਂ।</span></p>
+<div class="meta"><span><b>3 <span class="en">real sessions</span><span class="pa">ਅਸਲੀ sessions</span></b></span><span><b>~10 min</b> <span class="en">each</span><span class="pa">ਹਰੇਕ</span></span><span><span class="en">Requires G2 + M3</span><span class="pa">G2 + M3 ਚਾਹੀਦੇ</span></span></div>
+</div></header>
+
+<section id="how"><div class="wrap"><span class="knum">01</span><h2><span class="en">How a replay works</span><span class="pa">Replay ਕਿਵੇਂ ਚੱਲਦਾ</span></h2>
+<div class="card">
+<div class="steprow"><div class="stepn">1</div><div><p class="st"><span class="en">Read the chart to the decision point</span><span class="pa">ਫ਼ੈਸਲੇ ਦੇ ਬਿੰਦੂ ਤੱਕ chart ਪੜ੍ਹੋ</span></p><p class="sd"><span class="en">ATR(14) is shown. Where is the obvious level everyone sees? Where would retail stops cluster (M3)?</span><span class="pa">ATR(14) ਦਿਖਾਇਆ। ਸਾਫ਼ level ਕਿੱਥੇ? Retail stops ਕਿੱਥੇ ਇਕੱਠੇ (M3)?</span></p></div></div>
+<div class="steprow"><div class="stepn">2</div><div><p class="st"><span class="en">Mark the level, then plan: entry · stop · target</span><span class="pa">Level mark ਕਰੋ, ਫਿਰ plan: entry · stop · target</span></p><p class="sd"><span class="en">Pick a mode button and click on the chart to place each line. Or choose "No trade" if the setup is not there.</span><span class="pa">Mode ਚੁਣੋ ਤੇ chart ਉੱਤੇ click ਕਰ ਕੇ ਲਾਈਨ ਲਾਓ। ਜਾਂ setup ਨਾ ਹੋਵੇ ਤਾਂ "No trade"।</span></p></div></div>
+<div class="steprow"><div class="stepn">3</div><div><p class="st"><span class="en">Size it</span><span class="pa">Size ਕਰੋ</span></p><p class="sd"><span class="en">Account and risk % set your dollars at risk; the stop distance sets the size — exactly the G2 formula.</span><span class="pa">Account ਤੇ risk % ਜੋਖਮ $ ਤੈਅ ਕਰਦੇ; stop ਦੂਰੀ size — G2 ਵਾਲਾ formula।</span></p></div></div>
+<div class="steprow"><div class="stepn">4</div><div><p class="st"><span class="en">Play — and get scored on process</span><span class="pa">Play — ਤੇ process ਉੱਤੇ score</span></p><p class="sd"><span class="en">Five checks, 20 points each: risk ≤ 1%, stop ≥ 1 ATR, reward ≥ 1.5R, stop survived the sweep, direction. A winning trade with bad process still scores low. That is the point.</span><span class="pa">ਪੰਜ ਜਾਂਚਾਂ, 20 ਅੰਕ ਹਰੇਕ: risk ≤ 1%, stop ≥ 1 ATR, reward ≥ 1.5R, stop sweep ਤੋਂ ਬਚਿਆ, ਦਿਸ਼ਾ। ਮਾੜੇ process ਨਾਲ ਜਿੱਤ ਵੀ ਘੱਟ score।</span></p></div></div>
+</div></div></section>
+
+<section id="lab"><div class="wrap"><span class="knum">02</span><h2><span class="en">The replay</span><span class="pa">Replay</span></h2>
+<div class="tool"><span class="tag"><span class="en">Interactive · trade replay</span><span class="pa">ਇੰਟਰਐਕਟਿਵ · trade replay</span></span>
+<div class="sesstabs" id="tabs"></div>
+<div class="chartwrap"><div class="hint" id="hint"></div><canvas id="ch"></canvas></div>
+<div class="modes">
+<button class="lvl" data-m="level" onclick="setMode(this)">📍 <span class="en">Mark level</span><span class="pa">Level mark</span></button>
+<button class="ent" data-m="entry" onclick="setMode(this)">▶ <span class="en">Entry</span><span class="pa">Entry</span></button>
+<button class="stp" data-m="stop" onclick="setMode(this)">✕ <span class="en">Stop</span><span class="pa">Stop</span></button>
+<button class="tgt" data-m="target" onclick="setMode(this)">◎ <span class="en">Target</span><span class="pa">Target</span></button>
+<button data-m="none" onclick="noTrade(this)">⏸ <span class="en">No trade</span><span class="pa">No trade</span></button>
+</div>
+<div class="row2"><div class="field"><label><span class="en">Account ($)</span><span class="pa">Account ($)</span></label><input id="acct" type="number" value="10000" oninput="recalc()"></div><div class="field"><label><span class="en">Risk per trade (%)</span><span class="pa">ਹਰ trade risk (%)</span></label><input id="risk" type="number" value="1" step="0.25" oninput="recalc()"></div></div>
+<div class="plan">
+<div class="pv"><div class="n" id="p-dir">—</div><div class="l"><span class="en">direction</span><span class="pa">ਦਿਸ਼ਾ</span></div></div>
+<div class="pv"><div class="n" id="p-stop">—</div><div class="l"><span class="en">stop distance / ATR</span><span class="pa">stop ਦੂਰੀ / ATR</span></div></div>
+<div class="pv"><div class="n" id="p-rr">—</div><div class="l"><span class="en">reward : risk</span><span class="pa">reward : risk</span></div></div>
+<div class="pv"><div class="n" id="p-size">—</div><div class="l"><span class="en">size (oz)</span><span class="pa">size (oz)</span></div></div>
+</div>
+<div class="btnrow"><button class="primary" id="play" onclick="play()" disabled>▶ <span class="en">Play the market</span><span class="pa">ਬਾਜ਼ਾਰ ਚਲਾਓ</span></button><button class="ghost" onclick="resetSession()">↺ <span class="en">Reset</span><span class="pa">Reset</span></button></div>
+<p class="muted" style="font-size:13px;margin:14px 0 0"><span class="en">Click the chart to place lines. Entry must be set to play (or choose No trade). The grey dashed line is the decision point — nothing right of it is known to you yet.</span><span class="pa">Chart ਉੱਤੇ click ਕਰ ਕੇ ਲਾਈਨਾਂ ਲਾਓ। Play ਲਈ entry ਚਾਹੀਦੀ (ਜਾਂ No trade)। ਸਲੇਟੀ ਲਾਈਨ ਫ਼ੈਸਲੇ ਦਾ ਬਿੰਦੂ।</span></p>
+</div></div></section>
+
+<section id="score"><div class="wrap"><span class="knum">03</span><h2><span class="en">Scorecard</span><span class="pa">Scorecard</span></h2>
+<div class="gateout"><div class="gn" id="s-n">—</div><div class="gv" id="s-v"><span class="en">Play a session to get scored</span><span class="pa">Score ਲਈ session ਚਲਾਓ</span></div><div class="gd" id="s-d"></div></div>
+<div class="score" id="s-list"></div>
+<p class="muted" style="font-size:14px;margin-top:16px"><span class="en">Run all three sessions. A professional process scores 80+ on every one regardless of whether the trade won. Post your scores in Discord.</span><span class="pa">ਤਿੰਨੇ sessions ਚਲਾਓ। ਪੇਸ਼ੇਵਰ process ਹਰ ਇੱਕ ਉੱਤੇ 80+ ਕਰਦਾ, ਜਿੱਤ-ਹਾਰ ਤੋਂ ਵੱਖ। Discord ਵਿੱਚ score ਪੋਸਟ ਕਰੋ।</span></p>
+</div></section>
+<footer><div class="wrap"><p class="disc"><span class="en">Educational only · Not financial advice · DYOR · Historical data via Twelve Data</span><span class="pa">ਸਿਰਫ਼ ਵਿੱਦਿਅਕ · ਵਿੱਤੀ ਸਲਾਹ ਨਹੀਂ · DYOR</span></p></div></footer>
+<script>
+const SESS=[{"id":"s1","name":["Oct 22 \u00b7 London sweep","Oct 22 \u00b7 London sweep"],"kind":"sweep","show":66,"c":[["10-21 13:15",4117.63,4120.82,4114.21,4116.08],["10-21 13:30",4116.82,4119.29,4114.01,4114.18],["10-21 13:45",4114.31,4120.48,4113.52,4117.56],["10-21 14:00",4117.48,4121.19,4113.7,4114.82],["10-21 14:15",4114.29,4120.48,4114.29,4119.35],["10-21 14:30",4119.63,4125.92,4119.63,4120.46],["10-21 14:45",4120.68,4122.75,4117.79,4117.87],["10-21 15:00",4118.1,4122.04,4118.0,4121.49],["10-21 15:15",4120.72,4126.02,4116.12,4116.86],["10-21 15:30",4118.11,4121.67,4115.4,4116.41],["10-21 15:45",4117.23,4117.23,4114.38,4115.29],["10-21 16:00",4115.2,4120.14,4114.72,4119.78],["10-21 16:15",4119.46,4128.11,4118.85,4127.74],["10-21 16:30",4127.26,4129.5,4115.9,4116.26],["10-21 16:45",4116.77,4122.01,4114.8,4118.56],["10-21 17:00",4118.25,4119.48,4114.35,4116.52],["10-21 17:15",4116.12,4118.18,4113.2,4113.24],["10-21 17:30",4113.31,4118.62,4113.31,4114.25],["10-21 17:45",4114.35,4114.72,4111.5,4111.59],["10-21 18:00",4111.78,4116.15,4111.73,4115.94],["10-21 18:15",4115.67,4124.05,4112.15,4123.02],["10-21 18:30",4123.22,4124.68,4119.76,4121.13],["10-21 18:45",4121.03,4123.81,4119.34,4123.74],["10-21 19:00",4123.57,4125.09,4120.65,4122.29],["10-21 19:15",4122.15,4123.37,4117.53,4122.36],["10-21 19:30",4122.54,4123.34,4120.69,4122.24],["10-21 19:45",4121.56,4123.39,4119.46,4120.65],["10-21 20:00",4120.44,4124.23,4118.79,4123.63],["10-21 20:15",4122.89,4124.99,4120.39,4123.47],["10-21 20:30",4123.11,4125.92,4121.27,4122.93],["10-21 20:45",4122.7,4122.86,4117.6,4117.87],["10-21 21:00",4118.36,4118.36,4115.16,4115.33],["10-21 21:15",4115.6,4120.5,4112.35,4119.06],["10-21 21:30",4118.97,4128.58,4118.97,4128.29],["10-21 21:45",4127.86,4128.65,4125.27,4127.06],["10-21 22:00",4126.92,4129.5,4125.41,4129.27],["10-21 22:15",4128.78,4132.06,4127.8,4129.72],["10-21 22:30",4130.03,4141.13,4128.92,4140.39],["10-21 22:45",4140.25,4140.44,4137.36,4140.38],["10-21 23:00",4140.24,4142.03,4136.5,4136.86],["10-21 23:15",4137.6,4138.69,4130.87,4131.98],["10-21 23:30",4131.79,4132.06,4124.9,4126.46],["10-21 23:45",4126.79,4129.76,4124.73,4129.31],["10-22 00:00",4128.1,4139.24,4126.76,4136.2],["10-22 00:15",4136.13,4140.96,4135.44,4138.05],["10-22 00:30",4137.75,4138.5,4133.09,4137.54],["10-22 00:45",4136.8,4140.25,4129.8,4130.3],["10-22 01:00",4131.39,4131.39,4121.84,4128.43],["10-22 01:15",4127.92,4135.48,4126.6,4135.07],["10-22 01:30",4134.28,4134.36,4128.65,4130.17],["10-22 01:45",4129.83,4133.0,4127.98,4131.35],["10-22 02:00",4130.86,4131.55,4126.77,4127.27],["10-22 02:15",4127.1,4139.43,4127.1,4138.53],["10-22 02:30",4136.4,4140.44,4131.63,4132.17],["10-22 02:45",4133.33,4133.33,4131.04,4132.3],["10-22 03:00",4132.39,4133.4,4129.67,4131.48],["10-22 03:15",4131.34,4134.12,4130.31,4133.04],["10-22 03:30",4132.89,4135.65,4124.7,4133.17],["10-22 03:45",4132.03,4135.14,4131.33,4131.91],["10-22 04:00",4131.82,4132.16,4129.33,4132.05],["10-22 04:15",4131.9,4133.26,4130.51,4130.81],["10-22 04:30",4131.43,4136.88,4131.43,4136.37],["10-22 04:45",4136.45,4137.08,4134.09,4136.37],["10-22 05:00",4136.39,4140.1,4136.03,4137.92],["10-22 05:15",4138.09,4140.27,4136.96,4140.2],["10-22 05:30",4140.01,4141.13,4138.82,4139.52],["10-22 05:45",4139.31,4139.31,4115.2,4115.97],["10-22 06:00",4117.04,4120.48,4107.11,4117.06],["10-22 06:15",4116.27,4124.46,4115.5,4123.87],["10-22 06:30",4123.03,4135.31,4123.03,4133.53],["10-22 06:45",4134.08,4134.93,4130.94,4134.54],["10-22 07:00",4134.23,4135.85,4133.49,4135.2],["10-22 07:15",4134.97,4135.6,4132.91,4133.49],["10-22 07:30",4133.24,4138.15,4132.4,4137.56],["10-22 07:45",4136.5,4142.22,4136.5,4141.17],["10-22 08:00",4140.98,4141.57,4140.27,4140.97],["10-22 08:15",4140.99,4141.12,4140.87,4141.03],["10-22 08:30",4140.95,4141.49,4140.79,4140.96],["10-22 08:45",4140.88,4141.3,4140.66,4140.96],["10-22 09:00",4141.01,4142.67,4137.18,4138.42],["10-22 09:15",4138.47,4138.9,4136.7,4137.26],["10-22 09:30",4137.2,4137.2,4133.43,4133.79],["10-22 09:45",4133.6,4134.31,4130.18,4131.91],["10-22 10:00",4131.81,4131.81,4125.7,4127.85],["10-22 10:15",4127.48,4128.31,4124.9,4126.87],["10-22 10:30",4126.53,4127.46,4122.47,4124.97],["10-22 10:45",4124.77,4127.63,4123.37,4125.61],["10-22 11:00",4125.78,4125.86,4121.5,4121.74],["10-22 11:15",4122.18,4123.29,4117.69,4119.23],["10-22 11:30",4118.93,4119.73,4114.7,4117.12],["10-22 11:45",4116.51,4118.32,4114.04,4114.3],["10-22 12:00",4114.19,4118.11,4110.45,4115.85],["10-22 12:15",4116.13,4116.79,4108.63,4114.15],["10-22 12:30",4112.59,4118.45,4111.67,4112.09],["10-22 12:45",4112.89,4115.4,4110.64,4115.08],["10-22 13:00",4114.57,4115.73,4109.48,4111.48],["10-22 13:15",4111.07,4117.94,4111.07,4117.84],["10-22 13:30",4117.58,4124.22,4115.06,4117.66],["10-22 13:45",4117.42,4118.11,4111.67,4117.57],["10-22 14:00",4117.49,4117.49,4107.96,4108.32]]},{"id":"s2","name":["Oct 16 \u00b7 NY sweep","Oct 16 \u00b7 NY sweep"],"kind":"sweep","show":68,"c":[["10-15 19:15",4151.98,4158.62,4151.98,4155.64],["10-15 19:30",4155.45,4158.18,4150.93,4151.08],["10-15 19:45",4151.3,4154.89,4149.03,4151.43],["10-15 20:00",4151.46,4157.62,4151.1,4157.02],["10-15 20:15",4155.62,4159.51,4155.59,4159.3],["10-15 20:30",4159.02,4160.36,4157.49,4158.98],["10-15 20:45",4158.85,4159.91,4153.86,4158.13],["10-15 21:00",4158.71,4158.87,4155.59,4155.62],["10-15 21:15",4155.69,4155.87,4152.13,4154.32],["10-15 21:30",4154.39,4155.41,4153.03,4153.66],["10-15 21:45",4153.57,4155.41,4152.31,4154.42],["10-15 22:00",4154.36,4159.84,4153.48,4158.03],["10-15 22:15",4157.15,4158.7,4155.93,4158.23],["10-15 22:30",4157.58,4159.04,4150.41,4150.57],["10-15 22:45",4150.82,4152.13,4146.03,4148.07],["10-15 23:00",4147.33,4149.89,4144.39,4149.85],["10-15 23:15",4149.76,4155.69,4148.18,4151.18],["10-15 23:30",4149.88,4157.66,4136.33,4149.58],["10-15 23:45",4151.35,4151.49,4141.06,4150.89],["10-16 00:00",4150.13,4157.31,4145.77,4156.76],["10-16 00:15",4155.91,4168.92,4153.59,4156.94],["10-16 00:30",4156.76,4163.83,4150.58,4161.04],["10-16 00:45",4160.65,4160.95,4150.99,4156.84],["10-16 01:00",4156.9,4157.56,4146.8,4146.93],["10-16 01:15",4147.13,4160.95,4144.78,4160.91],["10-16 01:30",4160.94,4164.58,4156.91,4157.81],["10-16 01:45",4159.91,4162.04,4154.36,4158.12],["10-16 02:00",4158.29,4159.83,4150.58,4151.21],["10-16 02:15",4152.12,4159.04,4150.5,4155.0],["10-16 02:30",4154.86,4157.9,4149.38,4152.25],["10-16 02:45",4152.47,4152.82,4147.87,4149.69],["10-16 03:00",4149.92,4150.07,4144.55,4144.65],["10-16 03:15",4144.78,4153.0,4144.05,4152.57],["10-16 03:30",4151.62,4152.13,4148.5,4149.05],["10-16 03:45",4149.57,4151.08,4147.48,4147.88],["10-16 04:00",4147.93,4149.26,4145.94,4148.98],["10-16 04:15",4148.53,4151.96,4146.8,4149.15],["10-16 04:30",4149.05,4154.02,4148.17,4153.51],["10-16 04:45",4152.87,4154.72,4152.35,4152.59],["10-16 05:00",4153.1,4158.18,4153.1,4155.48],["10-16 05:15",4155.65,4158.35,4155.24,4158.26],["10-16 05:30",4158.06,4158.82,4156.73,4157.44],["10-16 05:45",4157.67,4158.87,4156.82,4157.29],["10-16 06:00",4157.52,4161.29,4157.32,4160.83],["10-16 06:15",4160.81,4162.68,4159.39,4161.63],["10-16 06:30",4161.6,4168.2,4157.66,4168.05],["10-16 06:45",4167.82,4175.77,4167.82,4175.13],["10-16 07:00",4173.55,4177.81,4172.28,4173.21],["10-16 07:15",4173.35,4174.28,4169.42,4170.54],["10-16 07:30",4170.73,4171.66,4168.75,4170.44],["10-16 07:45",4170.27,4171.05,4169.01,4170.88],["10-16 08:00",4170.58,4171.36,4170.58,4170.94],["10-16 08:15",4170.83,4171.06,4170.81,4170.95],["10-16 08:30",4170.87,4171.05,4170.66,4170.97],["10-16 08:45",4170.87,4171.88,4170.39,4171.78],["10-16 09:00",4171.58,4172.49,4170.31,4171.76],["10-16 09:15",4171.89,4172.46,4167.36,4167.42],["10-16 09:30",4167.48,4168.23,4166.39,4166.96],["10-16 09:45",4166.86,4167.14,4163.89,4164.45],["10-16 10:00",4164.19,4165.35,4163.72,4164.03],["10-16 10:15",4163.97,4164.07,4161.46,4161.96],["10-16 10:30",4161.88,4161.98,4156.51,4158.0],["10-16 10:45",4157.95,4158.59,4156.1,4156.2],["10-16 11:00",4156.34,4156.34,4152.68,4155.17],["10-16 11:15",4154.49,4156.28,4154.38,4155.18],["10-16 11:30",4155.31,4155.94,4152.05,4153.42],["10-16 11:45",4153.83,4157.49,4153.76,4154.23],["10-16 12:00",4155.01,4161.16,4152.19,4158.3],["10-16 12:15",4158.68,4158.87,4150.41,4151.41],["10-16 12:30",4151.23,4152.23,4147.48,4150.8],["10-16 12:45",4150.44,4154.37,4147.73,4153.11],["10-16 13:00",4153.3,4158.24,4151.97,4155.47],["10-16 13:15",4154.48,4161.81,4153.07,4161.68],["10-16 13:30",4161.28,4167.07,4160.45,4161.52],["10-16 13:45",4161.66,4179.73,4161.38,4178.95],["10-16 14:00",4179.03,4179.03,4171.76,4173.76],["10-16 14:15",4172.92,4174.49,4169.27,4169.61],["10-16 14:30",4169.63,4170.85,4163.19,4163.47],["10-16 14:45",4163.94,4184.63,4163.94,4183.4],["10-16 15:00",4183.29,4187.24,4176.06,4176.24],["10-16 15:15",4176.47,4181.54,4176.47,4179.34],["10-16 15:30",4179.24,4179.24,4174.49,4174.6],["10-16 15:45",4174.84,4175.67,4172.23,4172.6],["10-16 16:00",4172.73,4176.21,4170.14,4171.46],["10-16 16:15",4171.02,4175.19,4171.02,4172.51],["10-16 16:30",4172.98,4176.48,4169.45,4172.31],["10-16 16:45",4170.65,4176.06,4170.65,4175.25],["10-16 17:00",4175.4,4176.93,4170.12,4171.78],["10-16 17:15",4171.47,4174.95,4169.45,4174.78],["10-16 17:30",4174.26,4180.41,4173.64,4178.56],["10-16 17:45",4178.69,4179.55,4176.93,4177.15],["10-16 18:00",4177.36,4186.03,4176.59,4185.76],["10-16 18:15",4185.61,4188.83,4182.88,4187.8],["10-16 18:30",4187.44,4189.71,4183.4,4183.96],["10-16 18:45",4184.3,4188.13,4182.32,4188.04],["10-16 19:00",4187.92,4190.15,4179.55,4180.36],["10-16 19:15",4180.11,4184.98,4178.51,4184.0],["10-16 19:30",4184.23,4185.68,4181.83,4185.61],["10-16 19:45",4185.4,4189.06,4183.75,4188.65],["10-16 20:00",4188.04,4191.47,4186.38,4190.14]]},{"id":"s3","name":["Oct 13\u201314 \u00b7 Trend day","Oct 13\u201314 \u00b7 Trend \u0a26\u0a3f\u0a28"],"kind":"trend","show":50,"c":[["10-13 23:15",4188.22,4188.22,4181.58,4187.27],["10-13 23:30",4186.66,4191.29,4180.87,4189.29],["10-13 23:45",4188.46,4188.46,4178.19,4179.11],["10-14 00:00",4179.02,4181.43,4171.1,4176.71],["10-14 00:15",4176.9,4185.8,4175.17,4185.29],["10-14 00:30",4184.66,4189.36,4178.26,4179.24],["10-14 00:45",4180.56,4180.56,4169.45,4170.45],["10-14 01:00",4170.34,4172.56,4165.8,4167.68],["10-14 01:15",4168.65,4170.66,4163.37,4167.28],["10-14 01:30",4167.2,4169.79,4165.28,4168.81],["10-14 01:45",4168.72,4173.45,4167.84,4168.35],["10-14 02:00",4169.47,4169.47,4164.93,4166.56],["10-14 02:15",4166.62,4167.09,4160.84,4161.83],["10-14 02:30",4163.18,4164.41,4159.04,4160.26],["10-14 02:45",4160.35,4160.98,4157.31,4159.18],["10-14 03:00",4159.06,4160.25,4155.59,4159.84],["10-14 03:15",4159.43,4161.79,4155.73,4155.81],["10-14 03:30",4155.99,4159.15,4155.59,4158.61],["10-14 03:45",4158.5,4158.5,4152.82,4153.08],["10-14 04:00",4153.44,4156.72,4150.93,4156.58],["10-14 04:15",4156.39,4157.66,4154.88,4157.06],["10-14 04:30",4156.62,4156.79,4152.91,4156.13],["10-14 04:45",4156.08,4156.1,4147.48,4148.36],["10-14 05:00",4148.23,4163.69,4148.06,4162.67],["10-14 05:15",4161.7,4162.16,4157.83,4160.2],["10-14 05:30",4160.84,4161.98,4158.18,4161.8],["10-14 05:45",4161.47,4164.29,4161.47,4164.24],["10-14 06:00",4164.24,4164.24,4161.98,4162.08],["10-14 06:15",4162.24,4165.8,4162.16,4165.74],["10-14 06:30",4165.58,4166.32,4164.96,4165.74],["10-14 06:45",4165.63,4166.75,4162.96,4164.44],["10-14 07:00",4164.48,4164.73,4162.16,4162.49],["10-14 07:15",4162.44,4162.5,4157.66,4159.53],["10-14 07:30",4159.39,4159.94,4157.83,4158.87],["10-14 07:45",4158.77,4161.98,4158.5,4160.85],["10-14 08:00",4160.97,4161.17,4157.93,4157.93],["10-14 08:15",4157.96,4158.14,4157.89,4158.04],["10-14 08:30",4157.95,4158.14,4157.89,4158.04],["10-14 08:45",4157.95,4160.59,4157.41,4160.29],["10-14 09:00",4159.86,4163.23,4159.86,4161.15],["10-14 09:15",4160.95,4161.4,4158.96,4160.69],["10-14 09:30",4160.85,4161.12,4159.39,4160.29],["10-14 09:45",4159.68,4163.02,4159.68,4161.53],["10-14 10:00",4161.61,4161.81,4157.66,4157.74],["10-14 10:15",4157.88,4158.44,4155.41,4156.31],["10-14 10:30",4156.06,4157.19,4155.76,4156.73],["10-14 10:45",4156.54,4157.42,4154.81,4154.92],["10-14 11:00",4155.11,4164.22,4155.11,4162.62],["10-14 11:15",4162.42,4163.02,4158.35,4160.09],["10-14 11:30",4159.4,4161.12,4155.07,4155.29],["10-14 11:45",4155.85,4158.35,4155.78,4157.97],["10-14 12:00",4157.27,4159.39,4151.31,4153.01],["10-14 12:15",4153.39,4163.14,4148.17,4162.92],["10-14 12:30",4162.6,4167.02,4144.97,4148.05],["10-14 12:45",4148.46,4158.7,4143.76,4152.14],["10-14 13:00",4152.9,4163.37,4152.13,4160.94],["10-14 13:15",4161.45,4162.5,4159.31,4161.21],["10-14 13:30",4161.32,4162.85,4159.21,4159.38],["10-14 13:45",4159.52,4167.19,4157.73,4165.68],["10-14 14:00",4165.75,4168.4,4163.37,4166.96],["10-14 14:15",4166.51,4169.97,4165.73,4165.91],["10-14 14:30",4166.19,4166.19,4163.54,4163.63],["10-14 14:45",4163.8,4164.89,4161.98,4162.77],["10-14 15:00",4162.5,4162.85,4156.62,4157.22],["10-14 15:15",4158.54,4161.64,4155.76,4160.7],["10-14 15:30",4160.77,4166.0,4160.14,4165.78],["10-14 15:45",4165.16,4167.36,4165.1,4166.64],["10-14 16:00",4166.58,4166.58,4157.66,4162.6],["10-14 16:15",4162.37,4162.79,4157.31,4157.5],["10-14 16:30",4157.84,4162.85,4157.14,4157.63],["10-14 16:45",4157.9,4158.85,4149.03,4149.43],["10-14 17:00",4150.16,4161.91,4146.45,4161.29],["10-14 17:15",4160.22,4162.5,4153.96,4154.23],["10-14 17:30",4154.68,4155.22,4151.56,4151.6],["10-14 17:45",4151.72,4152.31,4146.27,4147.04],["10-14 18:00",4147.1,4150.28,4143.87,4148.69],["10-14 18:15",4148.79,4149.47,4143.88,4145.44],["10-14 18:30",4145.81,4148.39,4144.56,4146.18],["10-14 18:45",4146.29,4149.91,4146.11,4149.75],["10-14 19:00",4149.55,4153.91,4148.86,4153.2],["10-14 19:15",4152.92,4157.61,4150.07,4151.16],["10-14 19:30",4150.97,4150.97,4143.88,4144.32],["10-14 19:45",4144.55,4145.15,4142.16,4142.23],["10-14 20:00",4142.37,4145.59,4141.47,4143.44],["10-14 20:15",4143.58,4145.77,4142.33,4142.38],["10-14 20:30",4142.44,4143.31,4141.82,4143.2],["10-14 20:45",4143.11,4143.8,4142.85,4143.67],["10-14 21:00",4143.56,4144.05,4140.62,4143.97],["10-14 21:15",4143.8,4145.23,4140.1,4140.34],["10-14 21:30",4140.62,4144.39,4140.52,4142.58],["10-14 21:45",4142.54,4145.08,4139.76,4141.31],["10-14 22:00",4140.63,4142.29,4136.33,4140.66],["10-14 22:15",4140.3,4142.92,4138.05,4139.13],["10-14 22:30",4139.5,4140.35,4138.73,4139.38],["10-14 22:45",4139.26,4141.64,4137.21,4141.29],["10-14 23:00",4140.58,4150.97,4139.35,4148.78],["10-14 23:15",4148.37,4154.72,4144.22,4153.89],["10-14 23:30",4153.19,4172.83,4087.64,4088.55],["10-14 23:45",4090.14,4106.27,4089.14,4099.72],["10-15 00:00",4097.4,4097.4,4082.8,4083.07]]}];
+function toggleLang(){document.body.classList.toggle('lang-pa');const pa=document.body.classList.contains('lang-pa');document.getElementById('langbtn').textContent=pa?'English':'ਪੰਜਾਬੀ';document.documentElement.lang=pa?'pa':'en';buildTabs();draw();recalc();}
+function L(en,pa){return document.body.classList.contains('lang-pa')?pa:en;}
+const bar=document.getElementById('progressbar');const navlinks=[...document.querySelectorAll('nav.toc a')].filter(l=>!l.classList.contains('home'));
+const secs=['start','how','lab','score'].map(id=>document.getElementById(id));
+function onScroll(){const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';let cur=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=120)cur=i});navlinks.forEach((l,i)=>l.classList.toggle('active',i===cur));}
+document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+// ---------- state
+let si=0, shown=0, mode='level', plan={level:null,entry:null,stop:null,target:null,none:false}, played=false, timer=null, hitIdx=null, outcome=null;
+const cv=document.getElementById('ch'), ctx=cv.getContext('2d');
+function sess(){return SESS[si];}
+function atr14(cs,upto){const w=cs.slice(Math.max(0,upto-14),upto);return w.reduce((a,c)=>a+(c[2]-c[3]),0)/w.length;}
+function buildTabs(){const t=document.getElementById('tabs');t.innerHTML='';SESS.forEach((s,i)=>{const b=document.createElement('button');b.textContent=L(s.name[0],s.name[1]);b.className=i===si?'on':'';b.onclick=()=>{si=i;resetSession();};t.appendChild(b);});}
+function resetSession(){clearInterval(timer);shown=sess().show;plan={level:null,entry:null,stop:null,target:null,none:false};played=false;hitIdx=null;outcome=null;mode='level';document.querySelectorAll('.modes button').forEach(b=>b.classList.toggle('on',b.dataset.m==='level'));buildTabs();draw();recalc();document.getElementById('s-n').textContent='—';document.getElementById('s-v').textContent=L('Play a session to get scored','Score ਲਈ session ਚਲਾਓ');document.getElementById('s-d').textContent='';document.getElementById('s-list').innerHTML='';}
+function setMode(b){if(played)return;mode=b.dataset.m;plan.none=false;document.querySelectorAll('.modes button').forEach(x=>x.classList.toggle('on',x===b));recalc();}
+function noTrade(b){if(played)return;plan.none=true;plan.entry=plan.stop=plan.target=null;mode='none';document.querySelectorAll('.modes button').forEach(x=>x.classList.toggle('on',x===b));draw();recalc();}
+
+// ---------- drawing
+function layout(){const r=cv.getBoundingClientRect();cv.width=r.width*2;cv.height=380*2;ctx.setTransform(2,0,0,2,0,0);return {W:r.width,H:380};}
+let scale=null;
+function draw(){const {W,H}=layout();const cs=sess().c;const N=cs.length;const padL=8,padR=62,padT=14,padB=22;
+ const vis=cs.slice(0,played?N:shown);let hi=Math.max(...cs.map(c=>c[2])),lo=Math.min(...cs.map(c=>c[3]));
+ const extra=[plan.level,plan.entry,plan.stop,plan.target].filter(v=>v!=null);if(extra.length){hi=Math.max(hi,...extra);lo=Math.min(lo,...extra);}
+ const pad=(hi-lo)*0.06;hi+=pad;lo-=pad;const cw=(W-padL-padR)/N;const y=p=>padT+(hi-p)/(hi-lo)*(H-padT-padB);const x=i=>padL+i*cw+cw/2;scale={y,lo,hi,padT,padB,H};
+ ctx.clearRect(0,0,W,H);ctx.fillStyle='#0e1014';ctx.fillRect(0,0,W,H);
+ // grid + price labels
+ ctx.strokeStyle='#1d2026';ctx.fillStyle='#6b7079';ctx.font='11px Inter,system-ui';ctx.textAlign='left';
+ const step=niceStep((hi-lo)/5);for(let p=Math.ceil(lo/step)*step;p<hi;p+=step){ctx.beginPath();ctx.moveTo(padL,y(p));ctx.lineTo(W-padR,y(p));ctx.stroke();ctx.fillText(p.toFixed(0),W-padR+6,y(p)+4);}
+ // decision line
+ const dx=padL+sess().show*cw;ctx.setLineDash([4,4]);ctx.strokeStyle='#4a4f5a';ctx.beginPath();ctx.moveTo(dx,padT);ctx.lineTo(dx,H-padB);ctx.stroke();ctx.setLineDash([]);
+ // candles
+ vis.forEach((c,i)=>{const up=c[4]>=c[1];ctx.strokeStyle=ctx.fillStyle=up?'#46c98a':'#e0625e';ctx.beginPath();ctx.moveTo(x(i),y(c[2]));ctx.lineTo(x(i),y(c[3]));ctx.stroke();const bw=Math.max(1.5,cw*0.6);const top=y(Math.max(c[1],c[4])),bh=Math.max(1,Math.abs(y(c[1])-y(c[4])));ctx.fillRect(x(i)-bw/2,top,bw,bh);});
+ // plan lines
+ const lines=[['level',plan.level,'#7aa2ff',L('level','level')],['entry',plan.entry,'#ffffff',L('entry','entry')],['stop',plan.stop,'#e0625e',L('stop','stop')],['target',plan.target,'#46c98a',L('target','target')]];
+ ctx.font='bold 11px Inter,system-ui';lines.forEach(([k,v,col,lab])=>{if(v==null)return;ctx.strokeStyle=col;ctx.setLineDash(k==='level'?[6,4]:[]);ctx.beginPath();ctx.moveTo(padL,y(v));ctx.lineTo(W-padR,y(v));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.fillText(lab+' '+v.toFixed(1),padL+6,y(v)-4);});
+ // hit marker
+ if(hitIdx!=null){ctx.fillStyle=outcome==='win'?'#46c98a':'#e0625e';ctx.beginPath();ctx.arc(x(hitIdx),y(outcome==='win'?plan.target:plan.stop),5,0,Math.PI*2);ctx.fill();}
+ // ATR + time labels
+ const a=atr14(cs,sess().show);ctx.fillStyle='#9aa0ab';ctx.font='11px Inter,system-ui';ctx.textAlign='right';ctx.fillText('ATR(14) '+a.toFixed(1),W-padR-6,padT+12);ctx.textAlign='left';ctx.fillText(cs[0][0],padL+2,H-6);ctx.textAlign='right';ctx.fillText(cs[(played?N:shown)-1][0],W-padR-2,H-6);
+ document.getElementById('hint').textContent=played?L('Replay complete','Replay ਪੂਰਾ'):L('Mode: '+modeName()+' — click to place','Mode: '+modeName()+' — click ਕਰ ਕੇ ਲਾਓ');}
+function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(r)));const m=r/p;return (m<2?2:m<5?5:10)*p;}
+function modeName(){return {level:L('Level','Level'),entry:L('Entry','Entry'),stop:L('Stop','Stop'),target:L('Target','Target'),none:L('No trade','No trade')}[mode];}
+cv.addEventListener('click',e=>{if(played||mode==='none'||!scale)return;const r=cv.getBoundingClientRect();const yy=e.clientY-r.top;const p=scale.hi-(yy-scale.padT)/(scale.H-scale.padT-scale.padB)*(scale.hi-scale.lo);plan[mode]=Math.round(p*10)/10;draw();recalc();});
+window.addEventListener('resize',draw);
+
+// ---------- plan maths
+function dir(){if(plan.none)return 'none';if(plan.entry==null||plan.stop==null)return null;return plan.stop<plan.entry?'long':'short';}
+function recalc(){const d=dir();const a=atr14(sess().c,sess().show);const acct=+document.getElementById('acct').value||0,risk=+document.getElementById('risk').value||0;
+ const pd=document.getElementById('p-dir');pd.textContent=d==='none'?L('No trade','No trade'):d==='long'?'LONG':d==='short'?'SHORT':'—';pd.style.color=d==='long'?'var(--green)':d==='short'?'var(--red)':'var(--gold-soft)';
+ let sd=null,rr=null,size=null;if(d==='long'||d==='short'){sd=Math.abs(plan.entry-plan.stop);if(plan.target!=null){const rw=d==='long'?plan.target-plan.entry:plan.entry-plan.target;rr=rw/sd;}size=sd>0?(acct*risk/100)/sd:null;}
+ document.getElementById('p-stop').textContent=sd!=null?sd.toFixed(1)+' / '+(sd/a).toFixed(2)+'×':'—';
+ document.getElementById('p-rr').textContent=rr!=null?rr.toFixed(2)+' : 1':'—';
+ document.getElementById('p-size').textContent=size!=null?size.toFixed(2):'—';
+ document.getElementById('play').disabled=played||!(d==='none'||(d&&plan.stop!=null));}
+
+// ---------- play + score
+function play(){if(played)return;played=true;document.getElementById('play').disabled=true;const cs=sess().c;const d=dir();let i=shown;hitIdx=null;outcome=null;
+ timer=setInterval(()=>{if(i>=cs.length){clearInterval(timer);finish();return;}const c=cs[i];
+  if(d==='long'||d==='short'){if(hitIdx==null){const stopHit=d==='long'?c[3]<=plan.stop:c[2]>=plan.stop;const tgtHit=plan.target!=null&&(d==='long'?c[2]>=plan.target:c[3]<=plan.target);if(stopHit){hitIdx=i;outcome='loss';}else if(tgtHit){hitIdx=i;outcome='win';}}}
+  shown=i+1;i++;draw();},110);}
+function finish(){const s=sess(),cs=s.c,d=dir(),a=atr14(cs,s.show);const acct=+document.getElementById('acct').value||0,risk=+document.getElementById('risk').value||0;
+ const future=cs.slice(s.show);const fHi=Math.max(...future.map(c=>c[2])),fLo=Math.min(...future.map(c=>c[3]));const last=cs[cs.length-1][4],dec=cs[s.show-1][4];
+ const moved=last-dec;const trueDir=Math.abs(moved)<1.0*a?'none':moved>0?'long':'short';
+ // sweep low/high in the first 12 future candles
+ const upto=hitIdx!=null?Math.max(1,hitIdx-s.show):12;const early=future.slice(0,Math.min(12,upto));const swLo=Math.min(...early.map(c=>c[3])),swHi=Math.max(...early.map(c=>c[2]));
+ let favFirst=null;if(d==='long'||d==='short'){for(const c of future){const fav=d==='long'?c[2]-plan.entry:plan.entry-c[3];const adv=d==='long'?plan.entry-c[3]:c[2]-plan.entry;if(adv>=1*a){favFirst=false;break;}if(fav>=1.5*a){favFirst=true;break;}}}
+ const checks=[];
+ if(d==='none'){
+  const ok=trueDir==='none';checks.push([ok?20:5,L('No trade','No trade'),ok?L('Correct — the market went nowhere. Sitting out was the trade.','ਸਹੀ — ਬਾਜ਼ਾਰ ਕਿਤੇ ਨਹੀਂ ਗਿਆ।'):L('The market moved '+Math.abs(moved).toFixed(1)+' ('+(Math.abs(moved)/a).toFixed(1)+' ATR). There was a setup here.','ਬਾਜ਼ਾਰ '+Math.abs(moved).toFixed(1)+' ਹਿੱਲਿਆ। ਇੱਥੇ setup ਸੀ।')]);
+  checks.push([20,L('Risk','Risk'),L('Zero risk taken.','ਜ਼ੀਰੋ ਜੋਖਮ।')]);checks.push([20,L('Capital','ਪੂੰਜੀ'),L('Preserved.','ਬਚੀ।')]);checks.push([ok?20:10,L('Patience','ਸਬਰ'),L('No trade is a position.','No trade ਵੀ position ਹੈ।')]);checks.push([ok?20:10,L('Discipline','ਅਨੁਸ਼ਾਸਨ'),L('You did not force it.','ਜ਼ਬਰਦਸਤੀ ਨਹੀਂ ਕੀਤੀ।')]);
+ } else {
+  const sd=Math.abs(plan.entry-plan.stop);const rw=plan.target==null?null:(d==='long'?plan.target-plan.entry:plan.entry-plan.target);const rr=rw==null?null:rw/sd;
+  checks.push([risk<=1?20:risk<=2?10:0,L('Risk ≤ 1% of account','Risk ≤ 1%'),L('You risked '+risk+'%.','ਤੁਸੀਂ '+risk+'% ਜੋਖਮ ਲਿਆ।')]);
+  checks.push([sd>=a?20:sd>=0.6*a?10:0,L('Stop ≥ 1 × ATR','Stop ≥ 1 × ATR'),L('Stop = '+(sd/a).toFixed(2)+' × ATR. Under 1 ATR is inside normal noise (G2).','Stop = '+(sd/a).toFixed(2)+' × ATR। 1 ATR ਤੋਂ ਘੱਟ = ਰੌਲੇ ਅੰਦਰ (G2)।')]);
+  checks.push([rr==null?0:rr>=1.5?20:rr>=1?10:0,L('Reward ≥ 1.5 R','Reward ≥ 1.5 R'),rr==null?L('No target set.','Target ਨਹੀਂ।'):L('Planned '+rr.toFixed(2)+' : 1.','Plan '+rr.toFixed(2)+' : 1।')]);
+  const survived=d==='long'?plan.stop<swLo:plan.stop>swHi;const sweepDist=d==='long'?(swLo-plan.stop):(plan.stop-swHi);
+  checks.push([survived?20:0,L('Stop beyond the sweep zone','Stop sweep zone ਤੋਂ ਅੱਗੇ'),survived?L('Price came within '+Math.abs(sweepDist).toFixed(1)+' of your stop in the next 3 hours and did not take it. That is where stops belong (M3).','ਕੀਮਤ ਤੁਹਾਡੇ stop ਦੇ '+Math.abs(sweepDist).toFixed(1)+' ਨੇੜੇ ਆਈ ਪਰ ਲਿਆ ਨਹੀਂ। Stops ਇੱਥੇ ਚਾਹੀਦੇ (M3)।'):L('The early sweep went '+Math.abs(sweepDist).toFixed(1)+' through your stop. You were the liquidity.','ਸ਼ੁਰੂਆਤੀ sweep ਤੁਹਾਡੇ stop ਤੋਂ '+Math.abs(sweepDist).toFixed(1)+' ਲੰਘੀ। ਤੁਸੀਂ liquidity ਸੀ।')]);
+  const dirOk=favFirst===true;checks.push([dirOk?20:favFirst===null?10:0,L('Direction','ਦਿਸ਼ਾ'),dirOk?L('Price ran 1.5 ATR in your favour before 1 ATR against. Right side.','ਕੀਮਤ ਤੁਹਾਡੇ ਪੱਖ ਵਿੱਚ 1.5 ATR ਗਈ। ਸਹੀ ਪਾਸਾ।'):favFirst===null?L('Neither side moved 1.5 ATR — a chop session.','ਕੋਈ ਪਾਸਾ 1.5 ATR ਨਹੀਂ — chop।'):L('Price went 1 ATR against you before any real move your way. Wrong side.','ਕੀਮਤ ਪਹਿਲਾਂ 1 ATR ਤੁਹਾਡੇ ਖ਼ਿਲਾਫ਼। ਗਲਤ ਪਾਸਾ।')]);
+ }
+ const total=checks.reduce((x,c)=>x+c[0],0);const col=total>=80?'var(--green)':total>=50?'var(--amber)':'var(--red)';
+ const n=document.getElementById('s-n'),v=document.getElementById('s-v'),dd=document.getElementById('s-d');n.textContent=total+'/100';n.style.color=col;v.style.color=col;
+ let out='';if(d==='long'||d==='short'){const sd=Math.abs(plan.entry-plan.stop);const size=(acct*risk/100)/sd;const px=outcome==='win'?plan.target:outcome==='loss'?plan.stop:last;const pnl=(d==='long'?px-plan.entry:plan.entry-px)*size;const R=(d==='long'?px-plan.entry:plan.entry-px)/sd;out=L('Outcome: '+(outcome==='win'?'target hit':outcome==='loss'?'stopped out':'still open at close')+' · '+(pnl>=0?'+':'−')+'$'+Math.abs(pnl).toFixed(0)+' ('+R.toFixed(2)+' R)','ਨਤੀਜਾ: '+(outcome==='win'?'target ਹਿੱਟ':outcome==='loss'?'stop out':'close ਤੇ ਖੁੱਲ੍ਹਾ')+' · '+(pnl>=0?'+':'−')+'$'+Math.abs(pnl).toFixed(0)+' ('+R.toFixed(2)+' R)');}
+ v.textContent=total>=80?L('Professional process','ਪੇਸ਼ੇਵਰ process'):total>=50?L('Getting there — fix the red lines','ਨੇੜੇ — ਲਾਲ ਲਾਈਨਾਂ ਠੀਕ ਕਰੋ'):L('Retail process — rebuild the plan','Retail process — plan ਮੁੜ ਬਣਾਓ');dd.textContent=out;
+ const list=document.getElementById('s-list');list.innerHTML='';checks.forEach(c=>{const e=document.createElement('div');e.className='sc '+(c[0]>=20?'ok':c[0]>0?'':'no');e.innerHTML=`<div class="pt">${c[0]}/20</div><div><div>${c[1]}</div><div class="why">${c[2]}</div></div>`;list.appendChild(e);});
+ document.getElementById('score').scrollIntoView({behavior:'smooth',block:'start'});}
+buildTabs();resetSession();
+</script></body></html>
